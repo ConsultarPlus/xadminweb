@@ -1,0 +1,22 @@
+ {% extends 'base.html' %}
+ {% load crispy_forms_tags %}
+ {% load static %}
+    {% block content %}
+     <table id="tab">
+        <tbody>
+            <tr>
+            {% for menu in menues %}
+                <td>
+                    <a href="{{ item.url }}" class="btn btn-outline-primary btn-block">{{ item.titulo }</a><br>
+                </td>
+                {% if forloop.counter|divisibleby:6 %}
+                </tr>
+                <tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+     </table>
+    {% endblock %}
+
+
+

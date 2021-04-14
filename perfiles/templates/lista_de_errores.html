@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+{% block content %}
+    {% if errores %}
+    <br>
+    <div class="alert alert-warning" role="alert">
+      Se deben revisar los errores mostrados abajo
+    </div>
+    {% for error in errores %}
+        <li>{{ error }}</li>
+    {% endfor %}
+    {% endif %}
+    <br>
+    {% include 'boton_volver.html' %}
+{% endblock %}

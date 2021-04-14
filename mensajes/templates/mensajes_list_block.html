@@ -1,0 +1,142 @@
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% load static %}
+{% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    {% include "cabeza.html" %}
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+{% endif %}
+
+{% if filtros_form %}
+    <h1>{% traducir 'Mensajes' 'MENSAJE' %}</h1>
+    {% crispy filtros_form %}
+{% endif %}
+
+<div class="form-row form-row">
+    <div class="col form-group">
+        <table>
+            <tr class="model-group">
+				<th><a href="{% url 'mensaje_agregar' %}?modo={{ request.GET.modo }}"
+                       title="{% traducir 'Agregar' 'MENSAJE' %}"
+				       class="addlink">{% traducir 'Mensaje' 'MENSAJE' %}</a>
+				</th>
+            </tr>
+        </table>
+    </div>
+    {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    <div class="col form-group" align="right">
+        <div class="form-group">
+        {% include 'boton_seleccionar.html' %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div style="overflow-x:auto;">
+<br>
+<table id="tab">
+    <thead>
+        <tr>
+            {% if request.GET.modo == 'm' %}
+                <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]" /></th>
+            {% else %}
+                <th></th>
+            {% endif %}
+            {% if bandeja == 'rec' %}
+            <th></th>
+            {% endif %}
+            <th>{% traducir 'Fecha' 'MENSAJE' %}</th>
+            <th>{% traducir 'Hora' 'MENSAJE' %}</th>
+            <th>{% traducir 'Mensaje' 'MENSAJE' %}</th>
+            {% if bandeja == 'rec' %}
+            <th>{% traducir 'Remitente' 'MENSAJE' %}</th>
+            <th></th>
+            {% else %}
+            <th></th>
+            <th></th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in paginado %}
+        {% if bandeja == 'rec' %}
+        <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+        {% else %}
+        <tr class="row2">
+        {% endif %}
+            {% if request.GET.modo == 'm' %}
+                <td><input type="checkbox" id="{{ item.id }}" /></td>
+            {% else %}
+                {% if request.GET.modo == 's' %}
+                    <td><input type="radio" id="{{ item.id }}" name="items" ></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            {% endif %}
+            {% if bandeja == 'rec' %}
+                <td><i class="envelope-solid-20{% if item.fecha_visto %}-open{% endif %}"></i></td>
+                <td>{{ item.mensaje.fecha|date:"d/m/Y" }}</td>
+                <td>{{ item.mensaje.hora }}</td>
+                {% autoescape off %}
+                <td>{{ item.mensaje.mensaje|observacion_pop }}</td>
+                {% endautoescape %}
+                <td>
+                    {% if item.mensaje.remitente.perfil.foto.name|tiene_vista_previa %}
+                    <img class="preview" style="width:50px;border-radius:50%;" src="/media/{{ item.mensaje.remitente.perfil.foto }}">
+                    {% else %}
+                    <img class="preview" style="width:50px;border-radius:50%;" src="/static/img/usuario_incognito.png">
+                    {% endif %}
+                    {{ item.mensaje.remitente }}
+                </td>
+                <td><a href="{% url 'mensaje_ver' item.mensaje_id %}?modo={{ request.GET.modo }} "
+                       class="viewlink" >{% traducir 'Ver' 'MENSAJE' %}</a></td>
+            {% else %}
+                <td>{{ item.fecha|date:"d/m/Y" }}</td>
+                <td>{{ item.hora }}</td>
+                {% autoescape off %}
+                <td>{{ item.mensaje|observacion_pop }}</td>
+                {% endautoescape %}
+                <td><a href="{% url 'mensaje_editar' item.id %}?modo={{ request.GET.modo }} "
+                       title="{% traducir 'Editar' 'MENSAJE' %}"
+                       class="changelink" ></a></td>
+                <td><a href="#"
+                       class="deletelink"
+                       title="{% traducir 'Eliminar' 'MENSAJE' %}"
+                       onclick="return confirmarAccion('{% url 'mensaje_eliminar' item.id %}',
+                                                       '¿Eliminar mensaje?')"></a></td>
+                {% for destinatario in item.destinatarios.all %}
+                    <tr>
+                    <td></td>
+                    <th>{% if forloop.counter == 1 %}Destinatario{% endif %}</th>
+                    <td>
+                        {% if destinatario.perfil.foto.name|tiene_vista_previa %}
+                        <img class="preview foto-id-sm" src="/media/{{ destinatario.perfil.foto }}">
+                        {% else %}
+                        <img class="preview foto-id-sm" src="/static/img/usuario_incognito.png">
+                        {% endif %}
+                        {{ destinatario }}
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+
+{% include "paginador.html" %}
+</div>
+{% if not expediente %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+{% endif %}
+{% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    {% if request.GET.modo == 'm' %}
+        <script src="{% static "js/marcar_todo.js" %} " ></script>
+    {% endif %}
+    <script src="{% static "js/armar_seleccionados.js" %} " ></script>
+    </div>
+{% endif %}

@@ -1,0 +1,110 @@
+{% load crispy_forms_tags %}
+{% load expte_custom_tags %}
+{% load static %}
+{% get_media_prefix as MEDIA_URL %}
+<h1>{% traducir 'Documentos' 'DOCUMENTO' %}</h1>
+{% if filtros_form %}
+    {% crispy filtros_form %}
+{% endif %}
+
+{% if expediente %}
+    {% if editable %}
+        <a href="{% url 'expediente_documento_agregar' expediente.id %}"
+           title="{% traducir 'Agregar' 'DOCUMENTO' %}"
+           class="addlink">{% traducir 'Documentos' 'DOCUMENTO' %}</a>
+    {% endif %}
+{% else %}
+<!--    <a href="{% url 'documento_agregar' %}"-->
+<!--       title="{% traducir 'Agregar' 'DOCUMENTO' %}"-->
+<!--       class="addlink">{% traducir 'Documentos' 'DOCUMENTO' %}</a>-->
+{% endif %}
+
+<div align="right">
+    {% if seleccionar == 'True' %}
+        <a href="#" class="btn btn-default" onclick="armar_seleccionados('{{ multiple }}')">{% traducir 'Seleccionar' 'DOCUMENTO' %}</a>
+        {% if not expediente %}
+            <input type="button"
+                   name="volver"
+                   value="Volver"
+                   class="btn btn-default"
+                   id="id_boton_volver"
+                   onclick="window.history.back()"
+            />
+        {% endif %}
+    {% endif %}
+</div>
+<div style="overflow-x:auto;">
+    <br>
+    <table id="tab">
+        <thead>
+        <tr>
+            {% if seleccionar and multiple %}
+                <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]" /> </th>
+            {% endif %}
+            <th>{% traducir 'Entidad' 'DOCUMENTO' %}</th>
+            <th>{% traducir 'ID' 'DOCUMENTO' %}</th>
+            <th>{% traducir 'Descripción' 'DOCUMENTO' %}</th>
+            <th>{% traducir 'Archivo' 'DOCUMENTO' %}</th>
+            <th>{% traducir 'Vista previa' 'DOCUMENTO' %}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in paginado %}
+        <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+            {% if seleccionar %}
+                {% if multiple %}
+                <td><input type="checkbox" id="{{ item.id }}"/></td>
+                {% else %}
+                <td><input type="radio" id="{{ item.id }}" name="items"></td>
+                {% endif %}
+            {% endif %}
+            <td>{{ item.entidad }}</td>
+            {% if item.entidad == 'EXPEDIENTE' %}
+                <td>{{ item.entidad_id|busca_expte }}</td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            <td>{{ item.descripcion }}</td>
+            <td><a href="{{ MEDIA_URL }}{{ item.archivo }}" target="_blank">{{ item.archivo }}</a></td>
+            {% if item.archivo.name|tiene_vista_previa %}
+                <td><a target="_blank"
+                       href="{{ MEDIA_URL }}{{ item.archivo }}">
+                       <img class="preview" src="/media/{{ item.archivo }}" style="width:150px">
+                    </a>
+                </td>
+            {% else %}
+                <td></td>
+            {% endif %}
+            <td></td>
+            {% if not expediente or editable %}
+            <td><a href="{% url 'documento_editar' item.id %} "
+                   title="{% traducir 'Editar' 'DOCUMENTO' %}"
+                   class="changelink"></a></td>
+            <td><a href="#"
+                   class="deletelink"
+                   title="{% traducir 'Eliminar' 'DOCUMENTO' %}"
+                   onclick="return confirmarAccion('{% url 'documento_eliminar' item.id %}',
+                                                                '¿Eliminar el documento?')"></a></td>
+            {% else %}
+            <td></td>
+            <td></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {% include "paginador.html" %}
+</div>
+{% if not expediente %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static "js/marcar_todo.js" %} " ></script>
+    <script src="{% static "js/armar_seleccionados.js" %} " ></script>
+{% endif %}
+
+
+

@@ -1,0 +1,91 @@
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% load static %}
+{% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    {% include "cabeza.html" %}
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+{% endif %}
+
+{% if filtros_form %}
+    <h1>{% traducir 'Usuarios' 'USUARIOS' %}</h1>
+    {% crispy filtros_form %}
+{% endif %}
+
+<div class="form-row form-row">
+    {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    <div class="col form-group" align="right">
+        <div class="form-group">
+        {% include 'boton_seleccionar.html' %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<div style="overflow-x:auto;">
+<br>
+<table id="tab">
+    <thead>
+        <tr>
+            {% if request.GET.modo == 'm' %}
+                <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]" /></th>
+            {% else %}
+                <th></th>
+            {% endif %}
+            <th></th>
+            <th>{% traducir 'Usuario' 'USUARIO' %}</th>
+            <th>{% traducir 'Nombre' 'USUARIO' %}</th>
+            <th>{% traducir 'Apellido' 'USUARIO' %}</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for item in paginado %}
+        <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+            {% if request.GET.modo == 'm' %}
+                <td><input type="checkbox" id="{{ item.id }}" /></td>
+            {% else %}
+                {% if request.GET.modo == 's' %}
+                    <td><input type="radio" id="{{ item.id }}" name="items" ></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            {% endif %}
+            {% if item.perfil.foto.name|tiene_vista_previa %}
+                <td><a target="_blank"
+                       href="/media/{{ item.perfil.foto }}">
+                       <img class="preview foto-id-sm"
+                            src="/media/{{ item.perfil.foto }}">
+                    </a>
+                </td>
+            {% else %}
+                <td><a target="_blank"
+                       href="/static/img/usuario_incognito.png">
+                       <img class="preview foto-id-sm"
+                            src="/static/img/usuario_incognito.png">
+                    </a>
+                </td>
+            {% endif %}
+			<td> {{ item.username }}</td>
+			<td> {{ item.first_name }}</td>
+			<td> {{ item.last_name }}</td>
+			<td></td>
+			<td></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<br>
+
+{% include "paginador.html" %}
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+{% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    {% include 'live-search-scripts.html' %}
+    {% if request.GET.modo == 'm' %}
+        <script src="{% static "js/marcar_todo.js" %} " ></script>
+    {% endif %}
+    <script src="{% static "js/armar_seleccionados.js" %} " ></script>
+    </div>
+{% endif %}

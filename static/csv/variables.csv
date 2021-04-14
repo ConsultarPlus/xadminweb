@@ -1,0 +1,12 @@
+V_ESTADO_FOJA_CERO,codigo de estado de foja cero,N,,,1587.0000,f
+V_TIPO_CIERRE,Valor del Tipo de Insumido para el cierre,N,,,4.0000,f
+V_TIPO_PASE,"",N,,"",2.0000,f
+V_TIPO_OFICIO,Tipo de insumido de Oficio,N,,,3.0000,f
+V_REPORTE_FOJA_0,Reporte foja 0,N,,,1.0000,f
+V_TIPO_FOJA_CERO,tipo de insumido foja cero,N,,,1.0000,f
+V_CLAVE_EXPIRA,"",N,,"",0.0000,f
+V_PERSO_INTER,"",N,,"",0.0000,f
+V_TIPO_AUTOMATICO,AUTO,N,,,7.0000,f
+V_SECTOR_INTERNO,SECTOR DE RECLAMOS INTERNOS,N,,,1827.0000,f
+V_TIPO_DOCUMENTACION,TIPO DE INSUMIDO PARA CUANDO SE ADJUNTA DOCUMENTACIÓN,N,,,18.0000,f
+V_TIPO_FIRMA_RTA,respuesta firma,N,,,9.0000,f

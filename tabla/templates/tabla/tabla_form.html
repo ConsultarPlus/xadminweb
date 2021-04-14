@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+    {% if tabla %}
+        <h2>{{ tabla.entidad }} - {{ tabla.descripcion }}, {{ tabla.codigo }}</h2>
+    {% else %}
+        {% if titulo %}
+        <h2>{{titulo}}</h2>
+        {% else %}
+        <h2>Agregar</h2>
+        {% endif %}
+    {% endif %}
+    {% crispy form %}
+    {% if formato %}
+    <br>
+    <div class="alert alert-secondary" role="alert">
+        <strong>Formato del CSV:</strong> {{ formato }}
+    </div>
+    {% endif %}
+    {% if errores %}
+    <br>
+        <div class="alert alert-warning" role="alert">
+          Se deben revisar los errores mostrados abajo
+        </div>
+        {% for error in errores %}
+            <li>{{ error }}</li>
+        {% endfor %}
+    {% endif %}
+
+     <form hidden id="tablaForm"
+            cargar_registros_de_entidad-url="{% url 'cargar_registros_de_entidad' %}"
+            novalidate>
+     </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static "js/cargar_listas.js" %} " ></script>
+
+{% endblock %}

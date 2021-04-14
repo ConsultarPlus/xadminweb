@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+    {% crispy form %}
+<script>
+    function cambiar_redirect(url) {
+        try {
+            document.getElementById("id_redirect_url").value  = url;
+            document.getElementById("id_form").submit();
+        } catch(error) {
+          console.error(error);
+        }
+    }
+</script>
+{% endblock %}

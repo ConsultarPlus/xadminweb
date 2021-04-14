@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+{% if mensaje_interno %}
+    <h2>Mensaje</h2>
+    {% else %}
+    <h2>Agregar</h2>
+    {% endif %}
+
+    {% crispy form %}
+
+    <form hidden id="urlsForm"
+        usuario_nombre-url="{% url 'usuario_nombre' %}"
+    novalidate>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        var myWindow
+
+        window.addEventListener('unload', function(event) {
+            myWindow.close();
+        });
+
+        function openWin() {
+          var url = '{% url 'seleccionar_usuarios' %}'
+          if (myWindow) {
+            myWindow.close();
+          }
+          myWindow = window.open(url, "_blank", "height=900, width=800, status=yes, toolbar=no, " +
+                                 "menubar=no, location=no, addressbar=no");
+        }
+
+        function setValue(seleccion) {
+            var url = $("#urlsForm").attr("usuario_nombre-url");
+            var sels = seleccion.split(";");
+            for (sel of sels) {
+                var nombre = ""
+                $.ajax({
+                    url: url,
+                    data: {'id': sel},
+                    success: function (data) {
+                        const object = data
+                        for (const [key, value] of Object.entries(object)) {
+                            var agregar = 'S';
+                            var selectobject=document.getElementById("id_destinatarios")
+                            for (var i=0; i<selectobject.length; i++){
+                                valor = selectobject.options[i].value;
+                                if (valor == key) {
+                                    agregar = 'N';
+                                    break;
+                                }
+                            }
+                            if (agregar == 'S') {
+                                $('#id_destinatarios').append('<option value="' + key + '" selected="selected">' + value + '</option>');
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function closeWin() {
+          myWindow.close();
+        }
+
+    </script>
+
+{% endblock %}

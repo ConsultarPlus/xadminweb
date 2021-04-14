@@ -1,0 +1,5 @@
+Expediente,Fecha,Dependencia,Sector,Subsector,Tema,Subtema,Localidad,Origen,Estado,Prioridad,Usuario,Persona,Cantidad,Queja,Calle,Altura,Ambito
+6,<built-in method date of datetime.datetime object at 0x038D7908>,SEDE ROSARIO,290,1601,273,227,CERES (2340),CALL CENTER,,,,"PICAPIEDRA, PABLO (DNI 65432178)",1,q,,,P
+5,<built-in method date of datetime.datetime object at 0x038D7218>,SEDE ROSARIO,290,1601,273,227,CERES (2340),CALL CENTER,,,,"PICAPIEDRA, PABLO (DNI 65432178)",1,q,,,P
+4,<built-in method date of datetime.datetime object at 0x038D7AD0>,SEDE ROSARIO,290,1602,1751,1787,CERES (2340),CALL CENTER,,,,"QUITO, ESTEBAN (DNI 74185296)",1,tengo frío,jm de rosas,1353,P
+3,<built-in method date of datetime.datetime object at 0x038D72F0>,SEDE ROSARIO,290,1602,1751,1787,ROSARIO (2000),CALL CENTER,,,,"ESCAMOSO, PEDRO (DNI 98765432)",1,"ahora si, estoy enojado",Oroño,2450,P

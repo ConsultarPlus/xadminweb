@@ -1,0 +1,48 @@
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% load static %}
+<div style="overflow-x:auto;">
+    <br>
+    <table id="tab">
+        <thead>
+        <tr>
+            {% if seleccionar and multiple %}
+                <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]" /> </th>
+            {% endif %}
+            <th>{% traducir 'Pantalla' 'PREFERENCIAS' %}</th>
+            <th>{% traducir 'Opción' 'PREFERENCIAS' %}</th>
+            <th>{% traducir 'valor' 'PREFERENCIAS' %}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in paginado %}
+        <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+            {% if seleccionar %}
+                {% if multiple %}
+                <td><input type="checkbox" id="{{ item.id }}"/></td>
+                {% else %}
+                <td><input type="radio" id="{{ item.id }}" name="items"></td>
+                {% endif %}
+            {% endif %}
+            <td>{{ item.vista }}</td>
+            <td>{{ item.opcion }}</td>
+            {% if item.caracter %}
+                <td>{{ item.caracter }}</td>
+            {% elif item.fecha %}
+                <td>{{ item.fecha }}</td>
+            {% elif item.numero %}
+                <td>{{ item.numero }}</td>
+            {% endif %}
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {% include "paginador.html" %}
+</div>

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Permission denied (403)' %}{% endblock %}
+
+{% block content %}
+
+<h2>{% trans 'Permiso denegado (403)' %}</h2>
+
+<p>{% trans 'Lo lamentamos mucho pero este requerimiento no puede ser permitido.' %}</p>
+
+{% with alineacion="left" %}
+{% include 'boton_volver.html' %}
+{% endwith %}
+{% endblock %}

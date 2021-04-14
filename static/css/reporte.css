@@ -1,0 +1,310 @@
+
+html {
+    font-family: Helvetica;
+    font-size: 10px;
+    font-weight: normal;
+    color: #000000;
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+    line-height: 150%;
+    border: 1px none;
+    display: inline;
+    width: auto;
+    height: auto;
+    white-space: normal;
+}
+
+b,
+strong {
+    font-weight: bold;
+}
+
+i,
+em {
+    font-style: italic;
+}
+
+u {
+    text-decoration: underline;
+}
+
+s,
+strike {
+    text-decoration: line-through;
+}
+
+a {
+    text-decoration: underline;
+    color: blue;
+}
+
+ins {
+    color: green;
+    text-decoration: underline;
+}
+del {
+    color: red;
+    text-decoration: line-through;
+}
+
+pre,
+code,
+kbd,
+samp,
+tt {
+    font-family: "Courier New";
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight:bold;
+    -pdf-outline: true;
+    -pdf-outline-open: false;
+}
+
+h1 {
+    /*18px via YUI Fonts CSS foundation*/
+    font-size:138.5%;
+    -pdf-outline-level: 0;
+}
+
+h2 {
+    /*16px via YUI Fonts CSS foundation*/
+    font-size:123.1%;
+    -pdf-outline-level: 1;
+}
+
+h3 {
+    /*14px via YUI Fonts CSS foundation*/
+    font-size:108%;
+    -pdf-outline-level: 2;
+}
+
+h4 {
+    -pdf-outline-level: 3;
+}
+
+h5 {
+    -pdf-outline-level: 4;
+}
+
+h6 {
+    -pdf-outline-level: 5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+pre,
+hr {
+    margin:1em 0;
+}
+
+address,
+blockquote,
+body,
+center,
+dl,
+dir,
+div,
+fieldset,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+isindex,
+menu,
+noframes,
+noscript,
+ol,
+p,
+pre,
+table,
+th,
+tr,
+td,
+ul,
+li,
+dd,
+dt,
+pdftoc {
+    display: block;
+}
+
+table {
+}
+
+tr,
+th,
+td {
+
+    vertical-align: middle;
+    width: auto;
+}
+
+th {
+    text-align: center;
+    font-weight: bold;
+}
+
+center {
+    text-align: center;
+}
+
+big {
+    font-size: 125%;
+}
+
+small {
+    font-size: 75%;
+}
+
+
+ul {
+    margin-left: 1.5em;
+    list-style-type: disc;
+}
+
+ul ul {
+    list-style-type: circle;
+}
+
+ul ul ul {
+    list-style-type: square;
+}
+
+ol {
+    list-style-type: decimal;
+    margin-left: 1.5em;
+}
+
+pre {
+    white-space: pre;
+}
+
+blockquote {
+    margin-left: 1.5em;
+    margin-right: 1.5em;
+}
+
+noscript {
+    display: none;
+}
+
+
+page { size=letter; }
+/*page {
+  background: white;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 0.5cm;
+  box-shadow: 0 0 0.5cm rgba(0,0,0,0.5);
+}*/
+
+page[size="A4"] {  
+  width: 21cm;
+  height: 29.7cm; 
+}
+
+page[size="A5"] {  
+  width: 21cm;
+  height: 14.8cm; 
+}
+
+page[size="CARTA"] {  
+  width: 21.6cm;
+  height: 27.9cm; 
+}
+
+page[size="OFICIO"] {  
+  width: 21.6cm;
+  height: 33cm; 
+}
+
+page[size="LEGAL"] {  
+  width: 21.6cm;
+  height: 35.6cm; 
+}
+
+page[size="1/2 CARTA"] {  
+  width: 21.6cm;
+  height: 14cm; 
+}
+/*
+@media print {
+	body, page {
+		margin: 0;
+		box-shadow: 0;
+		box-shadow: none;
+	}
+	.boton  {
+		display: none ;
+	}
+	div.contenedor {
+		border: none;
+	}
+}
+
+body {
+    background-color: gray;
+}
+
+div {
+	font-family: "Verdana";
+	font-size: .9em;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    padding: 2px;
+    text-align: left;
+}
+
+th {
+    height: 30px;
+}
+
+button {
+	background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 7px 16px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+}
+
+button:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+}
+
+.contenedor {
+	margin: auto;
+    width: 98%;
+	height: 98% ;
+    padding: 2px;
+}
+*/

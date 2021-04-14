@@ -1,0 +1,26 @@
+<!--Ver opciones en https://developer.snapappointments.com/bootstrap-select/-->
+<select data-live-search="true"
+        {% if modo_obscuro %}
+            data-style="btn btn-dark"
+        {% endif %}
+        title="---------"
+        name="{{ widget.name }}"
+        {% for name, value in widget.attrs.items %}
+            {% if value is not False %}
+                {{ name }}{% if value is not True %}="{{ value|stringformat:'s' }}{% if name == 'class' %} selectpicker border{% endif %}"{% endif %}
+            {% endif %}
+        {% endfor %}
+        >
+        {% for group_name, group_choices, group_index in widget.optgroups %}
+            {% if group_name %}
+                <optgroup label="{{ group_name }}">
+            {% endif %}
+            {% for option in group_choices %}
+                {% include option.template_name with widget=option %}
+            {% endfor %}
+            {% if group_name %}
+                </optgroup>
+            {% endif %}
+        {% endfor %}
+</select>
+

@@ -1,0 +1,8 @@
+<option value="">---------</option>
+{% for subordinado in subordinados %}
+    {% if subordinado.entidad == 'LOCALIDAD' %}
+        <option value="{{ subordinado.id }}" >{{ subordinado.descripcion }} ({{ subordinado.codigo }})</option>
+    {% else %}
+        <option value="{{ subordinado.id }}" >{{ subordinado.descripcion }}</option>
+    {% endif %}
+{% endfor %}

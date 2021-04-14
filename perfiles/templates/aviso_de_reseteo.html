@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+    {% autoescape off %}
+    <p>Estos son sus nuevos datos de acceso:</p>
+    <p>Usuario: {{ usuario }}</p>
+    <p>Clave: {{ clave }}</p>
+    <br>
+    <p>Sitio de la Defensoría: <a href="{{ sitio }}">{{ sitio }}</a></p>
+    <br>
+    <p>Atención: Se recomienda cambiar la contraseña inmediatamente</p>
+    <p>Si el vínculo no funciona copie y pegue la URL en la barra de direcciones</p>
+
+    <p>Equipo técnico de la Defensoría del pueblo</p>
+    {% endautoescape %}
+</body>
+</html>
+

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form name="delete-form" method="post">
+        {% csrf_token %}
+        <h2>¿Cargar la tabla {{ entidad }}?</h2>
+        <script>
+            document.write('<a href="' + document.referrer + '">Cancelar</a>');
+        </script>
+        <button type="submit">Cargar</button>
+
+    </form>
+
+{% endblock %}

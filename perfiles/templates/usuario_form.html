@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+{% include 'form_errors.html' %}
+
+  {% crispy form %}
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="{% static "js/colapsar_div.js" %} " ></script>
+  <script>
+      $('form').submit(function () {
+        $('#id_nivel').removeAttr('disabled');
+      });
+  </script>
+{% endblock %}

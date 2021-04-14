@@ -1,0 +1,43 @@
+{% include "django/forms/widgets/input.html" %}
+<!--Ver opciones en https://api.jqueryui.com/datepicker/-->
+<script>
+    $(function () {
+        $("#id_{{ widget.name }}").datepicker({
+          altFormat:'dd/mm/yyyy',
+          dateFormat: "dd/mm/yy",
+          dayNames: [ "Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado" ],
+          dayNamesMin: [ "Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa" ],
+          dayNamesShort: [ "Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb" ],
+          monthNames: [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+          monthNamesShort: [ "Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic" ],
+          changeYear: true,
+          yearRange: "c-90:c+5",
+          changeMonth: true,
+        });
+    });
+
+    var date = document.getElementById('id_{{ widget.name }}');
+    function checkValue(str, max) {
+        if (str.charAt(0) !== '0' || str == '00') {
+            var num = parseInt(str);
+            if (isNaN(num) || num <= 0 || num > max) num = 1;
+            str = num > parseInt(max.toString().charAt(0)) && num.toString().length == 1 ? '0' + num : num.toString();
+        };
+        return str;
+    };
+
+    date.addEventListener('input', function(e) {
+        this.type = 'text';
+        var input = this.value;
+        if (/\D\/$/.test(input)) input = input.substr(0, input.length - 3);
+        var values = input.split('/').map(function(v) {
+            return v.replace(/\D/g, '')
+        });
+        if (values[0]) values[0] = checkValue(values[0], 31);
+        if (values[1]) values[1] = checkValue(values[1], 12);
+        var output = values.map(function(v, i) {
+            return v.length == 2 && i < 2 ? v + '/' : v;
+        });
+        this.value = output.join('').substr(0, 14);
+    });
+</script>

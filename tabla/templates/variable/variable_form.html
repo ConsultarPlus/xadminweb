@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+{% if variable %}
+    <h2>Modificar</h2>
+    {% else %}
+    <h2>Agregar</h2>
+    {% endif %}
+
+    {% crispy form %}
+
+    <form hidden id="urlsForm" novalidate></form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        var tipo_dato_aux; //define variable global para usar como bandera
+        $("#id_tipo").change(function () {
+          var tipo_dato = $(this).val();  // obtiene el código del input de HTML
+          if (tipo_dato_aux != tipo_dato) {
+            tipo_dato_aux = tipo_dato;
+            document.getElementById("id_fecha").disabled = true;
+            document.getElementById("id_caracter").disabled = true;
+            document.getElementById("id_numero").disabled = true;
+            document.getElementById("id_logico").disabled = true;
+            var elemento;
+            switch(tipo_dato) {
+            case "C":
+                elemento = "id_caracter";
+                break;
+            case "F":
+                elemento = "id_fecha";
+                break;
+            case "N":
+                elemento = "id_numero";
+                break;
+            case "L":
+                elemento = "id_logico";
+                break;
+            }
+            document.getElementById(elemento).disabled = false;
+          };
+        });
+    </script>
+{% endblock %}

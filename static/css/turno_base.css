@@ -1,0 +1,141 @@
+html, body {
+    height: 100%;
+}
+div {
+    /*border: 1px solid black;*/
+}
+html {
+    /* border: 1px solid red;*/
+}
+body {
+    /*border: 1px solid green;*/
+}
+.absolute {
+    position: absolute;
+    bottom: 10px;
+    height: 40px;
+}
+.turno-numero {
+    font-size: 8vw;
+}
+.box {
+    font-size: 6vw;
+}
+.barra-horizontal {
+    /*border: 1px solid blue;*/
+    width: 96%;
+    background: #92b41f;
+    padding: 10px 40px;
+    font-size: 14px;
+    color: #ffffff;
+    text-align: left;
+    border-radius: 4px;
+    margin-left: 2%;
+    margin-right: 2%;
+    padding-left: 1px;
+    padding-right: 1px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.al-centro {
+    text-align: center;
+    flex-grow: 0.5;
+    align-content: center;
+    /*border: 1px solid orange;*/
+}
+
+.a-la-izquierda {
+    text-align: left;
+    flex-grow: 0.5;
+    align-content: left;
+	padding-left: 2%;
+    /*border: 1px solid orange;*/
+}
+
+.a-la-derecha {
+    text-align: right;
+    flex-grow: 0.5;
+    align-content: right;
+	padding-right: 2%;
+    /*border: 1px solid orange;*/
+}
+
+full {
+    height: 100%;
+}
+
+.table-center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+.marquee {
+    margin: 0 auto;
+    white-space: nowrap;
+    overflow: hidden;
+    position: absolute;
+    /*border: 1px solid orange;*/
+    width: 100%;
+    font-size: 3vw;
+}
+
+.marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 12s linear infinite;
+}
+
+.marquee2 span {
+    animation-delay: 5s;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translate(0, 0);
+    }
+    100% {
+        transform: translate(-100%, 0);
+    }
+}
+
+.big-butt {
+  font-size: 3vw;
+}
+
+.big-font {
+  font-size: 1.5vw;
+}
+
+.alerta-amarilla {
+    animation-name: alerta-amarilla;
+    animation-duration: 0.5s;
+    animation-iteration-count: 3;
+}
+
+.alerta-naranja {
+    animation-name: alerta-naranja;
+    animation-duration: 0.5s;
+    animation-iteration-count: 3;
+}
+
+@keyframes alerta-amarilla {
+  from {background-color: white;}
+  to {background-color: yellow;}
+}
+
+@keyframes alerta-naranja {
+  from {background-color: white;}
+  to {background-color: orange;}
+}
+
+.volume-up{
+    padding-left: 16px;
+    background: url(../img/volume-up-solid.svg) 0 1px no-repeat;
+}
+
+.volume-mute{
+    padding-left: 16px;
+    background: url(../img/volume-mute-solid.svg) 0 1px no-repeat;
+}
+

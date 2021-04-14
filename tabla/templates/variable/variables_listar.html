@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% load static %}
+<h1>Variables</h1>
+{% crispy filtros_form %}
+<a href="{% url 'variable_agregar' %}" class="addlink">{% traducir 'Variable' 'VARIABLE' %}</a>
+
+<div style="overflow-x:auto;">
+    <br>
+    <table id="tab">
+        <thead>
+        <tr>
+            <th>{% traducir 'Variable' 'VARIABLE' %}</th>
+            <th>{% traducir 'Descripción' 'VARIABLE' %}</th>
+            <th>{% traducir 'Tipo' 'VARIABLE' %}</th>
+            <th>{% traducir 'Valor' 'VARIABLE' %}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in paginado %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr class="row1">
+            {% else %}
+        <tr class="row2">
+            {% endif %}
+            <td>{{ item.variable }}</td>
+            <td>{{ item.descripcion }} </td>
+            <td>{{ item.tipo }} </td>
+            {% if item.tipo == "C" %}
+                <td>{{ item.caracter }} </td>
+            {% else %}
+                {% if item.tipo == "N" %}
+                    <td>{{ item.numero }} </td>
+                {% else %}
+                    {% if item.tipo == "F" %}
+                        <td>{{ item.fecha|date:"d/m/Y" }} </td>
+                    {% else %}
+                        {% autoescape off %}
+                        <td>{{ item.logico|imagen_si_no }} </td>
+                        {% endautoescape %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            <td></td>
+            <td><a href="{% url 'variable_editar' item.variable %} "
+                   class="changelink"
+                   title="{% traducir 'Editar' 'VARIABLE' %}"></a></td>
+            <td><a href="#"
+                   class="deletelink"
+                   title="{% traducir 'Eliminar' 'VARIABLE' %}"
+                   onclick="return confirmarAccion('{% url 'variable_eliminar' item.variable %}',
+                                                                '¿Eliminar variable?')"></a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {% include "paginador.html" %}
+</div>
+{% include "confirmar_accion.html" %}
+{% endblock %}

@@ -1,0 +1,14 @@
+{
+'SECRET_KEY': "j=(+dhrkcr)56#28w(%o#n=(!7$f_jdaodauf#th#!jz(f@!3+",
+'DB': 'defensoria',
+'USER': 'consultar',
+'PASSWORD': 'Saavedra_1175',
+'HOST': 'localhost',
+'PORT': '5432',
+'EMAIL_HOST': 'mail.defensoriasantafe.gob.ar',
+'EMAIL_PORT': 587,
+'EMAIL_HOST_USER': 'dpsfnube@defensoriasantafe.gob.ar',
+'EMAIL_HOST_PASSWORD':  'jVEWbmV34',
+'EMAIL_USE_TLS': False,
+'EMAIL_USE_SSL': False,
+}

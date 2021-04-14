@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% block content %}
+{% load static %}
+
+    {% if plantilla %}
+        <h2>{% traducir 'Plantilla' 'PLANTILLA' %} {{ plantilla }}</h2>
+    {% else %}
+        <h2>{% traducir 'Agregar plantilla' 'PLANTILLA' %}</h2>
+    {% endif %}
+    <div class="spinner-border text-info" role="status" id="spinner">
+        <span class="sr-only">Cargando...</span>
+    </div>
+
+    {% crispy form %}
+
+    <form hidden id="urlsForm"
+          etiquetas_de_grupo-url = "{% url 'etiquetas_de_grupo' %}"
+          novalidate
+    > </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static "js/cargar_listas.js" %} " ></script>
+    <script src="{% static "js/copiar_a_papelera.js" %}" ></script>
+    <script>
+        window.addEventListener('load', function(event) {
+          document.getElementById('spinner').style.display="none";
+        });
+    </script>
+{% endblock %}

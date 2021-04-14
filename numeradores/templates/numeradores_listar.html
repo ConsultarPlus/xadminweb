@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% load static %}
+<h1>Numeradores</h1>
+{% crispy filtros_form %}
+
+<a href="{% url 'numerador_agregar' %}"
+   title="{% traducir 'Agregar' 'NUMERADOR' %}"
+   class="addlink">{% traducir 'Numerador' 'NUMERADOR' %}</a>
+
+<div style="overflow-x:auto;">
+    <br>
+    <table id="tab">
+        <thead>
+        <tr>
+            <th>{% traducir 'Comprobante' 'NUMERADOR' %}</th>
+            <th>{% traducir 'Descripción' 'NUMERADOR' %}</th>
+            <th>{% traducir 'Último valor' 'NUMERADOR' %}</th>
+            <th>{% traducir 'Activo' 'NUMERADOR' %}</th>
+            <th></th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in paginado %}
+        {% if forloop.counter|divisibleby:2 %}
+        <tr class="row1">
+            {% else %}
+        <tr class="row2">
+            {% endif %}
+            <td>{{ item.comprobante }}</td>
+            <td>{{ item.descripcion }}</td>
+            <td>{{ item.ultimo_valor }}</td>
+            {% autoescape off %}
+            <td> {{ item.activo|imagen_si_no }}</td>
+            {% endautoescape %}
+            <td></td>
+            <td><a href="{% url 'numerador_editar' item.comprobante %} "
+                   class="changelink"
+                   title="{% traducir 'Editar' 'NUMERADOR' %}"></a></td>
+            <td><a href="#" class="deletelink"
+                   title="{% traducir 'Eliminar' 'NUMERADOR' %}"
+                   onclick="return confirmarAccion('{% url 'numerador_eliminar' item.comprobante %}',
+                                                                '¿Eliminar numerador?')"></a></td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    {% include "paginador.html" %}
+</div>
+<script src="{% static "js/confirmarAccion.js" %} " ></script>
+{% endblock %}

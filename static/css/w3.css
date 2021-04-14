@@ -1,0 +1,89 @@
+.w3-modal {
+    z-index: 3;
+    display: none;
+    padding-top: 100px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.w3-modal-content {
+    margin: auto;
+    background-color: #fff;
+    position: relative;
+    padding: 0;
+    outline: 0;
+    width: 600px;
+}
+.w3-animate-top {
+    position: relative;
+    animation: animatetop 0.4s;
+}
+.w3-card-4,
+.w3-hover-shadow:hover {
+    box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.2), 0 4px 20px 0 rgba(0, 0, 0, 0.19);
+}
+.w3-defensoria-cabeza,
+.w3-hover-defensoria-cabeza:hover {
+    color: #fefefe !important;
+    background-color: #954397 !important;
+}
+.w3-defensoria-pie,
+.w3-hover-defensoria-pie:hover {
+    color: #fefefe !important;
+    background-color: #92b41f !important;
+}
+.w3-button {
+    border: none;
+    display: inline-block;
+    padding: 8px 16px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    background-color: inherit;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.w3-display-topright {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+.w3-container,
+.w3-panel {
+    padding: 0.01em 16px;
+}
+
+.w3-container,
+.w3-panel {
+    background-color: #333333;
+}
+
+@keyframes animatetop {
+    from {
+        top: -300px;
+        opacity: 0;
+    }
+    to {
+        top: 0;
+        opacity: 1;
+    }
+}
+
+.w3-animate-zoom {
+    animation: animatezoom 0.6s;
+}
+@keyframes animatezoom {
+    from {
+        transform: scale(0);
+    }
+    to {
+        transform: scale(1);
+    }
+}

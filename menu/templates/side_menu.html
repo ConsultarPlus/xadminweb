@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="bg-light-2 border-right" id="sidebar-wrapper">
+      <div class="sidebar-heading">
+          <img src="{% static "favicon.ico" %}" alt=""/> Menú
+          <a href="#"
+             id="fijar_menu"
+             title="Fijar"
+             data="{% if fijar_menu %}true{% else %}false{% endif %}"
+             onclick="fijar_menu({{ request.user.id }}, '{% url 'preferencia_grabar_asinc' %}')">
+             <i id="fijar_icono" class="fa fa-toggle-{% if fijar_menu %}on{% else %}off{% endif %}"></i>
+          </a>
+      </div>
+      <div class="list-group list-group-flush">
+          {% for grupo in grupos %}
+              {% if grupo.visible %}
+                  <button id="{{ grupo.id }}" class="dropdown-btn">{{ grupo.descripcion }}<i class="fa fa-caret-down"></i></button>
+                  <div class="dropdown-container" {% if grupo.mostrar %}style="display: block;"{% endif %}>
+                    {% for menu in menues %}
+                        {% if menu.id_grupo == grupo.id %}
+                            {% if menu.visible %}
+                                <a href="{{ menu.url }}" class="list-group-item list-group-item-action bg-light-2">{{ menu.titulo }}</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endfor %}
+                  </div>
+              {% endif %}
+        {% endfor %}
+      </div>
+</div>

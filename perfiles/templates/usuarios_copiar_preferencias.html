@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block breadcrumbs %}
+    <div class="breadcrumbs">
+<a href="/admin/">Inicio</a>
+› <a href="/admin/perfiles/">Perfiles</a>
+› <a href="/admin/perfiles/preferencia/">Preferencias</a>
+› Copiar preferencias
+</div>
+{% endblock %}
+{% block content %}
+    {% crispy form %}
+    <script type="text/javascript" src="{% url 'jsi18n' %}"></script>
+{% endblock %}
