@@ -1,0 +1,14 @@
+<div align="{{alineacion}}">
+    <input type="button"
+           name="cancel"
+           value="Volver"
+           class="btn-sm btn-default"
+           id="button-id-cancel"
+           display="inline;"
+           {% if volver %}
+           onclick="window.location.replace('{{ volver }}')"
+           {% else %}
+           onclick="window.history.back()"
+           {% endif %}
+     />
+</div>

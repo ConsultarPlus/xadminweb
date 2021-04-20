@@ -1,0 +1,66 @@
+<html lang="es-ar" >
+{% load custom_tags %}
+<head>
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css{{ css_version }}">
+    <link rel="stylesheet" type="text/css" href="/static/css/login.css{{ css_version }}">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/responsive.css{{ css_version }}">
+    <meta name="robots" content="NONE,NOARCHIVE">
+</head>
+<body class=" login" data-admin-utc-offset="0">
+    <div id="container">
+        <div id="header-log">
+            <div id="branding-log">
+                <h1 id="site-name"><a href="../"></a>
+                <img src='/static/img/{{ logo }}' alt="{{ titulo }}">
+                </h1>
+            </div>
+        </div>
+         <div id="content" class="colM">
+            {% if failure_limit > 1 %}
+            <h1>Se superaron los {{ failure_limit  }} intentos</h1>
+            {% endif %}
+            <h1 id="conteo" >Vuelva intentar en   </h1>
+            <br class="clear">
+        </div>
+    <div id="footer"></div>
+</div>
+
+<script>
+var d = new Date();
+var countDownDate = d.getTime()+({{ cooloff_timedelta|segundos_timpedelta }} * 1000);
+
+// Actualizar conteo cada segundo
+var x = setInterval(function() {
+
+  // Obtener hora actual
+  var now = new Date().getTime();
+
+  // Diferencia entre hora actual y los segundos de conteo
+  var distance = countDownDate - now;
+
+  // Cálculos de dóas, horas, minutos y segundos
+  var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+  var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+  var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+  // Mostrar el resultado en la etiqueta de id="conteo"
+
+  var texto = "Vuelva intentar en ";
+  if (hours != 0) { texto += hours + "h "; }
+  if (minutes != 0) { texto += minutes + "m "; }
+  if (seconds != 0) { texto += seconds + "s "; }
+
+  document.getElementById("conteo").innerHTML = texto;
+  // Mostrar el link de reingreso cuando finalice el conteo
+  if (distance <= 0) {
+    clearInterval(x);
+    document.getElementById("conteo").innerHTML = '<a href="{% url 'ingresar' %}">Identificarse de nuevo</a>';
+  }
+}, 1000);
+</script>
+
+</body>
+</html>

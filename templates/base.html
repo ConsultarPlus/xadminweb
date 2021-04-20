@@ -1,0 +1,12 @@
+{% extends "header.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+{% load static %}
+<p class="MsoNormal" style="line-height: normal; text-align: left;" align="right"><img src='{% static "img/" %}{{ logo }} ' /></p>
+{% endblock %}
+
+{% block nav-global %}
+{% endblock %}
+

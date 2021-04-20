@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es-ar" >
+<head>
+    <title>{{ titulo }}</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css{{ css_version }}">
+    <link rel="stylesheet" type="text/css" href="/static/css/login.css{{ css_version }}">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/admin/css/responsive.css{{ css_version }}">
+    <meta name="robots" content="NONE,NOARCHIVE">
+</head>
+<body class=" login" data-admin-utc-offset="0">
+    <div id="container">
+        <div id="header-log">
+            <div id="branding-log">
+                <h1 id="site-name"><a href="../"></a>
+                <img src='/static/img/{{ logo }}' alt="{{ titulo }}">
+                </h1>
+            </div>
+        </div>
+         <div id="content" class="colM">
+            <h1>Sesión cerrada</h1>
+            <p><a href="{% url 'ingresar' %}">Identificarse de nuevo</a></p>
+            <br class="clear">
+        </div>
+    <div id="footer"></div>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,12 @@
+<script>
+    function tareas_on_load() {
+        {% if mensaje %}
+            alert('{{ mensaje }}');
+        {% endif %}
+        {% if foco %}
+            colocar_foco("{{foco}}");
+        {% else %}
+            colocar_foco();
+        {% endif %}
+    }
+</script>

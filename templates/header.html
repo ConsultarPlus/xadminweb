@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+{% load i18n static %}
+{% load custom_tags %}
+{% load static %}
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+
+{% include "cabeza.html" %}
+
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+      data-admin-utc-offset="{% now "Z" %}"
+      onload="tareas_on_load()">
+
+<div class="d-flex {% if not fijar_menu %}toggled{% endif %}" id="wrapper">
+{% if user.id %}
+{% include 'side_menu.html' %}
+{% endif %}
+
+<!-- Page Content -->
+<div id="page-content-wrapper">
+    <!-- Container -->
+    <div id="container">
+        {% if not is_popup %}
+        <!-- Header -->
+        <div id="header">
+            <div id="branding">
+            {% block branding %}{% endblock %}
+            </div>
+            {% block usertools %}
+            {% if user.id %}
+            <div id="user-tools">
+                    {% block welcome-msg %}
+                        {% trans 'Welcome,' %}
+                        <a href="{% url 'usuario_modificar' %}">{% firstof user.get_short_name user.get_username %}</a>
+                        <!--<strong>{% firstof user.get_short_name user.get_username %}</strong>.-->
+                    {% endblock %}
+                    {% block userlinks %}
+                        {% if site_url %}
+                            <a href="{{ site_url }}">{% trans 'View site' %}</a> /
+                        {% endif %}
+                        {% if user.is_active and user.is_staff %}
+                            {% url 'django-admindocs-docroot' as docsroot %}
+                            {% if docsroot %}
+                                <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+                            {% endif %}
+                        {% endif %}
+                        {% if user.has_usable_password %}
+                        <a href="{% url 'cambiar_clave' %}">{% trans 'Change password' %}</a> /
+                        {% endif %}
+                        <a href="{% url 'salir' %}">{% trans 'Log out' %}</a>
+                    {% endblock %}
+            </div>
+            {% endif %}
+            {% endblock %}
+            {% block nav-global %}{% endblock %}
+        </div>
+        <!-- END Header -->
+        {% block breadcrumbs %}
+        <div class="breadcrumbs form-row">
+            <div class="col form-group" align="left">
+            {% if user.id %}
+            <span style="font-size:15px;cursor:pointer;color:#fefefe" id="menu-toggle" title="Menú">&#9776;</span>
+            {% endif %}
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+            {% if request.path %}
+                {{ request.path|donde_estoy }}
+            {% endif %}
+            </div>
+<!--            style="background-color: lightblue;"-->
+            <div class="col form-group" align="right">
+                {% if user %}
+                <a class="idlink" href="{% url 'usuario_modificar' %}"
+                   title="Modificar datos personales y preferencias"></a>
+                {% endif %}
+            </div>
+        </div>
+
+        {% endblock %}
+        {% endif %}
+		
+		{% block messages %}
+            {% if messages %}
+            <ul class="messagelist">
+                {% for message in messages %}
+                    {% define message|capfirst as msj %}
+                    <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>
+                        <span class="close-message-btn" onclick="this.parentElement.style.display='none';">&times;</span>
+                        {% trans msj %}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {% endblock messages %}
+
+        <!-- Content -->
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+            {% block pretitle %}{% endblock %}
+            {% block content_title %}{% if title %}<h1>{{ title }}</h1>{% endif %}{% endblock %}
+            {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+            {% endblock %}
+            {% block sidebar %}{% endblock %}
+            <br class="clear">
+        </div>
+        <div id="pop" class="w3-modal">
+            <div class="w3-modal-content w3-animate-zoom w3-card-4">
+                <header class="w3-container w3-cabeza">
+                    <span onclick="document.getElementById('pop').style.display='none'"
+                    class="w3-button w3-display-topright">&times;</span>
+                    <h2 id="pop-cabeza" ></h2>
+                </header>
+                <div class="w3-container" id="pop-cuerpo"></div>
+                <footer class="w3-container w3-pie">
+                    <p id="pop-pie" ></p>
+                </footer>
+            </div>
+        </div>
+        <!-- END Content -->
+        <script src="{% static "js/preferencias.js" %} " ></script>
+        <script src="{% static "js/colocar_foco.js" %} " ></script>
+        <script>
+            var dropdown = document.getElementsByClassName("dropdown-btn");
+            var i;
+            for (i = 0; i < dropdown.length; i++) {
+                dropdown[i].addEventListener("click", function() {
+                    this.classList.toggle("active");
+                    var dropdownContent = this.nextElementSibling;
+                    if (dropdownContent.style.display === "block") {
+                        dropdownContent.style.display = "none";
+                        fijar_boton_menu({{ request.user.id }}, '{% url 'preferencia_grabar_asinc' %}', this.id, false);
+                    } else {
+                        dropdownContent.style.display = "block";
+                        fijar_boton_menu({{ request.user.id }}, '{% url 'preferencia_grabar_asinc' %}', this.id, true);
+                    }
+                });
+            }
+
+            function todo_es_pop(titulo, texto, pie){
+                document.getElementById('pop').style.display='block';
+                document.getElementById('pop-cabeza').innerHTML = titulo;
+                document.getElementById('pop-pie').innerHTML = pie;
+                document.getElementById('pop-cuerpo').innerHTML = texto;
+            }
+
+            $("#menu-toggle").click(function(e) {
+                e.preventDefault();
+                $("#wrapper").toggleClass("toggled");
+            });
+
+            <!--$(document).ready(function() {-->
+                <!--$('#tab').DataTable( {-->
+                    <!--"paging": false,-->
+                    <!--"searching": false,-->
+                    <!--"language": {-->
+                        <!--"lengthMenu": "Mostrar _MENU_ registros por página",-->
+                        <!--"zeroRecords": "No se encontró nada",-->
+                        <!--"info": "Mostrando página _PAGE_ de _PAGES_",-->
+                        <!--"infoEmpty": "No hay registros",-->
+                        <!--"infoFiltered": "(filtrado de _MAX_ registros)",-->
+                        <!--"search": "Buscar",-->
+                    <!--}-->
+                <!--} );-->
+            <!--} );-->
+        </script>
+        {% include 'live-search-scripts.html' %}
+        <script src="{% static "js/ordenar_tabla.js" %} " ></script>
+        {% include "tareas_on_load.html" %}
+
+        {% block footer %}<div id="footer"></div>{% endblock %}
+    </div>
+    <footer class="pie">
+        <div class="breadcrumbs">
+            <p style="text-align: center">
+                 .: {{ titulo }} | {% now "Y" %} :.
+            </p>
+        </div>
+    </footer>
+    <!-- END Container -->
+</div>
+</div>
+</body>
+</html>
+
+

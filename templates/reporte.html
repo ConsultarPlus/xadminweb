@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		<style>
+			@page {
+				margin: 1cm;
+				{% if hoja == '' or hoja == 'A4' %}
+					size: A4 {{ orientacion }};
+					/*width: 21cm;
+			  		height: 29.7cm;*/
+				{% else %}{% if hoja == 'A5' %}
+					size: A5 {{ orientacion }};
+					/*width: 21cm;
+			  		height: 14.8cm;*/
+				{% else %}{% if hoja == 'CARTA' %}
+					size: letter {{ orientacion }};
+					/*width: 21.6cm;
+			  		height: 27.9cm;*/
+				{% else %}{% if hoja == '1/2 CARTA' %}
+					size: letter {{ orientacion }};
+					width: 21.6cm;
+			  		height: 14cm;
+				{% else %}{% if hoja == 'OFICIO' %}
+					size: legal {{ orientacion }};
+					width: 21.6cm;
+			  		height: 33cm;
+				{% else %}{% if hoja == 'LEGAL' %}
+					size: legal {{ orientacion }};
+					/*width: 21.6cm;
+			  		height: 35.6cm;*/
+				{% endif %}
+				{% endif %}
+				{% endif %}
+				{% endif %}
+				{% endif %}
+				{% endif %}
+			}
+		</style>
+	</head>
+<body>
+	{% if hoja == '' %}
+	<page size="A4">
+	{% else %}
+	<page size="{{ hoja }}">
+	{% endif %}
+		<div class="contenedor">
+            {{ html }}
+        </div>
+	</page>
+</body>
+</html>
