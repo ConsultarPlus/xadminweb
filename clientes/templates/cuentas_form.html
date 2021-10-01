@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+{% load static %}
+
+{% if cuentas %}
+    <h2>{{ cuentas.comprobante }}</h2>
+{% else %}
+    <h2>Agregar</h2>
+{% endif %}
+
+    {% crispy form %}
+
+    <form hidden id="urlsForm" novalidate>
+    </form>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="{% static " js/registros_de_entidad.js" %} " ></script>
+    {% include "mensaje_on_load.html" %}
+
+ñ
+    {% endblock %}
