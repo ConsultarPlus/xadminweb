@@ -1,0 +1,96 @@
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% load static %}
+{% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+{% include "cabeza.html" %}
+<div id="content" class="{% block coltype %}colM{% endblock %}">
+    {% endif %}
+
+    {% if filtros_form %}
+    <h1>{% traducir 'CLIENTES' 'CLIENTE' %}</h1>
+    {% crispy filtros_form %}
+    {% endif %}
+
+    <div class="form-row form-row">
+        <div class="col form-group">
+            <table>
+                <tr class="model-group">
+                    <th><a href="{% url 'cliente_agregar' %}?modo={{ request.GET.modo }}"
+                           class="addlink">{% traducir 'Agregar' 'CLIENTE' %}</a>
+                    </th>
+                </tr>
+            </table>
+        </div>
+        {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+        <div class="col form-group" align="right">
+            <div class="form-group">
+                {% include 'boton_seleccionar.html' %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="overflow-x:auto;">
+        <br>
+        <table id="tab">
+            <thead>
+            <tr>
+                {% if request.GET.modo == 'm' %}
+                <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]"/></th>
+                {% else %}
+                <th></th>
+                {% endif %}
+                <th>{% traducir 'Código' 'CLIENTE' %}</th>
+                <th>{% traducir 'Nombre' 'CLIENTE' %}</th>
+                <th>{% traducir 'CUIT' 'CLIENTE' %}</th>
+                <th>{% traducir 'Teléfono' 'CLIENTE' %}</th>
+                <th>{% traducir 'E-mail' 'CLIENTE' %}</th>
+                <th>{% traducir 'Domicilio' 'CLIENTE' %}</th>
+                <th></th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in paginado %}
+            <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+                {% if request.GET.modo == 'm' %}
+                <td><input type="checkbox" id="{{ item.id }}"/></td>
+                {% else %}
+                {% if request.GET.modo == 's' %}
+                <td><input type="radio" id="{{ item.id }}" name="items"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+                {% endif %}
+                <td> {{ item.clicod }}</td>
+                <td> {{ item.nombre|limpiar_none }}</td>
+                <td> {{ item.cuit|limpiar_none }}</td>
+                <td> {{ item.telefono|limpiar_none }}</td>
+                <td> {{ item.email|limpiar_none }}</td>
+                <td> {{ item.domicilio|limpiar_none }}</td>
+                <td><a href="{% url 'cliente_editar' item.id %}?modo={{ request.GET.modo }} "
+                       class="changelink">{% traducir 'Editar' 'CILENTE' %}</a></td>
+                <td><a href="#"
+                       class="deletelink"
+                       onclick="return confirmarAccion('{% url 'cliente_eliminar' item.id %}',
+                                                   '¿Eliminar Cliente?')">{% traducir 'Eliminar' 'CLIENTE' %}</a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+
+        {% include "paginador.html" %}
+    </div>
+    {% if not expediente %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    {% endif %}
+    {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    {% if request.GET.modo == 'm' %}
+    <script src="{% static " js/marcar_todo.js" %} " ></script>
+    {% endif %}
+    <script src="{% static " js/armar_seleccionados.js" %} " ></script>
+</div>
+{% endif %}

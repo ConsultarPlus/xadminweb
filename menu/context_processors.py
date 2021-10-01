@@ -11,10 +11,16 @@ def menu_processor(request):
         fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', False)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
 
-        # OPERATIVOS
-        entidad_puede_listar = request.user.has_perm('entidad.entidad_puede_listar')
+        # CLIENTES
+        cuentas_puede_listar = request.user.has_perm('clientes.cuentas_filtrar')
+        cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
+
+        # PROVEEDORES
+        # Cargar Facturas de Compra aquí ...
 
         # SOPORTE
+        clientes_puede_listar = request.user.has_perm('clientes.puede_listar')
+        proveedores_puede_listar = request.user.has_perm('proveedores.puede_listar')
         documento_puede_listar = request.user.has_perm('documentos.puede_listar')
         plantilla_puede_listar = request.user.has_perm('tabla.plantilla_puede_listar')
         # persona_puede_listar = request.user.has_perm('expediente.persona_puede_listar')
@@ -27,12 +33,13 @@ def menu_processor(request):
         tabla_puede_listar = request.user.has_perm('tablas.tabla_puede_listar')
         variable_puede_listar = request.user.has_perm('tablas.variable_puede_listar')
 
-        grupo_operativos_mostrar = False
+        grupo_cliente_mostrar = False
+        grupo_proveedor_mostrar = False
         grupo_soporte_mostrar = False
         grupo_config_mostrar = False
 
-        if entidad_puede_listar:
-            grupo_operativos_mostrar = True
+        if cuentas_puede_listar or cuenta_corriente:
+            grupo_cliente_mostrar = True
 
         if documento_puede_listar or plantilla_puede_listar:
             grupo_soporte_mostrar = True
@@ -41,21 +48,25 @@ def menu_processor(request):
             grupo_config_mostrar = True
 
         grupos = [
-                  {'id': 'OPE', 'descripcion': 'Operativos',
-                   'mostrar': get_preferencia(usuario, 'menu', 'OPE', 'L', True), 'visible': grupo_operativos_mostrar},
+                  {'id': 'CLI', 'descripcion': 'Mis comprobantes',
+                   'mostrar': get_preferencia(usuario, 'menu', 'CLI', 'L', True), 'visible': grupo_cliente_mostrar},
+                  # {'id': 'PRO', 'descripcion': 'Proveedores',
+                  #  'mostrar': get_preferencia(usuario, 'menu', 'PRO', 'L', True), 'visible': grupo_proveedor_mostrar},
                   {'id': 'SOP', 'descripcion': 'Soporte',
                    'mostrar': get_preferencia(usuario, 'menu', 'SOP', 'L', False), 'visible': grupo_soporte_mostrar},
                   {'id': 'CFN', 'descripcion': 'Configuración',
                    'mostrar': get_preferencia(usuario, 'menu', 'CFN', 'L', False), 'visible': grupo_config_mostrar},
                   ]
 
-        menues = [{'id_grupo': 'OPE', 'url': reverse('entidad_listar'), 'titulo': 'Consultas Expedientes',
-                   'modelo': 'EXPEDIENTE', 'visible': entidad_puede_listar},
-
+        menues = [
+                  {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'id': 1}), 'titulo': 'Facturas Pendientes',
+                   'modelo': 'CLIENTE', 'visible': cuentas_puede_listar},
+                  {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'id': 1}), 'titulo': 'Cuenta Corriente',
+                   'modelo': 'CLIENTE', 'visible': cuenta_corriente},
+                  {'id_grupo': 'SOP', 'url': reverse('clientes_listar'), 'titulo': 'Clientes', 'modelo': 'CLIENTE',
+                   'visible': clientes_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('documentos_listar'), 'titulo': 'Documentos',
                    'modelo': 'DOCUMENTO', 'visible': documento_puede_listar},
-                  # {'id_grupo': 'SOP', 'url': reverse('personas_listar'), 'titulo': 'Personas', 'modelo': 'PERSONA',
-                  #  'visible': persona_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('plantillas_listar'), 'titulo': 'Plantillas',
                    'modelo': 'PLANTILLA', 'visible': plantilla_puede_listar},
 

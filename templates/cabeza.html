@@ -3,9 +3,15 @@
     <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" >
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static 'css/base.css' %}{% endblock %}{{ css_version }}">
+
+    <link rel="stylesheet"
+          type="text/css"
+          id="css_base"
+          href="{% if modo_obscuro %}{% static 'css/base_dark.css'%}{% else %}{% static 'css/base.css'%}{% endif %}{{css_version}}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/menu.css' %}{{ css_version }}">
     <link rel="stylesheet" type="text/css" href="{% static 'css/w3.css' %}{{ css_version }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/animations.css' %}{{ css_version }}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/altocheck.css' %}{{ css_version }}">
     <link rel="shortcut icon" href=" {% static 'favicon.ico' %}" type="image/vnd.microsoft.icon" />
 
     <!--DataTables-->
@@ -13,7 +19,12 @@
     <!--<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/dataTables.bootstrap4.min.css">-->
 
     <!-- Barra de menu -->
-    <link rel="stylesheet" type="text/css" href="{% static 'css/sidebar.css' %}{{ css_version }}">
+    <link rel="stylesheet" type="text/css" id="css_sidebar"
+      {% if modo_obscuro %}
+      href="{% static "css/sidebar_dark.css" %}{{css_version}}">
+      {% else %}
+      href="{% static "css/sidebar.css" %}{{css_version}}">
+      {% endif %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <!-- Datepicker -->

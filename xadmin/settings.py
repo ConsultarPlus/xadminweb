@@ -59,6 +59,7 @@ ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.32', '190.193.200.120']
 
 # Application definition
 PROJECT_APPS = [
+    'clientes',
     'menu',
     'tabla',
     'documentos',
@@ -80,6 +81,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'simple_history',
 ] + PROJECT_APPS
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -107,7 +110,7 @@ ROOT_URLCONF = 'xadmin.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -115,6 +118,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'menu.context_processors.menu_processor',
             ],
         },
     },
@@ -160,7 +164,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-ar'
 
 TIME_ZONE = 'UTC'
 

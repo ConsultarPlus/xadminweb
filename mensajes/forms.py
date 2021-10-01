@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Button, ButtonHolder, HTML
 from crispy_forms.bootstrap import FieldWithButtons
-from defensoria.settings import MEDIA_URL, STATIC_URL
+from xadmin.settings import MEDIA_URL, STATIC_URL
 from tabla.widgets import DatePickerInput, SelectLiveSearchInput
 from tabla.funcs import boton_buscar
 from tabla.templatetags.custom_tags import traducir

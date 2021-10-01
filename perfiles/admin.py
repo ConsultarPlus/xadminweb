@@ -68,7 +68,7 @@ class UserAdmin(BaseUserAdmin):
         # template = Template('aviso_de_reseteo.html')
         template = 'aviso_de_reseteo.html'
         ano = datetime.datetime.today().year
-        password = 'Defen_' + str(ano)
+        password = 'Plus_' + str(ano)
         sitio = request.build_absolute_uri('/ingresar/')
         enviados = 0
         errores = 0
@@ -87,7 +87,7 @@ class UserAdmin(BaseUserAdmin):
                             'sitio': sitio}
                 try:
                     mensaje = render_to_string(template, contexto)
-                    exito = send_mail(subject='Defensoria del Pueblo: Nuevas credenciales de acceso',
+                    exito = send_mail(subject='Consultar Plus: Nuevas credenciales de acceso',
                                       message='',
                                       from_email=settings.EMAIL_HOST_USER,
                                       recipient_list=destinatario,

@@ -1,0 +1,88 @@
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+{% load static %}
+    {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+        {% include "cabeza.html" %}
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+    {% endif %}
+
+    {% if filtros_form %}
+        <h1>{% traducir 'Comprobantes' 'CUENTAS' %}</h1>
+        {% crispy filtros_form %}
+    {% endif %}
+
+    <div class="form-row form-row">
+        {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+        <div class="col form-group" align="right">
+            <div class="form-group">
+                {% include 'boton_seleccionar.html' %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="overflow-x:auto;">
+        <br>
+        <table id="tab">
+            <thead>
+            <tr>
+                {% if request.GET.modo == 'm' %}
+                <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]"/></th>
+                {% else %}
+                <th></th>
+                {% endif %}
+                <th>{% traducir 'Comprobante' 'CUENTAS' %}</th>
+                <th>{% traducir 'Emisión' 'CUENTAS' %}</th>
+                <th>{% traducir 'Vencimiento' 'CUENTAS' %}</th>
+                <th>{% traducir 'Total' 'CUENTAS' %}</th>
+                <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for item in paginado %}
+            <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+                {% if request.GET.modo == 'm' %}
+                <td><input type="checkbox" id="{{ item.id }}"/></td>
+                {% else %}
+                {% if request.GET.modo == 's' %}
+                <td><input type="radio" id="{{ item.id }}" name="items"></td>
+                {% else %}
+                <td></td>
+                {% endif %}
+                {% endif %}
+                <td> {{ item.comprobante }}</td>
+                <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
+                <td> {{ item.fecha_vemcimiento|date:"d/m/Y" }}</td>
+                <td> {{ item.total }}</td>
+                <td> {{ item.concepto }}</td>
+                {% if item.pdf|tiene_vista_previa %}
+                    <td><a target="_blank"
+                           href="{{ MEDIA_URL }}{{ item.pdf }}">
+                           <img class="preview" src="/media/{{ item.pdf }}" style="width:150px">
+                        </a>
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <br>
+
+        {% include "paginador.html" %}
+    </div>
+    {% if not expediente %}
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    {% endif %}
+    {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+    {% if request.GET.modo == 'm' %}
+    <script src="{% static " js
+    /marcar_todo.js" %} " ></script>
+    {% endif %}
+    <script src="{% static " js
+    /armar_seleccionados.js" %} " ></script>
+</div>
+{% endif %}

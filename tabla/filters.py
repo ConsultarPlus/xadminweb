@@ -3,7 +3,8 @@ from django.db.models import Q
 from .models import Tabla, Variable, Plantilla
 from .listas import ENTIDADES
 from .forms import FiltroSimple, FiltroTablas
-from .funcs import get_opcion_paginado, get_keys_by_value
+from .funcs import get_keys_by_value
+from perfiles.funcs import get_opcion_paginado
 
 
 def tabla_filtrar(query_dict):

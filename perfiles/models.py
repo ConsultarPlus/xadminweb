@@ -8,6 +8,7 @@ from simple_history.models import HistoricalRecords
 from tabla.models import Tabla
 from tabla.gets import get_choices
 from django.contrib.auth.models import Group
+from clientes.models import Cliente
 
 
 dependencias = get_choices('DEPENDENCIA')
@@ -33,6 +34,7 @@ class Perfil(models.Model):
     email_contacto = models.EmailField(max_length=100, null=True, blank=True,
                                        validators=[validate_email], verbose_name='E-mail de contacto')
     history = HistoricalRecords(table_name='historico_perfil')
+    clicod = models.CharField(max_length=5, verbose_name='Cliente asociado', null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "perfiles"
