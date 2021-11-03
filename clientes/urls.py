@@ -3,10 +3,13 @@ from .views import (cliente_agregar,
                     clientes_listar,
                     cliente_editar,
                     cliente_eliminar,
+                    clientes_cargar_csv,
                     cliente_agregar_y_volver,
+                    cuentas_agregar,
+                    cuentas_editar,
+                    cuentas_eliminar,
                     cuentas_listar,
                     cuenta_corriente,
-                    cuentas_imprimir,
                     )
 
 
@@ -16,8 +19,12 @@ urlpatterns = [
     path('clientes_listar/', clientes_listar, name='clientes_listar'),
     path('cliente_editar/<int:id>', cliente_editar, name='cliente_editar'),
     path('cliente_eliminar/<int:id>', cliente_eliminar, name='cliente_eliminar'),
+    path('cliente_importar/', clientes_cargar_csv, name='cliente_importar'),
+    path('cuentas_agregar/', cuentas_agregar, name='cuentas_agregar'),
+    path('cuentas_editar/<int:id>', cuentas_editar, name='cuentas_editar'),
+    path('cuentas_eliminar/<int:id>', cuentas_eliminar, name='cuentas_eliminar'),
     path('cuentas_listar/<int:id>', cuentas_listar, name='cuentas_listar'),
-    path('cuentas_imprimir/<int:id>', cuentas_imprimir, name='cuentas_imprimir'),
+    path('cuentas_listar/', cuentas_listar, name='cuentas_listar'),
     path('cuenta_corriente/<int:id>', cuenta_corriente, name='cuenta_corriente'),
 
 ]

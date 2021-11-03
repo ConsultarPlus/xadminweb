@@ -176,3 +176,16 @@ def get_opcion_paginado(query_dict):
         res = set_preferencia(preferencia)
 
     return int(items)
+
+
+def get_cliente_asociado(usuario):
+    try:
+        perfil = Perfil.objects.get(user=usuario)
+        if not perfil.clicod:
+            clicod = None
+        else:
+            clicod = perfil.clicod
+    except Exception as e:
+        clicod = None
+
+    return clicod

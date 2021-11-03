@@ -18,6 +18,9 @@
                     <th><a href="{% url 'cliente_agregar' %}?modo={{ request.GET.modo }}"
                            class="addlink">{% traducir 'Agregar' 'CLIENTE' %}</a>
                     </th>
+                    <th><a href="{% url 'cliente_importar' %}"
+                           class="addlink">{% traducir 'Importar CSV' 'CLIENTE' %}</a>
+                    </th>
                 </tr>
             </table>
         </div>

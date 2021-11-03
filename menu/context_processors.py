@@ -1,6 +1,6 @@
 from django.urls import reverse
-
-from perfiles.funcs import get_preferencia
+from clientes.models import Cliente
+from perfiles.funcs import get_preferencia, get_cliente_asociado
 from tabla.templatetags.custom_tags import traducir
 
 
@@ -8,22 +8,33 @@ def menu_processor(request):
     css_version = '?v=1.2'
     usuario = request.user
     if usuario.is_authenticated:
+        clicod = get_cliente_asociado(usuario)
+        print('clicod: ', clicod)
+        cliente_asociado = []
+        try:
+            cliente_asociado = Cliente.objects.filter(clicod=clicod).values('id')[0]
+        except Exception as e:
+            cliente_asociado = {'id': 0}
+        print(cliente_asociado)
         fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', False)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
 
         # CLIENTES
-        cuentas_puede_listar = request.user.has_perm('clientes.cuentas_filtrar')
-        cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
+        cuentas_puede_listar = False
+        cuenta_corriente = False
+        if cliente_asociado['id'] > 0:
+            cuentas_puede_listar = request.user.has_perm('clientes.cuentas_listar')
+            cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
+        print('cuenta corriente: ', cuenta_corriente)
 
         # PROVEEDORES
-        # Cargar Facturas de Compra aquí ...
+        # Para Cargar Facturas de Compra ...
 
         # SOPORTE
         clientes_puede_listar = request.user.has_perm('clientes.puede_listar')
         proveedores_puede_listar = request.user.has_perm('proveedores.puede_listar')
         documento_puede_listar = request.user.has_perm('documentos.puede_listar')
         plantilla_puede_listar = request.user.has_perm('tabla.plantilla_puede_listar')
-        # persona_puede_listar = request.user.has_perm('expediente.persona_puede_listar')
 
         # CONFIGURACIÓN
         mostrar_admin = False
@@ -41,7 +52,7 @@ def menu_processor(request):
         if cuentas_puede_listar or cuenta_corriente:
             grupo_cliente_mostrar = True
 
-        if documento_puede_listar or plantilla_puede_listar:
+        if documento_puede_listar or plantilla_puede_listar or clientes_puede_listar:
             grupo_soporte_mostrar = True
 
         if numerador_puede_listar or tabla_puede_listar or variable_puede_listar or mostrar_admin:
@@ -59,12 +70,14 @@ def menu_processor(request):
                   ]
 
         menues = [
-                  {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'id': 1}), 'titulo': 'Facturas Pendientes',
-                   'modelo': 'CLIENTE', 'visible': cuentas_puede_listar},
-                  {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'id': 1}), 'titulo': 'Cuenta Corriente',
-                   'modelo': 'CLIENTE', 'visible': cuenta_corriente},
+                  {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'id': cliente_asociado['id']}),
+                   'titulo':'Facturas Pendientes', 'modelo': 'CLIENTE', 'visible': cuentas_puede_listar},
+                  {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'id': cliente_asociado['id']}),
+                   'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': cuenta_corriente},
                   {'id_grupo': 'SOP', 'url': reverse('clientes_listar'), 'titulo': 'Clientes', 'modelo': 'CLIENTE',
                    'visible': clientes_puede_listar},
+                  {'id_grupo': 'SOP', 'url': reverse('cuentas_listar'), 'titulo': 'Comprobantes', 'modelo': 'CUENTAS',
+                   'visible': True},
                   {'id_grupo': 'SOP', 'url': reverse('documentos_listar'), 'titulo': 'Documentos',
                    'modelo': 'DOCUMENTO', 'visible': documento_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('plantillas_listar'), 'titulo': 'Plantillas',

@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.translation import ugettext as _
 
 
 # Create your models here.
@@ -10,6 +11,13 @@ class Cliente(models.Model):
     telefono = models.CharField(verbose_name='Teléfono', max_length=60, null=True, blank=True)
     email = models.EmailField(verbose_name='E-mail', max_length=60, null=True, blank=True)
 
+    class Meta:
+        permissions = (("clientes.cliente_agregar", _("Agregar")),
+                       ("clientes.cliente_editar", _("Editar")),
+                       ("clientes.cliente_eliminar", _("Eliminar")),
+                       ("clientes.puede_listar", _("Listar")),
+                       )
+
 
 class Cuentas(models.Model):
     vtacod = models.IntegerField(null=False, blank=False)
@@ -20,3 +28,11 @@ class Cuentas(models.Model):
     total = models.IntegerField(null=False, blank=False)
     concepto = models.TextField(null=True, blank=True)
     pdf = models.FileField(null=True, blank=True)
+
+    class Meta:
+        permissions = (("clientes.cuentas_agregar", _("Agregar")),
+                       ("clientes.cuentas_editar", _("Editar")),
+                       ("clientes.cuentas_eliminar", _("Eliminar")),
+                       ("clientes.cuentas_listar", _("Listar")),
+                       ("clientes.cuenta_corriente", _("Cuenta Corriente")),
+                       )
