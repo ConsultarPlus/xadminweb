@@ -11,6 +11,9 @@ class Cliente(models.Model):
     telefono = models.CharField(verbose_name='Teléfono', max_length=60, null=True, blank=True)
     email = models.EmailField(verbose_name='E-mail', max_length=60, null=True, blank=True)
 
+    def __str__(self):
+        return "{}".format(self.clicod)
+
     class Meta:
         permissions = (("clientes.cliente_agregar", _("Agregar")),
                        ("clientes.cliente_editar", _("Editar")),

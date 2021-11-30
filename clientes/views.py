@@ -314,3 +314,115 @@ def cuentas_eliminar(request, id):
         messages.add_message(request, messages.ERROR, mensaje)
 
     return redirect(url)
+
+
+@login_required(login_url='ingresar')
+@permission_required("clientes.cuentas_importar", None, raise_exception=True)
+def cuentas_importar(request):
+    errores_lista = []
+    initial = {'entidades': (('CUENTAS', 'Cuentas'), ),
+               'entidad': 'Cuentas'}
+    if request.POST:
+        form = ImportarCSVForm(request.POST, request.FILES, initial=initial)
+        if form.is_valid():
+            csv = request.FILES['archivo']
+            entidad = form.cleaned_data['entidad']
+            actualizados = 0
+            nuevos = 0
+            errores = 0
+            exitos = 0
+            msj = ''
+            try:
+                for cnt, line in enumerate(csv):
+                    try:
+                        line_aux = line.decode("utf-8-sig")
+                        if line_aux:
+                            values = line_aux.split(';')
+                            vtacod = values[0].replace("'", "")
+                            vtacod = vtacod.replace('"', '')
+
+                            if cnt == 0:
+                                print('*values: ', values)
+                                print('*vtacod: ', vtacod)
+
+                            comprobante = ''
+                            pdf = ''
+                            if len(values) > 1:
+                                comprobante = values[1].strip()
+                                if len(values) > 2:
+                                    clicod = values[2].replace("'", "").strip()
+                                    if len(values) > 3:
+                                        fecha_emision = values[3].strip()
+                                        if len(values) > 4:
+                                            fecha_vencimiento = values[4].strip()
+                                            if len(values) > 5:
+                                                t = values[5].replace("'", "")
+                                                total = int(float(t))
+                                                if len(values) > 6:
+                                                    concepto = values[6].strip()
+                                                    if len(values) > 7:
+                                                        pdf = values[7].strip()
+                            try:
+                                cuentas = Cuentas.objects.get(vtacod=vtacod)
+                                if clicod:
+                                    cliente = Cliente.objects.get(clicod=clicod)
+                                    cuentas.cliente = cliente
+                                if comprobante:
+                                    cuentas.comprobante = comprobante.upper()
+                                if fecha_emision:
+                                    cuentas.fecha_emision = fecha_emision
+                                if fecha_vencimiento:
+                                    cuentas.fecha_vencimiento = fecha_vencimiento
+                                if total:
+                                    cuentas.total = total
+                                if concepto:
+                                    cuentas.concepto = concepto
+                                if pdf:
+                                    cuentas.pdf = pdf
+                                cuentas.save()
+                                actualizados += 1
+                                exitos += 1
+                            except Cuentas.DoesNotExist:
+                                cliente = Cliente.objects.get(clicod=clicod)
+                                cuentas = Cuentas(vtacod=vtacod,
+                                                  comprobante=comprobante,
+                                                  cliente=cliente,
+                                                  fecha_emision=fecha_emision,
+                                                  fecha_vencimiento=fecha_vencimiento,
+                                                  total=total,
+                                                  concepto=concepto,
+                                                  pdf=pdf)
+                                cuentas.save()
+                                nuevos += 1
+                                exitos += 1
+
+                    except Exception as e:
+                        errores += 1
+                        if errores <= 10:
+                            if errores == 10:
+                                errores_lista.append('Hay más errores...')
+                            else:
+                                errores_lista.append('Fila {}: {}'.format(cnt+1, e))
+            except Exception as e:
+                msj = e
+
+            if msj:
+                messages.add_message(request, messages.ERROR, msj)
+            else:
+                msj = 'Carga de {}: {} errores; {} actualizados; {} nuevos'.format(entidad, errores,
+                                                                                   actualizados, nuevos)
+                if errores_lista:
+                    messages.add_message(request, messages.ERROR, msj)
+                else:
+                    messages.add_message(request, messages.INFO, msj)
+                    return redirect('cuentas_listar')
+    else:
+        form = ImportarCSVForm(initial=initial)
+
+    template_name = 'tabla/tabla_form.html'
+    formato = 'VtaCod N(8) ; Comprobante C(20); CliCod C(5); Emisión D(10); ' \
+              'Vencimiento D(10); VtaTotal N(14.4); VtaConce C(255); PDF C(200) ' \
+              'Codificación UTF-8'
+    titulo = 'Importar CSV'
+    contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
+    return render(request, template_name, contexto)

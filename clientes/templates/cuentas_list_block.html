@@ -1,6 +1,7 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% load static %}
+{% get_media_prefix as MEDIA_URL %}
     {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
         {% include "cabeza.html" %}
         <div id="content" class="{% block coltype %}colM{% endblock %}">
@@ -17,6 +18,9 @@
                 <tr class="model-group">
                     <th><a href="{% url 'cuentas_agregar' %}?modo={{ request.GET.modo }}"
                            class="addlink">{% traducir 'Agregar' 'CUENTAS' %}</a>
+                    </th>
+                    <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"
+                           class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>
                     </th>
                 </tr>
             </table>
@@ -41,6 +45,7 @@
                 <th></th>
                 {% endif %}
                 <th>{% traducir 'Comprobante' 'CUENTAS' %}</th>
+                <th>{% traducir 'Cliente' 'CUENTAS' %}</th>
                 <th>{% traducir 'Emisión' 'CUENTAS' %}</th>
                 <th>{% traducir 'Vencimiento' 'CUENTAS' %}</th>
                 <th>{% traducir 'Total' 'CUENTAS' %}</th>
@@ -63,6 +68,7 @@
                 {% endif %}
                 {% endif %}
                 <td> {{ item.comprobante }}</td>
+                <td> {{ item.cliente }}</td>
                 <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
                 <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
                 <td> {{ item.total }}</td>
