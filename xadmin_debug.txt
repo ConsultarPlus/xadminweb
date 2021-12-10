@@ -2,7 +2,7 @@
 'SECRET_KEY': "django-insecure-*j)f4!r#ayh$b19kfhme3w&i-398da9py7$bjgf(=dndwst_uv",
 'DB': 'xadmin',
 'USER': 'consultar',
-'PASSWORD': '1175',
+'PASSWORD': 'CONsultar2012',
 'HOST': 'localhost',
 'PORT': '5432',
 'EMAIL_HOST': 'mail.consultar.org',

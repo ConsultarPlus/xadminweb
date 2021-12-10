@@ -58,17 +58,14 @@ class CuentasForm(forms.ModelForm):
         self.helper.form_id = 'id_form'
         self.helper.layout = Layout(
             Row(
-                Column('vtacod', css_class='form-group col-md-2 mb-0'),
-                Column('comprobante', css_class='form-group col-md-3 mb-0'),
-                Column('cliente', css_class='form-group col-md-3 mb-0'),
+                Column('vtacod', css_class='form-group col-md-1 mb-0'),
+                Column('comprobante', css_class='form-group col-md-2 mb-0'),
+                Column('cliente', css_class='form-group col-md-2 mb-0'),
                 css_class='form-row'
             ),
             Row(
-                Column('fecha_emision', css_class='form-group col-md-2 mb-0'),
+                Column('fecha_emision', css_class='form-group col-md-1 mb-0'),
                 Column('fecha_vencimiento', css_class='form-group col-md-2 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
                 Column('total', css_class='form-group col-md-2 mb-0'),
                 css_class='form-row'
             ),
