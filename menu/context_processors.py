@@ -9,23 +9,20 @@ def menu_processor(request):
     usuario = request.user
     if usuario.is_authenticated:
         clicod = get_cliente_asociado(usuario)
-        print('clicod: ', clicod)
         cliente_asociado = []
         try:
             cliente_asociado = Cliente.objects.filter(clicod=clicod).values('id')[0]
         except Exception as e:
             cliente_asociado = {'id': 0}
-        print(cliente_asociado)
         fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', False)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
 
         # CLIENTES
-        cuentas_puede_listar = False
-        cuenta_corriente = False
-        if cliente_asociado['id'] > 0:
-            cuentas_puede_listar = request.user.has_perm('clientes.cuentas_listar')
-            cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
-        print('cuenta corriente: ', cuenta_corriente)
+        cuentas_puede_listar = True
+        cuenta_corriente = True
+        # if cliente_asociado['id'] > 0:
+        #     cuentas_puede_listar = request.user.has_perm('clientes.cuentas_listar')
+        #     cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
 
         # PROVEEDORES
         # Para Cargar Facturas de Compra ...
@@ -103,6 +100,9 @@ def menu_processor(request):
                 'fijar_menu': fijar_menu,
                 'css_version': css_version,
                 'modo_obscuro': modo_obscuro,
-                'carpeta_media': carpeta_media}
+                'carpeta_media': carpeta_media,
+                'titulo': 'XAdmin Web',
+                'logo': 'logo.png'}
     else:
-        return {}
+        return {'titulo': 'XAdmin Web',
+                'logo': 'logo.png'}

@@ -10,6 +10,7 @@ from .views import (cliente_agregar,
                     cuentas_eliminar,
                     cuentas_listar,
                     cuenta_corriente,
+                    cuentas_importar,
                     )
 
 
@@ -25,6 +26,7 @@ urlpatterns = [
     path('cuentas_eliminar/<int:id>', cuentas_eliminar, name='cuentas_eliminar'),
     path('cuentas_listar/<int:id>', cuentas_listar, name='cuentas_listar'),
     path('cuentas_listar/', cuentas_listar, name='cuentas_listar'),
+    path('cuentas_importar/', cuentas_importar, name='cuentas_importar'),
     path('cuenta_corriente/<int:id>', cuenta_corriente, name='cuenta_corriente'),
 
 ]
