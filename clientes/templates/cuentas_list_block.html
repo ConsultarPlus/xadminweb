@@ -52,7 +52,6 @@
                 <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
                 <th>{% traducir 'PDF' 'CUENTAS' %}</th>
                 <th></th>
-                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -74,13 +73,7 @@
                 <td> {{ item.total }}</td>
                 <td> {{ item.concepto }}</td>
                 <td><a href="{{ MEDIA_URL }}{{ item.pdf }}" class="printlink" target="_blank">Descargar</a></td>
-                <td><a href="{% url 'cuentas_editar' item.id %}?modo={{ request.GET.modo }} "
-                       class="changelink">{% traducir 'Editar' 'CILENTE' %}</a></td>
-                <td><a href="#"
-                       class="deletelink"
-                       onclick="return confirmarAccion('{% url 'cuentas_eliminar' item.id %}',
-                                                   '¿Eliminar Comprobante?')">{% traducir 'Eliminar' 'CLIENTE' %}</a>
-                </td>
+                <td></td>
             </tr>
             {% endfor %}
             </tbody>
