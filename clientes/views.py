@@ -257,6 +257,11 @@ def cuentas_listar(request, encriptado=None):
     modo = request.GET.get('modo')
     contexto['modo'] = modo
 
+    # print("Encriptado" + encriptado)
+
+    if encriptado == None:
+        return redirect('menu')
+
     if modo == 'm' or modo == 's':
         template_name = 'cuentas_list_block.html'
     else:
@@ -264,6 +269,20 @@ def cuentas_listar(request, encriptado=None):
 
     return render(request, template_name, contexto)
 
+
+@login_required(login_url='ingresar')
+@permission_required("clientes.cuentas_listar_admin", None, raise_exception=True)
+def cuentas_listar_admin(request):
+    contexto = cuentas_filtrar(request, None)
+    modo = request.GET.get('modo')
+    contexto['modo'] = modo
+
+    if modo == 'm' or modo == 's':
+        template_name = 'cuentas_list_block.html'
+    else:
+        template_name = 'cuentas_listar.html'
+
+    return render(request, template_name, contexto)
 
 @login_required(login_url='ingresar')
 # @permission_required("clientes.cuenta_corriente", None, raise_exception=True)

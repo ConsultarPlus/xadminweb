@@ -38,5 +38,6 @@ class Cuentas(models.Model):
                        ("clientes.cuentas_editar", _("Editar")),
                        ("clientes.cuentas_eliminar", _("Eliminar")),
                        ("clientes.cuentas_listar", _("Listar")),
+                       ("clientes.cuentas_listar_admin", _("Listar Admin")),
                        ("clientes.cuenta_corriente", _("Cuenta Corriente")),
                        )

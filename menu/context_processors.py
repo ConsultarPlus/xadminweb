@@ -74,7 +74,7 @@ def menu_processor(request):
                    'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': True},
                   {'id_grupo': 'SOP', 'url': reverse('clientes_listar'), 'titulo': 'Clientes', 'modelo': 'CLIENTE',
                    'visible': clientes_puede_listar},
-                  {'id_grupo': 'SOP', 'url': reverse('cuentas_listar'), 'titulo': 'Comprobantes', 'modelo': 'CUENTAS',
+                  {'id_grupo': 'SOP', 'url': reverse('cuentas_listar_admin'), 'titulo': 'Comprobantes', 'modelo': 'CUENTAS',
                    'visible': True},
                   {'id_grupo': 'SOP', 'url': reverse('documentos_listar'), 'titulo': 'Documentos',
                    'modelo': 'DOCUMENTO', 'visible': documento_puede_listar},
