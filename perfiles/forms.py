@@ -53,7 +53,7 @@ class PerfilPantallaForm(forms.ModelForm):
     opcion_dummy = forms.ChoiceField(choices=OPCION_DUMMY_CHOICES, required=False, label='Opción')
     caracter = forms.ChoiceField(choices=sorted(PANTALLAS), required=False, label='Valor')
     vista = forms.CharField(max_length=60, initial='menu', label='')
-    opcion = forms.CharField(max_length=60, initial='pantalla_inicial', label='')
+    # opcion = forms.CharField(max_length=60, initial='pantalla_inicial', label='')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -72,7 +72,7 @@ class UsuarioForm(forms.ModelForm):
                             label='E-mail (para recuperar contraseña)')
     dependencia_x_def = forms.IntegerField(max_value=999999999, required=False, label='Dependencia por defecto')
     grupo = forms.MultipleChoiceField(required=False, label='Grupos')
-    pantalla_inicial = forms.CharField(max_length=40, required=False, label='Pantalla inicial')
+    # pantalla_inicial = forms.CharField(max_length=40, required=False, label='Pantalla inicial')
 
     class Meta:
         model = Perfil
@@ -85,7 +85,7 @@ class UsuarioForm(forms.ModelForm):
         self.fields['grupo'].widget.attrs['disabled'] = True
         self.fields['dependencia_x_def'].widget = \
             SelectLiveSearchInput(choices=get_choices_dependencias_de_usuario(self.instance.user_id))
-        self.fields['pantalla_inicial'].widget = SelectLiveSearchInput(choices=sorted(PANTALLAS))
+        # self.fields['pantalla_inicial'].widget = SelectLiveSearchInput(choices=sorted(PANTALLAS))
 
         for field_name, field in self.fields.items():
             field.label = traducir(field.label, 'USUARIO')
@@ -107,8 +107,8 @@ class UsuarioForm(forms.ModelForm):
             self.fields['apellido'].initial = usuario.last_name
             self.fields['telefono'].initial = telefono
             self.fields['email'].initial = usuario.email
-            self.fields['nivel'].queryset = niveles
-            self.fields['nivel'].widget.attrs['rows'] = niveles.count()
+            # self.fields['nivel'].queryset = niveles
+            # self.fields['nivel'].widget.attrs['rows'] = niveles.count()
 
             if foto:
                 img = MEDIA_URL+str(foto)
@@ -146,13 +146,13 @@ class UsuarioForm(forms.ModelForm):
             ),
             HTML(separador),
             HTML(div_colapsable_ini),
+            # Row(
+            #     Column('dependencia_x_def', css_class='form-group col-md-3 mb-0'),
+            #     Column('pantalla_inicial', css_class='form-group col-md-3 mb-0'),
+            #     css_class='form-row'
+            # ),
             Row(
-                Column('dependencia_x_def', css_class='form-group col-md-3 mb-0'),
-                Column('pantalla_inicial', css_class='form-group col-md-3 mb-0'),
-                css_class='form-row'
-            ),
-            Row(
-                Column('nivel', css_class='form-group col-md-3 mb-0'),
+                # Column('nivel', css_class='form-group col-md-3 mb-0'),
                 Column('grupo', css_class='form-group col-md-3 mb-0'),
                 css_class='form-row'
             ),

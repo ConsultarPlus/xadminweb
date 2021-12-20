@@ -24,9 +24,9 @@ urlpatterns = [
     path('cuentas_agregar/', cuentas_agregar, name='cuentas_agregar'),
     path('cuentas_editar/<int:id>', cuentas_editar, name='cuentas_editar'),
     path('cuentas_eliminar/<int:id>', cuentas_eliminar, name='cuentas_eliminar'),
-    path('cuentas_listar/<int:id>', cuentas_listar, name='cuentas_listar'),
+    path('cuentas_listar/<slug:encriptado>', cuentas_listar, name='cuentas_listar'),
     path('cuentas_listar/', cuentas_listar, name='cuentas_listar'),
     path('cuentas_importar/', cuentas_importar, name='cuentas_importar'),
-    path('cuenta_corriente/<int:id>', cuenta_corriente, name='cuenta_corriente'),
+    path('cuenta_corriente/<slug:encriptado>', cuenta_corriente, name='cuenta_corriente'),
 
 ]

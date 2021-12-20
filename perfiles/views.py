@@ -86,7 +86,7 @@ def usuario_modificar(request):
     usuario = User.objects.get(id=user)
     perfil, created = Perfil.objects.get_or_create(user_id=user)
     pref_dependencia = get_dependencia(user)  # get_preferencia(user, 'menu', 'dependencia_x_defecto', 'C', None)
-    pref_pantalla = get_preferencia(user, 'menu', 'pantalla_inicial', 'C', None)
+    # pref_pantalla = get_preferencia(user, 'menu', 'pantalla_inicial', 'C', None)
     if request.method == 'POST':
         post = request.POST.copy()
         post['user'] = user
@@ -124,7 +124,7 @@ def usuario_modificar(request):
                 messages.add_message(request, messages.ERROR, 'El correo indicado ya está usado')
     else:
         initial = {'dependencia_x_def': pref_dependencia,
-                   'pantalla_inicial': pref_pantalla}
+                   }
         form = UsuarioForm(instance=perfil, initial=initial)
 
     template_name = 'usuario_form.html'

@@ -13,7 +13,7 @@ from clientes.models import Cliente
 
 dependencias = get_choices('DEPENDENCIA')
 Group.add_to_class('dependencia', models.IntegerField(null=True, blank=True,
-                                                      choices=dependencias))
+                                                     choices=dependencias))
 
 
 def get_image_filename(instance, filename):

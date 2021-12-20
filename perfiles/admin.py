@@ -30,8 +30,8 @@ class PerfilAdmin(admin.StackedInline):
     verbose_name_plural = 'Niveles, foto, fecha de clave, e-mail de recuperación'
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
-        if db_field.name == "nivel":
-            kwargs["queryset"] = Tabla.objects.filter(entidad='NIVEL')
+        # if db_field.name == "nivel":
+        #     kwargs["queryset"] = Tabla.objects.filter(entidad='NIVEL')
         return super().formfield_for_manytomany(db_field, request, **kwargs)
 
 
@@ -68,7 +68,7 @@ class UserAdmin(BaseUserAdmin):
         # template = Template('aviso_de_reseteo.html')
         template = 'aviso_de_reseteo.html'
         ano = datetime.datetime.today().year
-        password = 'Plus_' + str(ano)
+        password = 'Xadminweb'
         sitio = request.build_absolute_uri('/ingresar/')
         enviados = 0
         errores = 0

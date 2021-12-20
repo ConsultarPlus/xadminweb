@@ -11,7 +11,8 @@ from tabla.forms import ImportarCSVForm
 from tabla.funcs import es_valido, email_valido
 from perfiles.admin import agregar_a_errores
 from perfiles.models import Perfil
-
+import random
+import string
 
 # Create your views here.
 @login_required(login_url='ingresar')
@@ -36,7 +37,11 @@ def cliente_agregar(request):
     if request.POST:
         form = ClienteForm(request.POST)
         if form.is_valid():
+            encriptado = ''.join(random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
             form.save()
+            cliente = Cliente.objects.get(clicod=form.cleaned_data['clicod'])
+            cliente.encriptado = encriptado
+            cliente.save()
             return redirect('clientes_listar')
     else:
         form = ClienteForm()
@@ -90,6 +95,7 @@ def cliente_agregar_y_volver(request):
     url = reverse('cliente_agregar')
     parametros = urlencode({'volver': True})
     url = '{}?{}'.format(url, parametros)
+
     return redirect(url)
 
 
@@ -128,6 +134,7 @@ def clientes_cargar_csv(request):
                             domicilio = ''
                             telefono = ''
                             email = ''
+                            encriptado = ''
                             if len(values) > 1:
                                 nombre = values[1].replace("'", "").strip()
                                 if len(nombre) > 100:
@@ -145,6 +152,7 @@ def clientes_cargar_csv(request):
                             try:
                                 cliente = Cliente.objects.get(clicod=clicod)
                                 cliente.clicod = clicod
+                                cliente.encriptado = ''.join(random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
                                 if nombre:
                                     cliente.nombre = nombre.upper()
                                 if domicilio:
@@ -153,6 +161,8 @@ def clientes_cargar_csv(request):
                                     cliente.telefono = telefono
                                 if email:
                                     cliente.email = email
+                                if encriptado:
+                                    encriptado = ''.join(random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
                                 cliente.save()
                                 actualizados += 1
                                 exitos += 1
@@ -162,7 +172,8 @@ def clientes_cargar_csv(request):
                                                   cuit=cuit,
                                                   domicilio=domicilio.upper(),
                                                   telefono=telefono,
-                                                  email=email)
+                                                  email=email,
+                                                  encriptado=encriptado)
                                 cliente.save()
                                 nuevos += 1
                                 exitos += 1
@@ -240,9 +251,9 @@ def clientes_cargar_csv(request):
 
 
 @login_required(login_url='ingresar')
-@permission_required("clientes.cuentas_listar", None, raise_exception=True)
-def cuentas_listar(request, id=None):
-    contexto = cuentas_filtrar(request)
+# @permission_required("clientes.cuentas_listar", None, raise_exception=True)
+def cuentas_listar(request, encriptado=None):
+    contexto = cuentas_filtrar(request, encriptado)
     modo = request.GET.get('modo')
     contexto['modo'] = modo
 
@@ -255,8 +266,8 @@ def cuentas_listar(request, id=None):
 
 
 @login_required(login_url='ingresar')
-@permission_required("clientes.cuenta_corriente", None, raise_exception=True)
-def cuenta_corriente(request):
+# @permission_required("clientes.cuenta_corriente", None, raise_exception=True)
+def cuenta_corriente(request, encriptado=None):
     url = reverse('cuenta_')
     return redirect(url)
 

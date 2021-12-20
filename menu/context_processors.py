@@ -11,18 +11,19 @@ def menu_processor(request):
         clicod = get_cliente_asociado(usuario)
         cliente_asociado = []
         try:
-            cliente_asociado = Cliente.objects.filter(clicod=clicod).values('id')[0]
+            cliente_asociado = Cliente.objects.filter(clicod=clicod).values('encriptado', 'id')[0]
         except Exception as e:
-            cliente_asociado = {'id': 0}
+            cliente_asociado = {'encriptado': 0,'id': 0}
         fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', False)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
-
+        print('cliente asociado: ', cliente_asociado)
         # CLIENTES
         cuentas_puede_listar = True
         cuenta_corriente = True
-        # if cliente_asociado['id'] > 0:
-        #     cuentas_puede_listar = request.user.has_perm('clientes.cuentas_listar')
-        #     cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
+        if cliente_asociado['id'] > 0:
+            cuentas_puede_listar = request.user.has_perm('clientes.cuentas_listar')
+            cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
+        print('cuenta corriente: ', cuenta_corriente)
 
         # PROVEEDORES
         # Para Cargar Facturas de Compra ...
@@ -41,8 +42,8 @@ def menu_processor(request):
         tabla_puede_listar = request.user.has_perm('tablas.tabla_puede_listar')
         variable_puede_listar = request.user.has_perm('tablas.variable_puede_listar')
 
-        grupo_cliente_mostrar = False
-        grupo_proveedor_mostrar = False
+        grupo_cliente_mostrar = True
+        grupo_proveedor_mostrar = True
         grupo_soporte_mostrar = False
         grupo_config_mostrar = False
 
@@ -67,10 +68,10 @@ def menu_processor(request):
                   ]
 
         menues = [
-                  {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'id': cliente_asociado['id']}),
-                   'titulo':'Facturas Pendientes', 'modelo': 'CLIENTE', 'visible': cuentas_puede_listar},
-                  {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'id': cliente_asociado['id']}),
-                   'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': cuenta_corriente},
+                  {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'encriptado': cliente_asociado['encriptado']}),
+                   'titulo':'Facturas Pendientes', 'modelo': 'CLIENTE', 'visible': True},
+                  {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'encriptado': cliente_asociado['encriptado']}),
+                   'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': True},
                   {'id_grupo': 'SOP', 'url': reverse('clientes_listar'), 'titulo': 'Clientes', 'modelo': 'CLIENTE',
                    'visible': clientes_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('cuentas_listar'), 'titulo': 'Comprobantes', 'modelo': 'CUENTAS',

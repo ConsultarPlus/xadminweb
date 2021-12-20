@@ -5,8 +5,10 @@ from tabla.forms import FiltroSimple
 from perfiles.funcs import get_opcion_paginado
 
 
-def clientes_filtrar(query_dict):
+def clientes_filtrar(query_dict, encriptado=None):
     buscar = query_dict.GET.get('buscar')
+    # buscarenc = query_dict.GET.get('encriptado')
+    buscarenc = encriptado
     items = get_opcion_paginado(query_dict)
     modo = query_dict.GET.get('modo')
     filtrado = Cliente.objects.all()
@@ -15,6 +17,9 @@ def clientes_filtrar(query_dict):
         filtrado = filtrado.filter(Q(clicod__icontains=buscar) |
                                    Q(nombre__icontains=buscar)
                                    )
+
+    if buscarenc != '' and buscarenc is not None:
+        filtrado = filtrado.filter(encriptado=buscarenc)
 
     registros = filtrado.count()
     paginado = paginador(query_dict, filtrado)
@@ -28,15 +33,14 @@ def clientes_filtrar(query_dict):
             'filtros_form': form}
 
 
-def cuentas_filtrar(query_dict):
+def cuentas_filtrar(query_dict, encriptado):
     buscar = query_dict.GET.get('buscar')
-    cliente_id = query_dict.GET.get('id')
     items = get_opcion_paginado(query_dict)
     modo = query_dict.GET.get('modo')
     filtrado = Cuentas.objects.all()
 
-    if cliente_id != '' and cliente_id is not None:
-        filtrado = filtrado.filter(cliente=cliente_id)
+    if encriptado != '' and encriptado is not None:
+        filtrado = filtrado.filter(cliente__encriptado=encriptado)
 
     if buscar != '' and buscar is not None:
         filtrado = filtrado.filter(concepto__icontains=buscar)
