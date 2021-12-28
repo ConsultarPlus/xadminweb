@@ -13,6 +13,8 @@ from perfiles.admin import agregar_a_errores
 from perfiles.models import Perfil
 import random
 import string
+from xadmin.settings import MEDIA_URL
+import webbrowser
 
 # Create your views here.
 @login_required(login_url='ingresar')
@@ -284,12 +286,16 @@ def cuentas_listar_admin(request):
 
     return render(request, template_name, contexto)
 
-@login_required(login_url='ingresar')
-# @permission_required("clientes.cuenta_corriente", None, raise_exception=True)
-def cuenta_corriente(request, encriptado=None):
-    url = reverse('cuenta_')
-    return redirect(url)
 
+@login_required(login_url='ingresar')
+# @permission_required("clientes.puede_listar", None, raise_exception=True)
+def cuenta_corriente(request, encriptado=None):
+
+    url = MEDIA_URL + "cuentas_corrientes/" + encriptado + ".pdf"
+
+    webbrowser.open_new("http://127.0.0.1:8000" + url)
+
+    return redirect("menu")
 
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_agrega", None, raise_exception=True)

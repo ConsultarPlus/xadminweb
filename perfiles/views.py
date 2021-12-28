@@ -106,12 +106,12 @@ def usuario_modificar(request):
                                                   'vista': 'menu',
                                                   'opcion': 'dependencia_x_defecto',
                                                   'caracter': pref_dependencia})
-
-                pref_pantalla = form.cleaned_data['pantalla_inicial']
-                ok = set_preferencia(preferencia={'usuario': usuario,
-                                                  'vista': 'menu',
-                                                  'opcion': 'pantalla_inicial',
-                                                  'caracter': pref_pantalla})
+                #
+                # pref_pantalla = form.cleaned_data['menu']
+                # ok = set_preferencia(preferencia={'usuario': usuario,
+                #                                   'vista': 'menu',
+                #                                   'opcion': 'menu',
+                #                                   'caracter': pref_pantalla})
 
                 """Se graba la tabla Perfil"""
                 form.save()
