@@ -16,6 +16,7 @@ import string
 from xadmin.settings import MEDIA_URL
 import webbrowser
 
+
 # Create your views here.
 @login_required(login_url='ingresar')
 @permission_required('clientes.puede_listar', None, raise_exception=True)
@@ -72,7 +73,7 @@ def cliente_editar(request, id):
         form = ClienteForm(instance=cliente)
 
     template_name = 'cliente_form.html'
-    contexto = {'form': form, 'MODELO': cliente}
+    contexto = {'form': form, 'cliente': cliente}
     return render(request, template_name, contexto)
 
 
