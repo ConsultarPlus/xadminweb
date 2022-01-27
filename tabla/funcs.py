@@ -304,3 +304,199 @@ def minutos_entre_datetimes(dt1, dt2):
         td = datetime.strptime(str_dt2, fmt) - datetime.strptime(str_dt1, fmt)
         minutos = td.total_seconds() / 60
     return round(minutos, 2)
+
+def get_lett(num):
+    nume = str(num)
+    largo = len(nume)
+    finnum = ' '
+    if largo == 1:
+        finnum = unidad(nume)
+    if largo == 2:
+        finnum = dece(nume)
+    if largo == 3:
+        finnum = cente(nume)
+    if largo == 4:
+        finnum = mil(nume)
+    if largo == 5:
+        finnum = decmil(nume)
+    if largo == 6:
+        finnum = centmil(nume)
+    if largo == 7:
+        finnum = mill(nume)
+    if largo == 8:
+        finnum = dece(nume[:-6]) + " MILLONES " + centmil(nume[2:])
+    if largo == 9:
+        finnum = cente(nume[:-6]) + " MILLONES " + centmil(nume[3:])
+    if largo == 10:
+        finnum = mil(nume[:-6]) + " MILLONES " + centmil(nume[4:])
+    if largo == 11:
+        finnum = decmil(nume[:-6]) + " MILLONES " + centmil(nume[5:])
+    if largo == 12:
+        finnum = centmil(nume[:-6]) + " MILLONES " + centmil(nume[6:])
+    return finnum
+
+def mill (x):
+    if x[0] == "1":
+        a = "UN MILLON " + centmil(x[1:])
+    else:
+        a = unidad(x[0]) + " MILLONES " + centmil(x[1:])
+    return a
+
+def centmil (x):
+    if x[0] == "0" and x[1] == "0" and x[2] == "0":
+        a = cente(x[3:])
+    else:
+        a = cente(x[0]+x[1]+x[2]) + " MIL " + cente(x[3:])
+    return a
+
+def decmil (x):
+    if x[0] == "0" and x[1] == "0":
+        cente(x[2:])
+    else:
+        a = dece(x[0] + x[1]) + " MIL " + cente(x[2:])
+    return a
+
+def mil (x):
+    if x[0] == "1":
+        a = " MIL " + cente(x[1:])
+    else:
+        if x[0] == "0":
+            a = cente(x[1:])
+        else:
+            a = unidad(x[0]) + " MIL " + cente(x[1:])
+    return a
+
+def cente (x):
+    if x[0] == "0":
+        a = dece(x[1:])
+    if x[0] == "1":
+        if x[1:] == "00":
+            a = "CIEN"
+        else:
+            a = "CIENTO " + dece(x[1:])
+    if x[0] == "2":
+        if x[1:] == "00":
+            a = "DOSCIENTOS"
+        else:
+            a = "DOSCIENTOS " + dece(x[1:])
+    if x[0] == "3":
+        if x[1:] == "00":
+            a = "TRESCIENTOS"
+        else:
+            a = "TRESCIENTOS " + dece(x[1:])
+    if x[0] == "4":
+        if x[1:] == "00":
+            a = "CUATROCIENTOS"
+        else:
+            a = "CUATROCIENTOS " + dece(x[1:])
+    if x[0] == "5":
+        if x[1:] == "00":
+            a = "QUINIENTOS"
+        else:
+            a = "QUINIENTOS " + dece(x[1:])
+    if x[0] == "6":
+        if x[1:] == "00":
+            a = "SEISCIENTOS"
+        else:
+            a = "SEISCIENTOS " + dece(x[1:])
+    if x[0] == "7":
+        if x[1:] == "00":
+            a = "SETECIENTOS"
+        else:
+            a = "SETECIENTOS " + dece(x[1:])
+    if x[0] == "8":
+        if x[1:] == "00":
+            a = "OCHOCIENTOS"
+        else:
+            a = "OCHOCIENTOS " + dece(x[1:])
+    if x[0] == "9":
+        if x[1:] == "00":
+            a = "NOVECIENTOS"
+        else:
+            a = "NOVECIENTOS " + dece(x[1:])
+    return a
+
+def dece (x):
+    v = int(x)
+    if x[0] == "0":
+        a = unidad(x[1])
+    if x[0] == "1":
+        if v < 16:
+            if x == "10":
+                a = "DIEZ"
+            if x == "11":
+                a = "ONCE"
+            if x == "12":
+                a = "DOCE"
+            if x == "13":
+                a = "TRECE"
+            if x == "14":
+                a = "CATORCE"
+            if x == "15":
+                a = "QUINCE"
+        else:
+            a = "DIECI" + unidad(x[1])
+    if x[0] == "2":
+        if x[1] == "0":
+            a = "VEINTE"
+        else:
+            a = "VEINTI" + unidad(x[1])
+    if x[0] == "3":
+        if x[1] == "0":
+            a = "TREINTA"
+        else:
+            a = "TERINTAI" + unidad(x[1])
+    if x[0] == "4":
+        if x[1] == "0":
+            a = "CUARENTA"
+        else:
+            a = "CUARENTAI" + unidad(x[1])
+    if x[0] == "5":
+        if x[1] == "0":
+            a = "CINCUENTA"
+        else:
+            a = "CINCUENTAI" + unidad(x[1])
+    if x[0] == "6":
+        if x[1] == "0":
+            a = "SESENTA"
+        else:
+            a = "SESENTAI" + unidad(x[1])
+    if x[0] == "7":
+        if x[1] == "0":
+            a = "SETENTA"
+        else:
+            a = "SETENTAI" + unidad(x[1])
+    if x[0] == "8":
+        if x[1] == "0":
+            a = "OCHENTA"
+        else:
+            a = "OCHENTAI" + unidad(x[1])
+    if x[0] == "9":
+        if x[1] == "0":
+            a = "NOVENTA"
+        else:
+            a = "NOVENTAI" + unidad(x[1])
+    return a
+
+def unidad(x):
+    if x == "1":
+        a = "UN"
+    if x == "2":
+        a = "DOS"
+    if x == "3":
+        a = "TRES"
+    if x == "4":
+        a = "CUATRO"
+    if x == "5":
+        a = "CINCO"
+    if x == "6":
+        a = "SEIS"
+    if x == "7":
+        a = "SIETE"
+    if x == "8":
+        a = "OCHO"
+    if x == "9":
+        a = "NUEVE"
+    if x == "0":
+        a = ""
+    return a

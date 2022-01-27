@@ -3,17 +3,27 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Group
+from django.http import FileResponse, HttpResponse
 from urllib.parse import urlencode
 from .models import Cliente, Cuentas
 from .forms import ClienteForm, CuentasForm
 from .filters import clientes_filtrar, cuentas_filtrar
 from tabla.forms import ImportarCSVForm
 from tabla.funcs import es_valido, email_valido
+from tabla.funcs import get_lett
 from perfiles.admin import agregar_a_errores
 from perfiles.models import Perfil
 import random
 import string
 from xadmin.settings import MEDIA_URL
+from reportlab.pdfgen import canvas
+import os
+import shutil
+from reportlab.lib.pagesizes import A4, landscape
+from reportlab.pdfbase.pdfmetrics import stringWidth
+from reportlab_qrcode import QRCodeImage
+from reportlab.lib.units import mm
+from reportlab.lib.utils import ImageReader
 import webbrowser
 
 
@@ -463,3 +473,57 @@ def cuentas_importar(request):
     titulo = 'Importar CSV'
     contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
     return render(request, template_name, contexto)
+
+
+@login_required(login_url='ingresar')
+def imprimir_png(request, id):
+    path = "media/facturas/" + str(id) + ".pdf"
+    comprobante = Cuentas.objects.get(id=id)
+    cliente = Cliente.objects.get(clicod=comprobante.cliente)
+    nombre_de_archivo = '{}.pdf'.format(id)
+    if cliente.domicilio != '':
+        print("existe")
+    else:
+        print("no existe")
+
+    path_archivo = MEDIA_URL + "facturas/" + nombre_de_archivo
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'inline; filename="' + nombre_de_archivo + '"'
+    doc = canvas.Canvas(response)
+
+    doc.drawImage("fondo_certificado.png", 0, -30, width=630, height=891)
+
+    doc.drawString(440, 753, '{}'.format(comprobante.fecha_emision))
+    doc.drawString(420, 783, "Nº " + '{}'.format(comprobante.sucursal) + "-" + '{}'.format(comprobante.numero))
+    doc.drawString(50, 170, '{}'.format(comprobante.subtotal))
+    doc.drawString(275, 170, '{}'.format(comprobante.iva))
+    doc.drawString(500, 170, "{:.2f}".format(comprobante.total))
+    doc.drawString(50, 200, "SUBTOTAL")
+    doc.drawString(275, 200, "IVA")
+    doc.drawString(500, 200, "TOTAL")
+    doc.drawString(50, 660, "Nombre: " + '{}'.format(cliente.nombre))
+    doc.drawString(45, 640, "Domicilio: " + cliente.domicilio)
+    doc.drawString(75, 620, "IVA: ")
+    doc.drawString(300, 620, "CUIT: " + '{}'.format(cliente.cuit))
+    doc.drawString(450, 100, "VTO: " + '{}'.format(comprobante.fecha_vencimiento))
+    doc.drawString(433, 120, "CAE Nº: " + '{}'.format(comprobante.cae))
+    doc.drawString(75, 550, "SON PESOS:")
+    doc.drawString(75, 530, get_lett(comprobante.total))
+    doc.drawString(75, 510, comprobante.concepto)
+    doc.drawString(220, 25, "https://serviciosweb.afip.gob.ar/genericos/comprobantes/cae.aspx")
+
+
+    # if os.path.exists(path):
+    doc.showPage()
+    # else:
+    doc.save()
+
+   # webbrowser.open("http://127.0.0.1:8000/" + url)
+
+    # os.rename(str(id) + ".pdf", path)
+    # shutil.move(str(id) + ".pdf", path)
+    # os.replace(str(id) + ".pdf", path)
+
+    # return redirect("menu")
+    return response

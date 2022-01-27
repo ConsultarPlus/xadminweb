@@ -11,6 +11,8 @@ class Cliente(models.Model):
     telefono = models.CharField(verbose_name='Teléfono', max_length=60, null=True, blank=True)
     email = models.EmailField(verbose_name='E-mail', max_length=60, null=True, blank=True)
     encriptado = models.CharField(max_length=10, null=False, blank=False)
+    tipoiva = models.CharField(max_length=60, null=True, blank=True)
+
 
     def __str__(self):
         return "{}".format(self.clicod)
@@ -32,6 +34,37 @@ class Cuentas(models.Model):
     total = models.IntegerField(null=False, blank=False)
     concepto = models.TextField(null=True, blank=True)
     pdf = models.FileField(null=True, blank=True)
+    cae = models.CharField(max_length=20, null=True, blank=True)
+    vencimiento_cae = models.DateField(null=True, blank=True)
+
+    def _get_numero(self):
+        num = self.comprobante.split('-')[3]
+        while len(num) < 8:
+            num = "0" + num
+        return num
+    numero = property(_get_numero)
+
+    def _get_sucursal(self):
+        suc = self.comprobante.split('-')[2]
+        while len(suc) < 4:
+            suc = "0" + suc
+        return suc
+    sucursal = property(_get_sucursal)
+
+    def _get_subtotal(self):
+        subt = (self.total / 121) * 100
+        return "{:.2f}".format(subt)
+    subtotal = property(_get_subtotal)
+
+    def _get_iva(self):
+        i = (self.total / 121) * 21
+        return "{:.2f}".format(i)
+    iva = property(_get_iva)
+
+    def _getiva105(self):
+        i = (self.total / 242) * 21
+        return "{:.2f}".format(i)
+    iva105 = property(_get_iva)
 
     class Meta:
         permissions = (("clientes.cuentas_agregar", _("Agregar")),

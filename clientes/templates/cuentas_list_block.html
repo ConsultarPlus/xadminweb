@@ -13,18 +13,18 @@
     {% endif %}
 
     <div class="form-row form-row">
-        <div class="col form-group">
-            <table>
-                <tr class="model-group">
-                    <th><a href="{% url 'cuentas_agregar' %}?modo={{ request.GET.modo }}"
-                           class="addlink">{% traducir 'Agregar' 'CUENTAS' %}</a>
-                    </th>
-                    <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"
-                           class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>
-                    </th>
-                </tr>
-            </table>
-        </div>
+<!--        <div class="col form-group">-->
+<!--            <table>-->
+<!--                <tr class="model-group">-->
+<!--                    <th><a href="{% url 'cuentas_agregar' %}?modo={{ request.GET.modo }}"-->
+<!--                           class="addlink">{% traducir 'Agregar' 'CUENTAS' %}</a>-->
+<!--                    </th>-->
+<!--                    <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"-->
+<!--                           class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>-->
+<!--                    </th>-->
+<!--                </tr>-->
+<!--            </table>-->
+<!--        </div>-->
         {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
         <div class="col form-group" align="right">
             <div class="form-group">
@@ -51,6 +51,7 @@
                 <th>{% traducir 'Total' 'CUENTAS' %}</th>
                 <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
                 <th>{% traducir 'PDF' 'CUENTAS' %}</th>
+                <th>{% traducir 'PNG' 'CUENTAS' %}</th>
                 <th></th>
             </tr>
             </thead>
@@ -72,14 +73,14 @@
                 <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
                 <td> {{ item.total }}</td>
                 <td> {{ item.concepto }}</td>
-                <td><a href="{{ MEDIA_URL }}{{ item.pdf }}" class="printlink" target="_blank">Descargar</a></td>
+                <td><a href="{{ MEDIA_URL }}{{ item.pdf }}" class="printlink" target="_blank">Descargar pdf</a></td>
+                <td><a href="{% url 'imprimir_png' item.id %} " target="_blank" class="printlink">{% traducir 'Descargar png' 'CUENTAS' %}</a></td>
                 <td></td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
         <br>
-
         {% include "paginador.html" %}
     </div>
     {% if not expediente %}

@@ -8,7 +8,7 @@ from simple_history.models import HistoricalRecords
 from tabla.models import Tabla
 from tabla.gets import get_choices
 from django.contrib.auth.models import Group
-from clientes.models import Cliente
+# from clientes.models import Cliente
 
 
 dependencias = get_choices('DEPENDENCIA')
