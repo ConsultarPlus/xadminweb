@@ -16,14 +16,12 @@ def menu_processor(request):
             cliente_asociado = {'encriptado': 0,'id': 0}
         fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', False)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
-        print('cliente asociado: ', cliente_asociado)
         # CLIENTES
         cuentas_puede_listar = True
         cuenta_corriente = True
         if cliente_asociado['id'] > 0:
             cuentas_puede_listar = request.user.has_perm('clientes.cuentas_listar')
             cuenta_corriente = request.user.has_perm('clientes.cuenta_corriente')
-        print('cuenta corriente: ', cuenta_corriente)
 
         # PROVEEDORES
         # Para Cargar Facturas de Compra ...
@@ -70,8 +68,8 @@ def menu_processor(request):
         menues = [
                   {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'encriptado': cliente_asociado['encriptado']}),
                    'titulo':'Facturas Pendientes', 'modelo': 'CLIENTE', 'visible': True},
-                  {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'encriptado': cliente_asociado['encriptado']}),
-                   'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': True},
+                  # {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'encriptado': cliente_asociado['encriptado']}),
+                  #  'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': True},
                   {'id_grupo': 'SOP', 'url': reverse('clientes_listar'), 'titulo': 'Clientes', 'modelo': 'CLIENTE',
                    'visible': clientes_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('cuentas_listar_admin'), 'titulo': 'Comprobantes', 'modelo': 'CUENTAS',

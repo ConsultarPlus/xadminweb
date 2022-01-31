@@ -475,7 +475,6 @@ def cuentas_importar(request):
 
 @login_required(login_url='ingresar')
 def imprimir_png(request, id, encriptado=None):
-    # comp = encriptado + "_" + id
     path = "media/facturas/" + str(id) + ".pdf"
     comprobante = Cuentas.objects.get(id=id)
     validacion = Cliente.objects.get(clicod=comprobante.cliente)
