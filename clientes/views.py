@@ -11,20 +11,15 @@ from .filters import clientes_filtrar, cuentas_filtrar
 from tabla.forms import ImportarCSVForm
 from tabla.funcs import es_valido, email_valido
 from tabla.funcs import get_lett
+from tabla.funcs import generar_qr
 from perfiles.admin import agregar_a_errores
 from perfiles.models import Perfil
 import random
 import string
 from xadmin.settings import MEDIA_URL
 from reportlab.pdfgen import canvas
-import os
-import shutil
-from reportlab.lib.pagesizes import A4, landscape
-from reportlab.pdfbase.pdfmetrics import stringWidth
-from reportlab_qrcode import QRCodeImage
-from reportlab.lib.units import mm
-from reportlab.lib.utils import ImageReader
 import webbrowser
+import json
 
 
 # Create your views here.
@@ -494,24 +489,69 @@ def imprimir_png(request, id):
 
     doc.drawImage("fondo_certificado.png", 0, -30, width=630, height=891)
 
-    doc.drawString(440, 753, '{}'.format(comprobante.fecha_emision))
-    doc.drawString(420, 783, "Nº " + '{}'.format(comprobante.sucursal) + "-" + '{}'.format(comprobante.numero))
+    doc.setFontSize(16)
+    doc.drawString(420, 753, '{}'.format(comprobante.fecha_emision))
+    doc.drawString(400, 783, "Nº " + '{}'.format(comprobante.sucursal) + "-" + '{}'.format(comprobante.numero))
+    doc.setFontSize(60)
+    doc.drawString(280, 780, '{}'.format(comprobante.tipocmp), 2)
+    doc.setFontSize(12)
     doc.drawString(50, 170, '{}'.format(comprobante.subtotal))
     doc.drawString(275, 170, '{}'.format(comprobante.iva))
     doc.drawString(500, 170, "{:.2f}".format(comprobante.total))
-    doc.drawString(50, 200, "SUBTOTAL")
-    doc.drawString(275, 200, "IVA")
-    doc.drawString(500, 200, "TOTAL")
-    doc.drawString(50, 660, "Nombre: " + '{}'.format(cliente.nombre))
-    doc.drawString(45, 640, "Domicilio: " + cliente.domicilio)
-    doc.drawString(75, 620, "IVA: ")
-    doc.drawString(300, 620, "CUIT: " + '{}'.format(cliente.cuit))
-    doc.drawString(450, 100, "VTO: " + '{}'.format(comprobante.fecha_vencimiento))
-    doc.drawString(433, 120, "CAE Nº: " + '{}'.format(comprobante.cae))
+    doc.drawString(50, 200, "SUBTOTAL", 1)
+    doc.drawString(275, 200, "IVA", 1)
+    doc.drawString(500, 200, "TOTAL", 1)
+    doc.drawString(50, 660, "Nombre: ", 1)
+    doc.drawString(100, 660, '{}'.format(cliente.nombre))
+    doc.drawString(45, 640, "Domicilio: ", 1)
+    doc.drawString(100, 640, cliente.domicilio)
+    doc.drawString(75, 620, "IVA: ", 1)
+    doc.drawString(100, 620, '{}'.format(cliente.tipoiva))
+    doc.drawString(300, 620, "CUIT: ", 1)
+    doc.drawString(335, 620, '{}'.format(cliente.cuit))
+    doc.drawString(450, 100, "VTO: ", 1)
+    doc.drawString(480, 100, '{}'.format(comprobante.fecha_vencimiento))
+    doc.drawString(433, 120, "CAE Nº: ", 1)
+    doc.drawString(480, 120, '{}'.format(comprobante.cae))
     doc.drawString(75, 550, "SON PESOS:")
     doc.drawString(75, 530, get_lett(comprobante.total))
     doc.drawString(75, 510, comprobante.concepto)
-    doc.drawString(220, 25, "https://serviciosweb.afip.gob.ar/genericos/comprobantes/cae.aspx")
+    doc.setFontSize(9)
+    doc.drawString(150, 25, "https://serviciosweb.afip.gob.ar/genericos/comprobantes/cae.aspx")
+    doc.setFontSize(12)
+
+    jsonqr = {
+        "ver": 1,
+        "fecha": '{}'.format(comprobante.fecha_emision),
+        "cuit": 20124040311,
+        "ptoVta": comprobante.sucursal,
+        "tipoCmp": comprobante.tipocmp,
+        "nroCmp": comprobante.numero,
+        "importe": "{:.2f}".format(comprobante.total),
+        "moneda": "PES",
+        "ctz": 1,
+        "tipoDocRec": 80,
+        "nroDocRec": cliente.cuit,
+        "tipoCodAut": "E",
+        "codAut": comprobante.cae
+    }
+
+    jsonqra = json.dumps(jsonqr)
+
+    nombre = "C:\PycharmProjects\ ".strip() + "xadminweb\media\qrs\ ".strip() + comprobante.comprobante + ".jpg"
+
+    jsonFile = open("jsonqr.json", "w")
+    jsonFile.write(jsonqra)
+    jsonFile.close()
+
+    nombrejson = "C:\PycharmProjects\ ".strip() + "xadminweb\ ".strip() + "jsonqr.json"
+
+    generar_qr(nombrejson, nombre, "S", 5, 'https://www.afip.gob.ar/fe/qr/?p=')
+
+    doc.drawImage(nombre, 15, 23, width=120, height=120)
+
+    doc.drawImage("Logo_afip.jpg", 150, 95)
+    doc.drawString(150, 75, "Comprobante Autorizado", 1)
 
 
     # if os.path.exists(path):

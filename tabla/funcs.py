@@ -12,7 +12,10 @@ from django.core.exceptions import ValidationError
 from xhtml2pdf import pisa
 from tabla.listas import PREPOSICIONES
 from crispy_forms.bootstrap import StrictButton
-
+import os
+import qrcode
+import base64
+from PIL import Image
 
 def email_valido(email):
     if es_valido(email):
@@ -500,3 +503,80 @@ def unidad(x):
     if x == "0":
         a = ""
     return a
+
+def generar_qr(archivo_input, archivo_output, encriptar='N', box_size='5', prefijo_no_enriptado=''):
+    try:
+        print(archivo_input)
+        if os.path.exists(archivo_input):
+            archivo_nombre, archivo_extension = os.path.splitext(archivo_input)
+            archivo_dir = os.path.dirname(archivo_input)
+            texto = open(archivo_input, 'r').read()
+
+
+
+            if archivo_output == '' or archivo_output is None:
+                output_dir = archivo_dir
+            else:
+                output_dir = os.path.dirname(archivo_output)
+                if not os.path.isdir(output_dir):
+                    os.mkdir(output_dir)
+                else:
+                    if os.path.exists(archivo_output):
+                        os.remove(archivo_output)
+
+            output_nombre, output_extension = os.path.splitext(archivo_output)
+            if output_nombre == ''  or output_nombre is None:
+                output_nombre = archivo_nombre
+
+            output = '{}.png'.format(output_nombre)
+
+            if encriptar == 'S':
+                texto = codificar_en_base64(texto)
+
+            if prefijo_no_enriptado != '' and prefijo_no_enriptado is not None:
+                texto = prefijo_no_enriptado + texto
+
+            if box_size == '' or box_size is None:
+                box_size = 5
+            else:
+                box_size = int(box_size)
+
+            qr = qrcode.QRCode(
+                version=1,
+                error_correction=qrcode.constants.ERROR_CORRECT_L,
+                box_size=box_size,
+                border=4,
+            )
+
+            qr.add_data(texto)
+            qr.make(fit=True)
+
+            img = qr.make_image(fill_color="black", back_color="white")
+            img.save(output)
+            if not png_a_jpg(output):
+                msj = 'Generar QR: No se pudo generar el jpg'
+                print(msj)
+        else:
+            msj = 'Generar QR: No se encuentra el archivo {}'.format(archivo_input)
+            print(msj)
+    except Exception as msj:
+        msj = 'Generar QR: {}'.format(msj)
+        print(msj)
+
+def codificar_en_base64(texto):
+    message_bytes = texto.encode('ascii')
+    base64_bytes = base64.b64encode(message_bytes)
+    return base64_bytes.decode('ascii')
+
+def png_a_jpg(png):
+    try:
+        im = Image.open(png)
+        rgb_im = im.convert('RGB')
+        png_nombre, png_extension = os.path.splitext(png)
+        jpg = '{}.jpg'.format(png_nombre)
+        if os.path.exists(jpg):
+            os.remove(jpg)
+        rgb_im.save(jpg)
+        return True
+    except Exception as e:
+        return False

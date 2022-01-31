@@ -13,6 +13,15 @@ class Cliente(models.Model):
     encriptado = models.CharField(max_length=10, null=False, blank=False)
     tipoiva = models.CharField(max_length=60, null=True, blank=True)
 
+    def _get_tipocmp(self):
+        if self.tipoiva == "A":
+            return "01"
+        else:
+            if self.tipoiva == "B":
+                return "06"
+            else:
+                return "Undefined"
+    tipocmp = property(_get_tipocmp)
 
     def __str__(self):
         return "{}".format(self.clicod)
@@ -50,6 +59,10 @@ class Cuentas(models.Model):
             suc = "0" + suc
         return suc
     sucursal = property(_get_sucursal)
+
+    def _get_tipocmp(self):
+        return self.comprobante.split('-')[1]
+    tipocmp = property(_get_tipocmp)
 
     def _get_subtotal(self):
         subt = (self.total / 121) * 100
