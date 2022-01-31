@@ -484,8 +484,8 @@ def imprimir_png(request, id, encriptado=None):
         keyboard.press_and_release('ctrl+w')
         return redirect("menu")
     else:
-        id = encriptado + format(id)
-        nombre_de_archivo = id + '.pdf'
+        dat = encriptado + format(id)
+        nombre_de_archivo = dat + '.pdf'
 
         path_archivo = MEDIA_URL + "facturas/" + nombre_de_archivo
 
