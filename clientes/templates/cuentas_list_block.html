@@ -74,7 +74,7 @@
                 <td> {{ item.total }}</td>
                 <td> {{ item.concepto }}</td>
                 <td><a href="{{ MEDIA_URL }}{{ item.pdf }}" class="printlink" target="_blank">Descargar pdf</a></td>
-                <td><a href="{% url 'imprimir_png' item.id %} " target="_blank" class="printlink">{% traducir 'Descargar png' 'CUENTAS' %}</a></td>
+                <td><a href="{% url 'imprimir_png' item.id item.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Descargar png' 'CUENTAS' %}</a></td>
                 <td></td>
             </tr>
             {% endfor %}

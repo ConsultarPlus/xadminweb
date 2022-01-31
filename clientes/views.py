@@ -20,6 +20,7 @@ from xadmin.settings import MEDIA_URL
 from reportlab.pdfgen import canvas
 import webbrowser
 import json
+import keyboard
 
 
 # Create your views here.
@@ -111,7 +112,7 @@ def cliente_agregar_y_volver(request):
 @permission_required("clientes.cliente_importar", None, raise_exception=True)
 def clientes_cargar_csv(request):
     errores_lista = []
-    initial = {'entidades': (('CLIENTES', 'Clientes'), ),
+    initial = {'entidades': (('CLIENTES', 'Clientes'),),
                'entidad': 'Clientes'}
     if request.POST:
         form = ImportarCSVForm(request.POST, request.FILES, initial=initial)
@@ -160,7 +161,8 @@ def clientes_cargar_csv(request):
                             try:
                                 cliente = Cliente.objects.get(clicod=clicod)
                                 cliente.clicod = clicod
-                                cliente.encriptado = ''.join(random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
+                                cliente.encriptado = ''.join(
+                                    random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
                                 if nombre:
                                     cliente.nombre = nombre.upper()
                                 if domicilio:
@@ -170,7 +172,8 @@ def clientes_cargar_csv(request):
                                 if email:
                                     cliente.email = email
                                 if encriptado:
-                                    encriptado = ''.join(random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
+                                    encriptado = ''.join(
+                                        random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
                                 cliente.save()
                                 actualizados += 1
                                 exitos += 1
@@ -233,7 +236,7 @@ def clientes_cargar_csv(request):
                             if errores == 10:
                                 errores_lista.append('Hay más errores...')
                             else:
-                                errores_lista.append('Fila {}: {}'.format(cnt+1, e))
+                                errores_lista.append('Fila {}: {}'.format(cnt + 1, e))
             except Exception as e:
                 msj = e
 
@@ -296,12 +299,12 @@ def cuentas_listar_admin(request):
 @login_required(login_url='ingresar')
 # @permission_required("clientes.puede_listar", None, raise_exception=True)
 def cuenta_corriente(request, encriptado=None):
-
     url = MEDIA_URL + "cuentas_corrientes/" + encriptado + ".pdf"
 
     webbrowser.open_new("http://127.0.0.1:8000" + url)
 
     return redirect("menu")
+
 
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_agrega", None, raise_exception=True)
@@ -362,7 +365,7 @@ def cuentas_eliminar(request, id):
 @permission_required("clientes.cuentas_importar", None, raise_exception=True)
 def cuentas_importar(request):
     errores_lista = []
-    initial = {'entidades': (('CUENTAS', 'Cuentas'), ),
+    initial = {'entidades': (('CUENTAS', 'Cuentas'),),
                'entidad': 'Cuentas'}
     if request.POST:
         form = ImportarCSVForm(request.POST, request.FILES, initial=initial)
@@ -444,7 +447,7 @@ def cuentas_importar(request):
                             if errores == 10:
                                 errores_lista.append('Hay más errores...')
                             else:
-                                errores_lista.append('Fila {}: {}'.format(cnt+1, e))
+                                errores_lista.append('Fila {}: {}'.format(cnt + 1, e))
             except Exception as e:
                 msj = e
 
@@ -471,99 +474,91 @@ def cuentas_importar(request):
 
 
 @login_required(login_url='ingresar')
-def imprimir_png(request, id):
+def imprimir_png(request, id, encriptado=None):
+    # comp = encriptado + "_" + id
     path = "media/facturas/" + str(id) + ".pdf"
     comprobante = Cuentas.objects.get(id=id)
-    cliente = Cliente.objects.get(clicod=comprobante.cliente)
-    nombre_de_archivo = '{}.pdf'.format(id)
-    if cliente.domicilio != '':
-        print("existe")
+    validacion = Cliente.objects.get(clicod=comprobante.cliente)
+    cliente = Cliente.objects.get(encriptado=encriptado)
+    if validacion != cliente:
+        keyboard.press_and_release('ctrl+w')
+        return redirect("menu")
     else:
-        print("no existe")
+        id = encriptado + format(id)
+        nombre_de_archivo = id + '.pdf'
 
-    path_archivo = MEDIA_URL + "facturas/" + nombre_de_archivo
+        path_archivo = MEDIA_URL + "facturas/" + nombre_de_archivo
 
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'inline; filename="' + nombre_de_archivo + '"'
-    doc = canvas.Canvas(response)
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = 'inline; filename="' + nombre_de_archivo + '"'
+        doc = canvas.Canvas(response)
 
-    doc.drawImage("fondo_certificado.png", 0, -30, width=630, height=891)
+        doc.drawImage("fondo_certificado.png", 0, -30, width=630, height=891)
 
-    doc.setFontSize(16)
-    doc.drawString(420, 753, '{}'.format(comprobante.fecha_emision))
-    doc.drawString(400, 783, "Nº " + '{}'.format(comprobante.sucursal) + "-" + '{}'.format(comprobante.numero))
-    doc.setFontSize(60)
-    doc.drawString(280, 780, '{}'.format(comprobante.tipocmp), 2)
-    doc.setFontSize(12)
-    doc.drawString(50, 170, '{}'.format(comprobante.subtotal))
-    doc.drawString(275, 170, '{}'.format(comprobante.iva))
-    doc.drawString(500, 170, "{:.2f}".format(comprobante.total))
-    doc.drawString(50, 200, "SUBTOTAL", 1)
-    doc.drawString(275, 200, "IVA", 1)
-    doc.drawString(500, 200, "TOTAL", 1)
-    doc.drawString(50, 660, "Nombre: ", 1)
-    doc.drawString(100, 660, '{}'.format(cliente.nombre))
-    doc.drawString(45, 640, "Domicilio: ", 1)
-    doc.drawString(100, 640, cliente.domicilio)
-    doc.drawString(75, 620, "IVA: ", 1)
-    doc.drawString(100, 620, '{}'.format(cliente.tipoiva))
-    doc.drawString(300, 620, "CUIT: ", 1)
-    doc.drawString(335, 620, '{}'.format(cliente.cuit))
-    doc.drawString(450, 100, "VTO: ", 1)
-    doc.drawString(480, 100, '{}'.format(comprobante.fecha_vencimiento))
-    doc.drawString(433, 120, "CAE Nº: ", 1)
-    doc.drawString(480, 120, '{}'.format(comprobante.cae))
-    doc.drawString(75, 550, "SON PESOS:")
-    doc.drawString(75, 530, get_lett(comprobante.total))
-    doc.drawString(75, 510, comprobante.concepto)
-    doc.setFontSize(9)
-    doc.drawString(150, 25, "https://serviciosweb.afip.gob.ar/genericos/comprobantes/cae.aspx")
-    doc.setFontSize(12)
+        doc.setFontSize(16)
+        doc.drawString(420, 753, '{}'.format(comprobante.fecha_emision))
+        doc.drawString(400, 783, "Nº " + '{}'.format(comprobante.sucursal) + "-" + '{}'.format(comprobante.numero))
+        doc.setFontSize(60)
+        doc.drawString(280, 780, '{}'.format(comprobante.tipocmp), 2)
+        doc.setFontSize(12)
+        doc.drawString(50, 170, '{}'.format(comprobante.subtotal))
+        doc.drawString(275, 170, '{}'.format(comprobante.iva))
+        doc.drawString(500, 170, "{:.2f}".format(comprobante.total))
+        doc.drawString(50, 200, "SUBTOTAL", 1)
+        doc.drawString(275, 200, "IVA", 1)
+        doc.drawString(500, 200, "TOTAL", 1)
+        doc.drawString(50, 660, "Nombre: ", 1)
+        doc.drawString(100, 660, '{}'.format(cliente.nombre))
+        doc.drawString(45, 640, "Domicilio: ", 1)
+        doc.drawString(100, 640, cliente.domicilio)
+        doc.drawString(75, 620, "IVA: ", 1)
+        doc.drawString(100, 620, '{}'.format(cliente.tipoiva))
+        doc.drawString(300, 620, "CUIT: ", 1)
+        doc.drawString(335, 620, '{}'.format(cliente.cuit))
+        doc.drawString(450, 100, "VTO: ", 1)
+        doc.drawString(480, 100, '{}'.format(comprobante.fecha_vencimiento))
+        doc.drawString(433, 120, "CAE Nº: ", 1)
+        doc.drawString(480, 120, '{}'.format(comprobante.cae))
+        doc.drawString(75, 550, "SON PESOS:")
+        doc.drawString(75, 530, get_lett(comprobante.total))
+        doc.drawString(75, 510, comprobante.concepto)
+        doc.setFontSize(9)
+        doc.drawString(150, 25, "https://serviciosweb.afip.gob.ar/genericos/comprobantes/cae.aspx")
+        doc.setFontSize(12)
 
-    jsonqr = {
-        "ver": 1,
-        "fecha": '{}'.format(comprobante.fecha_emision),
-        "cuit": 20124040311,
-        "ptoVta": comprobante.sucursal,
-        "tipoCmp": comprobante.tipocmp,
-        "nroCmp": comprobante.numero,
-        "importe": "{:.2f}".format(comprobante.total),
-        "moneda": "PES",
-        "ctz": 1,
-        "tipoDocRec": 80,
-        "nroDocRec": cliente.cuit,
-        "tipoCodAut": "E",
-        "codAut": comprobante.cae
-    }
+        jsonqr = {
+            "ver": 1,
+            "fecha": '{}'.format(comprobante.fecha_emision),
+            "cuit": 20124040311,
+            "ptoVta": comprobante.sucursal,
+            "tipoCmp": comprobante.tipocmp,
+            "nroCmp": comprobante.numero,
+            "importe": "{:.2f}".format(comprobante.total),
+            "moneda": "PES",
+            "ctz": 1,
+            "tipoDocRec": 80,
+            "nroDocRec": cliente.cuit,
+            "tipoCodAut": "E",
+            "codAut": comprobante.cae
+        }
 
-    jsonqra = json.dumps(jsonqr)
+        jsonqra = json.dumps(jsonqr)
 
-    nombre = "C:\PycharmProjects\ ".strip() + "xadminweb\media\qrs\ ".strip() + comprobante.comprobante + ".jpg"
+        nombre = "C:\PycharmProjects\ ".strip() + "xadminweb\media\qrs\ ".strip() + comprobante.comprobante + ".jpg"
 
-    jsonFile = open("jsonqr.json", "w")
-    jsonFile.write(jsonqra)
-    jsonFile.close()
+        jsonFile = open("jsonqr.json", "w")
+        jsonFile.write(jsonqra)
+        jsonFile.close()
 
-    nombrejson = "C:\PycharmProjects\ ".strip() + "xadminweb\ ".strip() + "jsonqr.json"
+        nombrejson = "C:\PycharmProjects\ ".strip() + "xadminweb\ ".strip() + "jsonqr.json"
 
-    generar_qr(nombrejson, nombre, "S", 5, 'https://www.afip.gob.ar/fe/qr/?p=')
+        generar_qr(nombrejson, nombre, "S", 5, 'https://www.afip.gob.ar/fe/qr/?p=')
 
-    doc.drawImage(nombre, 15, 23, width=120, height=120)
+        doc.drawImage(nombre, 15, 23, width=120, height=120)
 
-    doc.drawImage("Logo_afip.jpg", 150, 95)
-    doc.drawString(150, 75, "Comprobante Autorizado", 1)
+        doc.drawImage("Logo_afip.jpg", 150, 95)
+        doc.drawString(150, 75, "Comprobante Autorizado", 1)
 
-
-    # if os.path.exists(path):
-    doc.showPage()
-    # else:
-    doc.save()
-
-   # webbrowser.open("http://127.0.0.1:8000/" + url)
-
-    # os.rename(str(id) + ".pdf", path)
-    # shutil.move(str(id) + ".pdf", path)
-    # os.replace(str(id) + ".pdf", path)
-
-    # return redirect("menu")
-    return response
+        doc.showPage()
+        doc.save()
+        return response
