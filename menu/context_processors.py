@@ -68,8 +68,11 @@ def menu_processor(request):
         menues = [
                   {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'encriptado': cliente_asociado['encriptado']}),
                    'titulo':'Facturas Pendientes', 'modelo': 'CLIENTE', 'visible': True},
-                  # {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'encriptado': cliente_asociado['encriptado']}),
-                  #  'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': True},
+                  {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'encriptado': cliente_asociado['encriptado']}),
+                   'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': False},
+                  {'id_grupo': 'CLI', 'url': reverse('cliente_editar', kwargs={'encriptado': cliente_asociado['encriptado']}),
+                   'titulo':'Mis Datos', 'modelo': 'CLIENTE', 'visible': True},
+
                   {'id_grupo': 'SOP', 'url': reverse('clientes_listar'), 'titulo': 'Clientes', 'modelo': 'CLIENTE',
                    'visible': clientes_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('cuentas_listar_admin'), 'titulo': 'Comprobantes', 'modelo': 'CUENTAS',

@@ -3,6 +3,7 @@
 {% load static %}
 {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
 {% include "cabeza.html" %}
+{% include 'form_errors.html' %}
 <div id="content" class="{% block coltype %}colM{% endblock %}">
     {% endif %}
 
@@ -71,7 +72,7 @@
                 <td> {{ item.telefono|limpiar_none }}</td>
                 <td> {{ item.email|limpiar_none }}</td>
                 <td> {{ item.domicilio|limpiar_none }}</td>
-                <td><a href="{% url 'cliente_editar' item.id %}?modo={{ request.GET.modo }} "
+                <td><a href="{% url 'cliente_editar' item.encriptado %}?modo={{ request.GET.modo }} "
                        class="changelink">{% traducir 'Editar' 'CILENTE' %}</a></td>
                 <td><a href="#"
                        class="deletelink"

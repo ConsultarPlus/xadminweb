@@ -61,20 +61,24 @@ def cliente_agregar(request):
 
 
 @login_required(login_url='ingresar')
-@permission_required("clientes.cliente_editar", None, raise_exception=True)
-def cliente_editar(request, id):
+# @permission_required("clientes.cliente_editar", None, raise_exception=True)
+def cliente_editar(request, encriptado=None):
     try:
-        cliente = Cliente.objects.get(id=id)
+        cliente = Cliente.objects.get(encriptado=encriptado)
     except Exception as mensaje:
         messages.add_message(request, messages.ERROR, mensaje)
-        return redirect('clientes_listar')
+        return redirect('menu')
 
     if request.method == 'POST':
         post = request.POST.copy()
         form = ClienteForm(post, instance=cliente)
+        post["encriptado"]=encriptado
         if form.is_valid():
             form.save()
-            return redirect('clientes_listar')
+            return redirect('menu')
+        else:
+            messages.add_message(request, messages.ERROR, form.errors)
+            return redirect('menu')
     else:
         form = ClienteForm(instance=cliente)
 
@@ -262,7 +266,6 @@ def clientes_cargar_csv(request):
 
 
 @login_required(login_url='ingresar')
-# @permission_required("clientes.cuentas_listar", None, raise_exception=True)
 def cuentas_listar(request, encriptado=None):
     contexto = cuentas_filtrar(request, encriptado)
     modo = request.GET.get('modo')
@@ -509,7 +512,7 @@ def imprimir_png(request, id, encriptado=None):
         doc.drawString(50, 660, "Nombre: ", 1)
         doc.drawString(100, 660, '{}'.format(cliente.nombre))
         doc.drawString(45, 640, "Domicilio: ", 1)
-        doc.drawString(100, 640, cliente.domicilio)
+        doc.drawString(100, 640, '{}'.format(cliente.domicilio))
         doc.drawString(75, 620, "IVA: ", 1)
         doc.drawString(100, 620, '{}'.format(cliente.tipoiva))
         doc.drawString(300, 620, "CUIT: ", 1)
@@ -561,3 +564,7 @@ def imprimir_png(request, id, encriptado=None):
         doc.showPage()
         doc.save()
         return response
+
+@login_required(login_url='mis_datos')
+def mis_datos(request, encriptado=None):
+    return redirect(clientes_listar, request, encriptado)

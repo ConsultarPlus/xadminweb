@@ -10,7 +10,7 @@ class Cliente(models.Model):
     domicilio = models.CharField(max_length=60, null=True, blank=True)
     telefono = models.CharField(verbose_name='Teléfono', max_length=60, null=True, blank=True)
     email = models.EmailField(verbose_name='E-mail', max_length=60, null=True, blank=True)
-    encriptado = models.CharField(max_length=10, null=False, blank=False)
+    encriptado = models.CharField(max_length=10, null=True, blank=True)
     tipoiva = models.CharField(max_length=60, null=True, blank=True)
 
     def _get_tipocmp(self):

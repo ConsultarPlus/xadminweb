@@ -13,14 +13,14 @@ from .views import (cliente_agregar,
                     cuenta_corriente,
                     cuentas_importar,
                     imprimir_png,
-                    )
+                    mis_datos)
 
 
 urlpatterns = [
     path('cliente_agregar/', cliente_agregar, name='cliente_agregar'),
     path('cliente_agregar_y_volver/', cliente_agregar_y_volver, name='cliente_agregar_y_volver'),
     path('clientes_listar/', clientes_listar, name='clientes_listar'),
-    path('cliente_editar/<int:id>', cliente_editar, name='cliente_editar'),
+    path('cliente_editar/<slug:encriptado>', cliente_editar, name='cliente_editar'),
     path('cliente_eliminar/<int:id>', cliente_eliminar, name='cliente_eliminar'),
     path('cliente_importar/', clientes_cargar_csv, name='cliente_importar'),
     path('cuentas_agregar/', cuentas_agregar, name='cuentas_agregar'),
