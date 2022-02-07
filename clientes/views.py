@@ -9,7 +9,7 @@ from .models import Cliente, Cuentas
 from .forms import ClienteForm, CuentasForm
 from .filters import clientes_filtrar, cuentas_filtrar
 from tabla.forms import ImportarCSVForm
-from tabla.funcs import es_valido, email_valido
+from tabla.funcs import es_valido, email_valido, saldo_total
 from tabla.funcs import get_lett
 from tabla.funcs import generar_qr
 from perfiles.admin import agregar_a_errores
@@ -21,6 +21,7 @@ from reportlab.pdfgen import canvas
 import webbrowser
 import json
 import keyboard
+from tabla.listas import IVAS
 
 
 # Create your views here.
@@ -72,7 +73,7 @@ def cliente_editar(request, encriptado=None):
     if request.method == 'POST':
         post = request.POST.copy()
         form = ClienteForm(post, instance=cliente)
-        post["encriptado"]=encriptado
+        post["encriptado"] = encriptado
         if form.is_valid():
             form.save()
             return redirect('menu')
@@ -147,6 +148,8 @@ def clientes_cargar_csv(request):
                             domicilio = ''
                             telefono = ''
                             email = ''
+                            saldo_inicial = ''
+                            fecha_saldo = ''
                             encriptado = ''
                             if len(values) > 1:
                                 nombre = values[1].replace("'", "").strip()
@@ -160,6 +163,10 @@ def clientes_cargar_csv(request):
                                             telefono = values[4].strip()
                                             if len(values) > 5:
                                                 email = values[5].strip()
+                                                if len(values) > 6:
+                                                    saldo_inicial = values[6].strip()
+                                                    if len(values) > 7:
+                                                        fecha_saldo = values[7].strip()
                             activo = 'S'
                             valor_preferencial = 'N'
                             try:
@@ -175,6 +182,10 @@ def clientes_cargar_csv(request):
                                     cliente.telefono = telefono
                                 if email:
                                     cliente.email = email
+                                if saldo_inicial:
+                                    cliente.saldo_inicial = saldo_inicial
+                                if fecha_saldo:
+                                    cliente.fecha_saldo = fecha_saldo
                                 if encriptado:
                                     encriptado = ''.join(
                                         random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
@@ -188,6 +199,8 @@ def clientes_cargar_csv(request):
                                                   domicilio=domicilio.upper(),
                                                   telefono=telefono,
                                                   email=email,
+                                                  saldo_inicial=saldo_inicial,
+                                                  fecha_saldo=fecha_saldo,
                                                   encriptado=encriptado)
                                 cliente.save()
                                 nuevos += 1
@@ -271,8 +284,6 @@ def cuentas_listar(request, encriptado=None):
     modo = request.GET.get('modo')
     contexto['modo'] = modo
 
-    # print("Encriptado" + encriptado)
-
     if encriptado == None:
         return redirect('menu')
 
@@ -296,17 +307,37 @@ def cuentas_listar_admin(request):
     else:
         template_name = 'cuentas_listar.html'
 
+    contexto['subir_cuentas'] = True
     return render(request, template_name, contexto)
 
 
 @login_required(login_url='ingresar')
-# @permission_required("clientes.puede_listar", None, raise_exception=True)
 def cuenta_corriente(request, encriptado=None):
-    url = MEDIA_URL + "cuentas_corrientes/" + encriptado + ".pdf"
+    contexto = cuentas_filtrar(request, encriptado)
+    modo = request.GET.get('modo')
+    contexto['modo'] = modo
+    contexto['cuenta_corriente'] = True
 
-    webbrowser.open_new("http://127.0.0.1:8000" + url)
+    if encriptado is None:
+        return redirect('menu')
 
-    return redirect("menu")
+    if modo == 'm' or modo == 's':
+        template_name = 'cuentas_list_block.html'
+    else:
+        template_name = 'cuentas_listar.html'
+
+    cliente = Cliente.objects.get(encriptado=encriptado)
+
+    if cliente.saldo_inicial is None:
+        si = 0
+    else:
+        si = cliente.saldo_inicial
+
+    contexto['saldo_inicial'] = si
+
+    contexto['saldo_actual'] = saldo_total(si, cliente)
+
+    return render(request, template_name, contexto)
 
 
 @login_required(login_url='ingresar')
@@ -410,6 +441,10 @@ def cuentas_importar(request):
                                                     concepto = values[6].strip()
                                                     if len(values) > 7:
                                                         pdf = values[7].strip()
+                                                        if len(values) > 8:
+                                                            cptedh = values[8].strip()
+                                                            if len(values) > 9:
+                                                                pendiente = values[9].strip()
                             try:
                                 cuentas = Cuentas.objects.get(vtacod=vtacod)
                                 if clicod:
@@ -427,6 +462,15 @@ def cuentas_importar(request):
                                     cuentas.concepto = concepto
                                 if pdf:
                                     cuentas.pdf = pdf
+                                if cptedh:
+                                    cuentas.cptedh = cptedh
+                                    print(cptedh)
+                                if pendiente:
+                                    if pendiente == 'S':
+                                        pendiente = True
+                                    else:
+                                        pendiente = False
+                                    cuentas.pendiente = pendiente
                                 cuentas.save()
                                 actualizados += 1
                                 exitos += 1
@@ -439,7 +483,9 @@ def cuentas_importar(request):
                                                   fecha_vencimiento=fecha_vencimiento,
                                                   total=total,
                                                   concepto=concepto,
-                                                  pdf=pdf)
+                                                  pdf=pdf,
+                                                  cptedh=cptedh,
+                                                  pendiente=pendiente)
                                 cuentas.save()
                                 nuevos += 1
                                 exitos += 1
@@ -504,7 +550,16 @@ def imprimir_png(request, id, encriptado=None):
         doc.drawString(280, 780, '{}'.format(comprobante.tipocmp), 2)
         doc.setFontSize(12)
         doc.drawString(50, 170, '{}'.format(comprobante.subtotal))
-        doc.drawString(275, 170, '{}'.format(comprobante.iva))
+
+        tiva = cliente.tipoiva
+        if tiva == "I" or tiva == "M" or tiva == "C":
+            doc.drawString(275, 170, '{}'.format(comprobante.iva))
+        else:
+            if tiva == "S":
+                doc.drawString(275, 170, '{}'.format(comprobante.iva27))
+            else:
+                doc.drawString(275, 170, "0")
+
         doc.drawString(500, 170, "{:.2f}".format(comprobante.total))
         doc.drawString(50, 200, "SUBTOTAL", 1)
         doc.drawString(275, 200, "IVA", 1)
@@ -514,7 +569,14 @@ def imprimir_png(request, id, encriptado=None):
         doc.drawString(45, 640, "Domicilio: ", 1)
         doc.drawString(100, 640, '{}'.format(cliente.domicilio))
         doc.drawString(75, 620, "IVA: ", 1)
-        doc.drawString(100, 620, '{}'.format(cliente.tipoiva))
+
+        CAN = len(IVAS)
+        x = 0
+        while x < CAN:
+            if IVAS[x][0] == cliente.tipoiva:
+                doc.drawString(100, 620, '{}'.format(IVAS[x][1]))
+            x += 1
+
         doc.drawString(300, 620, "CUIT: ", 1)
         doc.drawString(335, 620, '{}'.format(cliente.cuit))
         doc.drawString(450, 100, "VTO: ", 1)
@@ -564,7 +626,3 @@ def imprimir_png(request, id, encriptado=None):
         doc.showPage()
         doc.save()
         return response
-
-@login_required(login_url='mis_datos')
-def mis_datos(request, encriptado=None):
-    return redirect(clientes_listar, request, encriptado)

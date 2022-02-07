@@ -10,12 +10,15 @@ from django.urls import reverse
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from xhtml2pdf import pisa
+
+from clientes.models import Cuentas
 from tabla.listas import PREPOSICIONES
 from crispy_forms.bootstrap import StrictButton
 import os
 import qrcode
 import base64
 from PIL import Image
+
 
 def email_valido(email):
     if es_valido(email):
@@ -73,7 +76,7 @@ def plural(singular):
     if singular in PREPOSICIONES:
         plural = singular
 
-    ultima = singular[len(singular)-1]
+    ultima = singular[len(singular) - 1]
     if ultima.lower() == 's':
         plural = singular
     else:
@@ -308,6 +311,7 @@ def minutos_entre_datetimes(dt1, dt2):
         minutos = td.total_seconds() / 60
     return round(minutos, 2)
 
+
 def get_lett(num):
     nume = str(num)
     largo = len(nume)
@@ -338,28 +342,32 @@ def get_lett(num):
         finnum = centmil(nume[:-6]) + " MILLONES " + centmil(nume[6:])
     return finnum
 
-def mill (x):
+
+def mill(x):
     if x[0] == "1":
         a = "UN MILLON " + centmil(x[1:])
     else:
         a = unidad(x[0]) + " MILLONES " + centmil(x[1:])
     return a
 
-def centmil (x):
+
+def centmil(x):
     if x[0] == "0" and x[1] == "0" and x[2] == "0":
         a = cente(x[3:])
     else:
-        a = cente(x[0]+x[1]+x[2]) + " MIL " + cente(x[3:])
+        a = cente(x[0] + x[1] + x[2]) + " MIL " + cente(x[3:])
     return a
 
-def decmil (x):
+
+def decmil(x):
     if x[0] == "0" and x[1] == "0":
         cente(x[2:])
     else:
         a = dece(x[0] + x[1]) + " MIL " + cente(x[2:])
     return a
 
-def mil (x):
+
+def mil(x):
     if x[0] == "1":
         a = " MIL " + cente(x[1:])
     else:
@@ -369,7 +377,8 @@ def mil (x):
             a = unidad(x[0]) + " MIL " + cente(x[1:])
     return a
 
-def cente (x):
+
+def cente(x):
     if x[0] == "0":
         a = dece(x[1:])
     if x[0] == "1":
@@ -419,7 +428,8 @@ def cente (x):
             a = "NOVECIENTOS " + dece(x[1:])
     return a
 
-def dece (x):
+
+def dece(x):
     v = int(x)
     if x[0] == "0":
         a = unidad(x[1])
@@ -481,6 +491,7 @@ def dece (x):
             a = "NOVENTAI" + unidad(x[1])
     return a
 
+
 def unidad(x):
     if x == "1":
         a = "UN"
@@ -504,6 +515,7 @@ def unidad(x):
         a = ""
     return a
 
+
 def generar_qr(archivo_input, archivo_output, encriptar='N', box_size='5', prefijo_no_enriptado=''):
     try:
         print(archivo_input)
@@ -511,8 +523,6 @@ def generar_qr(archivo_input, archivo_output, encriptar='N', box_size='5', prefi
             archivo_nombre, archivo_extension = os.path.splitext(archivo_input)
             archivo_dir = os.path.dirname(archivo_input)
             texto = open(archivo_input, 'r').read()
-
-
 
             if archivo_output == '' or archivo_output is None:
                 output_dir = archivo_dir
@@ -525,7 +535,7 @@ def generar_qr(archivo_input, archivo_output, encriptar='N', box_size='5', prefi
                         os.remove(archivo_output)
 
             output_nombre, output_extension = os.path.splitext(archivo_output)
-            if output_nombre == ''  or output_nombre is None:
+            if output_nombre == '' or output_nombre is None:
                 output_nombre = archivo_nombre
 
             output = '{}.png'.format(output_nombre)
@@ -563,10 +573,12 @@ def generar_qr(archivo_input, archivo_output, encriptar='N', box_size='5', prefi
         msj = 'Generar QR: {}'.format(msj)
         print(msj)
 
+
 def codificar_en_base64(texto):
     message_bytes = texto.encode('ascii')
     base64_bytes = base64.b64encode(message_bytes)
     return base64_bytes.decode('ascii')
+
 
 def png_a_jpg(png):
     try:
@@ -580,3 +592,18 @@ def png_a_jpg(png):
         return True
     except Exception as e:
         return False
+
+
+def saldo_total(si, clientecuentas):
+    todascuentas = Cuentas.objects.all()
+
+    i = 0
+    while i < len(todascuentas):
+        cuenta_actual = todascuentas[i]
+        if cuenta_actual.cliente.id == clientecuentas.id:
+            if cuenta_actual.cptedh == "D":
+                si = si + cuenta_actual.total
+            else:
+                si = si - cuenta_actual.total
+        i += 1
+    return si

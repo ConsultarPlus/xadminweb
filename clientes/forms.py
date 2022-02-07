@@ -19,11 +19,12 @@ class ClienteForm(forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column('clicod', css_class='form-group col-md-3 mb-0'),
-                Column('nombre', css_class='form-group col-md-6 mb-0'),
+                Column('nombre', css_class='form-group col-md-3 mb-0'),
                 css_class='form-row'
             ),
             Row(
                 Column('cuit', css_class='form-group col-md-3 mb-0'),
+                Column('tipoiva', css_class='form-group col-md-3 mb-0'),
                 css_class='form-row'
             ),
             Row(

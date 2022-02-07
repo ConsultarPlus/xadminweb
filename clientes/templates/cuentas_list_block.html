@@ -13,18 +13,29 @@
     {% endif %}
 
     <div class="form-row form-row">
-<!--        <div class="col form-group">-->
-<!--            <table>-->
-<!--                <tr class="model-group">-->
-<!--                    <th><a href="{% url 'cuentas_agregar' %}?modo={{ request.GET.modo }}"-->
-<!--                           class="addlink">{% traducir 'Agregar' 'CUENTAS' %}</a>-->
-<!--                    </th>-->
-<!--                    <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"-->
-<!--                           class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>-->
-<!--                    </th>-->
-<!--                </tr>-->
-<!--            </table>-->
-<!--        </div>-->
+        {% if subir_cuentas %}
+            <div class="col form-group">
+                <table>
+                    <tr class="model-group">
+                        <th><a href="{% url 'cuentas_agregar' %}?modo={{ request.GET.modo }}"
+                               class="addlink">{% traducir 'Agregar' 'CUENTAS' %}</a>
+                        </th>
+                        <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"
+                               class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>
+                        </th>
+                    </tr>
+                </table>
+            </div>
+        {% endif %}
+        {% if cuenta_corriente %}
+            <div class="col form-group">
+                <table>
+                    <tr class="model-group">
+                        <th>Saldo Inicial: {{ saldo_inicial }}</th>
+                    </tr>
+                </table>
+            </div>
+        {% endif %}
         {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
         <div class="col form-group" align="right">
             <div class="form-group">
@@ -34,52 +45,94 @@
         {% endif %}
     </div>
 
+
+
     <div style="overflow-x:auto;">
         <br>
         <table id="tab">
             <thead>
-            <tr>
-                {% if request.GET.modo == 'm' %}
-                <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]"/></th>
-                {% else %}
-                <th></th>
-                {% endif %}
-                <th>{% traducir 'Comprobante' 'CUENTAS' %}</th>
-                <th>{% traducir 'Cliente' 'CUENTAS' %}</th>
-                <th>{% traducir 'Emisión' 'CUENTAS' %}</th>
-                <th>{% traducir 'Vencimiento' 'CUENTAS' %}</th>
-                <th>{% traducir 'Total' 'CUENTAS' %}</th>
-                <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
-                <th>{% traducir 'PDF' 'CUENTAS' %}</th>
-                <th>{% traducir 'PNG' 'CUENTAS' %}</th>
-                <th></th>
-            </tr>
+                <tr>
+                    {% if request.GET.modo == 'm' %}
+                        <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]"/></th>
+                    {% else %}
+                        <th></th>
+                    {% endif %}
+                    {% if not cuenta_corriente %}
+                        <th>{% traducir 'Comprobante' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Cliente' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Emisión' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Vencimiento' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Total' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
+                        <th>{% traducir 'PDF' 'CUENTAS' %}</th>
+                    {% else %}
+                        <th>{% traducir 'Comprobante' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Emisión' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Vencimiento' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Total Debito' 'CUENTAS' %}</th>
+                        <th>{% traducir 'Total Credito' 'CUENTAS' %}</th>
+                    {% endif %}
+                    <th></th>
+                </tr>
             </thead>
             <tbody>
             {% for item in paginado %}
             <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
                 {% if request.GET.modo == 'm' %}
-                <td><input type="checkbox" id="{{ item.id }}"/></td>
+                    <td><input type="checkbox" id="{{ item.id }}"/></td>
                 {% else %}
-                {% if request.GET.modo == 's' %}
-                <td><input type="radio" id="{{ item.id }}" name="items"></td>
+                    {% if request.GET.modo == 's' %}
+                        <td><input type="radio" id="{{ item.id }}" name="items"></td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                {% endif %}
+
+                {% if not cuenta_corriente %}
+                    <td> {{ item.comprobante }}</td>
+                    <td> {{ item.cliente }}</td>
+                    <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
+                    <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if not item.cptedh == 'D' %}
+                            -
+                        {% else %}
+                            +
+                        {% endif %}
+                        {{ item.total }}</td>
+                    <td> {{ item.concepto }}</td>
+                    {% if item.cliente.encriptado %}
+                        <td><a href="{% url 'imprimir_png' item.id item.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Descargar pdf' 'CUENTAS' %}</a></td>
+                    {% endif %}
                 {% else %}
-                <td></td>
+                    <td> {{ item.comprobante }}</td>
+                    <td> {{ item.concepto }}</td>
+                    <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
+                    <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
+                    <td>
+                        {% if not item.cptedh == 'D' %}
+                            <td> - {{ item.total }}</td>
+                        {% else %}
+                            + {{ item.total }}
+                            <td></td>
+                        {% endif %}
+                    </td>
                 {% endif %}
-                {% endif %}
-                <td> {{ item.comprobante }}</td>
-                <td> {{ item.cliente }}</td>
-                <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
-                <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
-                <td> {{ item.total }}</td>
-                <td> {{ item.concepto }}</td>
-                <td><a href="{{ MEDIA_URL }}{{ item.pdf }}" class="printlink" target="_blank">Descargar pdf</a></td>
-                <td><a href="{% url 'imprimir_png' item.id item.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Descargar png' 'CUENTAS' %}</a></td>
                 <td></td>
             </tr>
             {% endfor %}
             </tbody>
         </table>
+        {% if cuenta_corriente %}
+            <div class="col form-group">
+                <table>
+                    <tr class="model-group">
+                        <th>Saldo Actual: {{ saldo_actual }}</th>
+                    </tr>
+                </table>
+            </div>
+        {% endif %}
         <br>
         {% include "paginador.html" %}
     </div>

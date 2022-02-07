@@ -24,6 +24,16 @@ ENTIDADES = (
 
 )
 
+IVAS = (
+    ('I', 'INSCRIPTO'),
+    ('E', 'EXCENTO'),
+    ('M', 'MONOTRIBUTO'),
+    ('C', 'CONSUMIDOR FINAL'),
+    ('N', 'EXCENTO TIERRA'),
+    ('P', 'PUBLICIDAD'),
+    ('S', 'SERVICIOS'),
+)
+
 ACTIVO = (
     ('S', 'Activo'),
     ('N', 'Inactivo'),

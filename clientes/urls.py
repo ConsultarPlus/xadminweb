@@ -13,7 +13,7 @@ from .views import (cliente_agregar,
                     cuenta_corriente,
                     cuentas_importar,
                     imprimir_png,
-                    mis_datos)
+                    )
 
 
 urlpatterns = [

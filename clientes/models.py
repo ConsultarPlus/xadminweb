@@ -3,6 +3,9 @@ from django.utils.translation import ugettext as _
 
 
 # Create your models here.
+from tabla.listas import IVAS
+
+
 class Cliente(models.Model):
     clicod = models.CharField(max_length=5, verbose_name='Código', null=False, blank=False)
     nombre = models.CharField(max_length=100, null=True, blank=True)
@@ -11,7 +14,9 @@ class Cliente(models.Model):
     telefono = models.CharField(verbose_name='Teléfono', max_length=60, null=True, blank=True)
     email = models.EmailField(verbose_name='E-mail', max_length=60, null=True, blank=True)
     encriptado = models.CharField(max_length=10, null=True, blank=True)
-    tipoiva = models.CharField(max_length=60, null=True, blank=True)
+    tipoiva = models.CharField(max_length=60, default='I', choices=IVAS)
+    saldo_inicial = models.FloatField(max_length=12, null=True, blank=True)
+    fecha_saldo = models.DateField(null=True, blank=True)
 
     def _get_tipocmp(self):
         if self.tipoiva == "A":
@@ -45,6 +50,8 @@ class Cuentas(models.Model):
     pdf = models.FileField(null=True, blank=True)
     cae = models.CharField(max_length=20, null=True, blank=True)
     vencimiento_cae = models.DateField(null=True, blank=True)
+    pendiente = models.BooleanField(null=False, blank=False, default=False)
+    cptedh = models.CharField(max_length=1, null=True, blank=False)
 
     def _get_numero(self):
         num = self.comprobante.split('-')[3]
@@ -74,10 +81,10 @@ class Cuentas(models.Model):
         return "{:.2f}".format(i)
     iva = property(_get_iva)
 
-    def _getiva105(self):
-        i = (self.total / 242) * 21
+    def _getiva27(self):
+        i = (self.total / 121) * 27
         return "{:.2f}".format(i)
-    iva105 = property(_get_iva)
+    iva27 = property(_getiva27)
 
     class Meta:
         permissions = (("clientes.cuentas_agregar", _("Agregar")),
