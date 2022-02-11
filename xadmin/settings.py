@@ -24,11 +24,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-*j)f4!r#ayh$b19kfhme3w&i-398da9py7$bjgf(=dndwst_uv'
 
 test = False  # Esto sirve para poder hacer pruebas con DEBUG = False cargando configuraciones de prueba
-DEBUG = True
+DEBUG = False
 
 if not DEBUG and not test:
-    BASE_DIR = '/var/www/xadmin'
-    archivo_conf = '/var/www/xadmin/xadmin_conf.txt'
+    BASE_DIR = '/home/consultar/xadminweb'
+    archivo_conf = '/home/consultar/xadminweb/xadmin_conf.txt'
 else:
     BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # During development only
@@ -54,7 +54,7 @@ EMAIL_HOST_PASSWORD = conf['EMAIL_HOST_PASSWORD']
 EMAIL_USE_TLS = conf['EMAIL_USE_TLS']
 EMAIL_USE_SSL = conf['EMAIL_USE_SSL']
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.32', '190.193.200.120']
+ALLOWED_HOSTS = ['127.0.0.1', '192.168.1.32', '190.193.200.120', 'www.xadmin.com.ar', 'xadmin.com.ar']
 
 
 # Application definition
@@ -179,10 +179,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
-if not DEBUG and not test:
-    STATIC_ROOT = '/var/www/xadmin/static/'
-else:
-    STATIC_ROOT = os.path.join(BASE_DIR, "root")
+# if not DEBUG and not test:
+#     STATIC_ROOT = '/var/www/xadmin/static/'
+# else:
+STATIC_ROOT = os.path.join(BASE_DIR, "root")
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 # '/var/www/static/',

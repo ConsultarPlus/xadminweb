@@ -193,6 +193,8 @@ def clientes_cargar_csv(request):
                                 actualizados += 1
                                 exitos += 1
                             except Cliente.DoesNotExist:
+                                encriptado = ''.join(
+                                    random.choice(string.ascii_lowercase.join(string.digits)) for i in range(10))
                                 cliente = Cliente(clicod=clicod,
                                                   nombre=nombre.upper(),
                                                   cuit=cuit,
@@ -271,7 +273,7 @@ def clientes_cargar_csv(request):
         form = ImportarCSVForm(initial=initial)
 
     template_name = 'tabla/tabla_form.html'
-    formato = 'CliCod C(5) ; Nombre C(100); CUIT C(13); Domicilio C(60); Teléfono C(60); E-mail C(60) ' \
+    formato = 'CliCod C(5) ; Nombre C(100); CUIT C(13); Domicilio C(60); Teléfono C(60); E-mail C(60), Saldo N(12.2), Fecha Saldo D(AAAA-MM-DD) ' \
               'Codificación UTF-8'
     titulo = 'Importar CSV'
     contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
