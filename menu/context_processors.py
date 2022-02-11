@@ -14,7 +14,7 @@ def menu_processor(request):
             cliente_asociado = Cliente.objects.filter(clicod=clicod).values('encriptado', 'id')[0]
         except Exception as e:
             cliente_asociado = {'encriptado': 0,'id': 0}
-        fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', False)
+        fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', True)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
         # CLIENTES
         cuentas_puede_listar = True
