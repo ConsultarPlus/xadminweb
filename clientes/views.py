@@ -140,9 +140,6 @@ def clientes_cargar_csv(request):
                             if len(clicod) > 10:
                                 clicod = clicod[0:10]
                             clicod = clicod.upper()
-                            if cnt == 0:
-                                print('*values: ', values)
-                                print('*clicod: ', clicod)
                             nombre = ''
                             cuit = ''
                             domicilio = ''
@@ -243,11 +240,15 @@ def clientes_cargar_csv(request):
                                     user.save()
                                     nuevos += 1
                                     exitos += 1
-                                grupo = Group.objects.get(name='Clientes')
-                                grupo.user_set.add(user)
-                                perfil, creado = Perfil.objects.get_or_create(user_id=user.id)
-                                perfil.clicod = clicod
-                                perfil.save()
+                                try:
+                                    grupo = Group.objects.get(name='Clientes')
+                                    grupo.user_set.add(user)
+                                    perfil, creado = Perfil.objects.get_or_create(user_id=user.id)
+                                    perfil.clicod = clicod
+                                    perfil.save()
+                                except Exception as e:
+                                    e = 'Problemas con el grupo o el perfil.'
+                                    errores_lista = agregar_a_errores(cnt, errores, e, errores_lista)
 
                     except Exception as e:
                         errores += 1
@@ -273,7 +274,7 @@ def clientes_cargar_csv(request):
         form = ImportarCSVForm(initial=initial)
 
     template_name = 'tabla/tabla_form.html'
-    formato = 'CliCod C(5) ; Nombre C(100); CUIT C(13); Domicilio C(60); Teléfono C(60); E-mail C(60), Saldo N(12.2), Fecha Saldo D(AAAA-MM-DD) ' \
+    formato = 'CliCod C(5) ; Nombre C(100); CUIT C(13); Domicilio C(60); Teléfono C(60); E-mail C(60); Saldo N(12.2) ' \
               'Codificación UTF-8'
     titulo = 'Importar CSV'
     contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
