@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Group
 from django.http import FileResponse, HttpResponse
 from urllib.parse import urlencode
+import os
 from .models import Cliente, Cuentas
 from .forms import ClienteForm, CuentasForm
 from .filters import clientes_filtrar, cuentas_filtrar
@@ -16,7 +17,7 @@ from perfiles.admin import agregar_a_errores
 from perfiles.models import Perfil
 import random
 import string
-from xadmin.settings import MEDIA_URL
+from xadmin.settings import MEDIA_URL, DEBUG, BASE_DIR
 from reportlab.pdfgen import canvas
 import webbrowser
 import json
@@ -282,12 +283,13 @@ def clientes_cargar_csv(request):
 
 
 @login_required(login_url='ingresar')
-def cuentas_listar(request, encriptado=None):
-    contexto = cuentas_filtrar(request, encriptado)
+def facturas_pendientes(request, encriptado=None):
+    contexto = cuentas_filtrar(request, encriptado, True)
     modo = request.GET.get('modo')
     contexto['modo'] = modo
+    contexto['facturas_pendientes'] = True
 
-    if encriptado == None:
+    if encriptado is None:
         return redirect('menu')
 
     if modo == 'm' or modo == 's':
@@ -301,7 +303,7 @@ def cuentas_listar(request, encriptado=None):
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_listar_admin", None, raise_exception=True)
 def cuentas_listar_admin(request):
-    contexto = cuentas_filtrar(request, None)
+    contexto = cuentas_filtrar(request, None, False)
     modo = request.GET.get('modo')
     contexto['modo'] = modo
 
@@ -316,7 +318,7 @@ def cuentas_listar_admin(request):
 
 @login_required(login_url='ingresar')
 def cuenta_corriente(request, encriptado=None):
-    contexto = cuentas_filtrar(request, encriptado)
+    contexto = cuentas_filtrar(request, encriptado, False)
     modo = request.GET.get('modo')
     contexto['modo'] = modo
     contexto['cuenta_corriente'] = True
@@ -423,10 +425,6 @@ def cuentas_importar(request):
                             vtacod = values[0].replace("'", "")
                             vtacod = vtacod.replace('"', '')
 
-                            if cnt == 0:
-                                print('*values: ', values)
-                                print('*vtacod: ', vtacod)
-
                             comprobante = ''
                             pdf = ''
                             if len(values) > 1:
@@ -443,11 +441,15 @@ def cuentas_importar(request):
                                                 if len(values) > 6:
                                                     concepto = values[6].strip()
                                                     if len(values) > 7:
-                                                        pdf = values[7].strip()
+                                                        cae = values[7].strip()
                                                         if len(values) > 8:
-                                                            cptedh = values[8].strip()
+                                                            vto_cae = values[8].strip()
                                                             if len(values) > 9:
-                                                                pendiente = values[9].strip()
+                                                                pdf = values[9].strip()
+                                                                if len(values) > 10:
+                                                                    cptedh = values[10].strip()
+                                                                    if len(values) > 11:
+                                                                        pendiente = values[11].strip()
                             try:
                                 cuentas = Cuentas.objects.get(vtacod=vtacod)
                                 if clicod:
@@ -463,16 +465,19 @@ def cuentas_importar(request):
                                     cuentas.total = total
                                 if concepto:
                                     cuentas.concepto = concepto
+                                if cae:
+                                    cuentas.cae = cae
+                                if vto_cae:
+                                    cuentas.vencimiento_cae = vto_cae
                                 if pdf:
                                     cuentas.pdf = pdf
                                 if cptedh:
                                     cuentas.cptedh = cptedh
-                                    print(cptedh)
                                 if pendiente:
+                                    if pendiente == 'N':
+                                        pendiente = False
                                     if pendiente == 'S':
                                         pendiente = True
-                                    else:
-                                        pendiente = False
                                     cuentas.pendiente = pendiente
                                 cuentas.save()
                                 actualizados += 1
@@ -486,6 +491,8 @@ def cuentas_importar(request):
                                                   fecha_vencimiento=fecha_vencimiento,
                                                   total=total,
                                                   concepto=concepto,
+                                                  cae=cae,
+                                                  vencimiento_cae=vto_cae,
                                                   pdf=pdf,
                                                   cptedh=cptedh,
                                                   pendiente=pendiente)
@@ -518,7 +525,7 @@ def cuentas_importar(request):
 
     template_name = 'tabla/tabla_form.html'
     formato = 'VtaCod N(8) ; Comprobante C(20); CliCod C(5); Emisión D(10); ' \
-              'Vencimiento D(10); VtaTotal N(14.4); VtaConce C(255); PDF C(200) ' \
+              'Vencimiento D(10); VtaTotal N(14.4); VtaConce C(255); VtaCAI C(20); Vto CAE D(10); PDF C(200); CpteCV C(1); Pendiente Boolean ' \
               'Codificación UTF-8'
     titulo = 'Importar CSV'
     contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
@@ -527,7 +534,7 @@ def cuentas_importar(request):
 
 @login_required(login_url='ingresar')
 def imprimir_png(request, id, encriptado=None):
-    path = "media/facturas/" + str(id) + ".pdf"
+
     comprobante = Cuentas.objects.get(id=id)
     validacion = Cliente.objects.get(clicod=comprobante.cliente)
     cliente = Cliente.objects.get(encriptado=encriptado)
@@ -537,14 +544,17 @@ def imprimir_png(request, id, encriptado=None):
     else:
         dat = encriptado + format(id)
         nombre_de_archivo = dat + '.pdf'
-
-        path_archivo = MEDIA_URL + "facturas/" + nombre_de_archivo
+        if DEBUG:
+            carpeta_media = BASE_DIR + '/media/'
+        else:
+            carpeta_media = '/home/consultar/xadminweb/media/'
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = 'inline; filename="' + nombre_de_archivo + '"'
         doc = canvas.Canvas(response)
 
-        doc.drawImage("fondo_certificado.png", 0, -30, width=630, height=891)
+        fondo_factura = carpeta_media + "fondo_factura.png"
+        doc.drawImage('{}'.format(fondo_factura), 0, -30, width=630, height=891)
 
         doc.setFontSize(16)
         doc.drawString(420, 753, '{}'.format(comprobante.fecha_emision))
@@ -578,6 +588,7 @@ def imprimir_png(request, id, encriptado=None):
         while x < CAN:
             if IVAS[x][0] == cliente.tipoiva:
                 doc.drawString(100, 620, '{}'.format(IVAS[x][1]))
+                break
             x += 1
 
         doc.drawString(300, 620, "CUIT: ", 1)
@@ -609,21 +620,18 @@ def imprimir_png(request, id, encriptado=None):
             "codAut": comprobante.cae
         }
 
+        nombrejson = carpeta_media + "jsonqr.json"
         jsonqra = json.dumps(jsonqr)
-
-        nombre = "C:\PycharmProjects\ ".strip() + "xadminweb\media\qrs\ ".strip() + comprobante.comprobante + ".jpg"
-
-        jsonFile = open("jsonqr.json", "w")
+        jsonFile = open('{}'.format(nombrejson), "w")
         jsonFile.write(jsonqra)
         jsonFile.close()
 
-        nombrejson = "C:\PycharmProjects\ ".strip() + "xadminweb\ ".strip() + "jsonqr.json"
+        qr = carpeta_media + comprobante.comprobante + ".jpg"
+        generar_qr(nombrejson, qr, "S", 5, 'https://www.afip.gob.ar/fe/qr/?p=')
+        doc.drawImage(qr, 15, 23, width=120, height=120)
 
-        generar_qr(nombrejson, nombre, "S", 5, 'https://www.afip.gob.ar/fe/qr/?p=')
-
-        doc.drawImage(nombre, 15, 23, width=120, height=120)
-
-        doc.drawImage("Logo_afip.jpg", 150, 95)
+        logo_afip = carpeta_media + "Logo_afip.jpg"
+        doc.drawImage('{}'.format(logo_afip), 150, 95)
         doc.drawString(150, 75, "Comprobante Autorizado", 1)
 
         doc.showPage()

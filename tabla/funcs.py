@@ -518,7 +518,6 @@ def unidad(x):
 
 def generar_qr(archivo_input, archivo_output, encriptar='N', box_size='5', prefijo_no_enriptado=''):
     try:
-        print(archivo_input)
         if os.path.exists(archivo_input):
             archivo_nombre, archivo_extension = os.path.splitext(archivo_input)
             archivo_dir = os.path.dirname(archivo_input)
@@ -565,13 +564,10 @@ def generar_qr(archivo_input, archivo_output, encriptar='N', box_size='5', prefi
             img.save(output)
             if not png_a_jpg(output):
                 msj = 'Generar QR: No se pudo generar el jpg'
-                print(msj)
         else:
             msj = 'Generar QR: No se encuentra el archivo {}'.format(archivo_input)
-            print(msj)
     except Exception as msj:
-        msj = 'Generar QR: {}'.format(msj)
-        print(msj)
+        msj = 'LPM Generar QR: {}'.format(msj)
 
 
 def codificar_en_base64(texto):
