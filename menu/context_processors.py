@@ -31,6 +31,7 @@ def menu_processor(request):
         proveedores_puede_listar = request.user.has_perm('proveedores.puede_listar')
         documento_puede_listar = request.user.has_perm('documentos.puede_listar')
         plantilla_puede_listar = request.user.has_perm('tabla.plantilla_puede_listar')
+        articulos_puede_listar = request.user.has_perm('articulos.articulos_puede_listar')
 
         # CONFIGURACIÓN
         mostrar_admin = False
@@ -77,6 +78,8 @@ def menu_processor(request):
                    'visible': clientes_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('cuentas_listar_admin'), 'titulo': 'Comprobantes', 'modelo': 'CUENTAS',
                    'visible': True},
+                  {'id_grupo': 'SOP', 'url': reverse('articulos_listar'), 'titulo': 'Artículos',
+                     'modelo': 'ARTICULO', 'visible': articulos_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('documentos_listar'), 'titulo': 'Documentos',
                    'modelo': 'DOCUMENTO', 'visible': documento_puede_listar},
                   {'id_grupo': 'SOP', 'url': reverse('plantillas_listar'), 'titulo': 'Plantillas',

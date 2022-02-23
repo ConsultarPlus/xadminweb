@@ -1,26 +1,30 @@
 
 ENTIDADES = (
-    ('DEPENDENCIA', 'Dependencia'),
     ('LOCALIDAD', 'Localidad'),
     ('PROVINCIA', 'Provincia'),
     ('COMPROBANTE', 'Comprobante'),
-    ('ESTADO', 'Estado de expediente'),
     ('TIPO_DOCUMENTO', 'Tipo de documento'),
-    ('ESTADO_CIVIL', 'Estado Civil'),
-    ('SECTOR', 'Sector'),
-    ('SUBSECTOR', 'Sub-sector'),
-    ('TEMA', 'Tema'),
-    ('SUBTEMA', 'Sub-tema'),
-    ('GENERO', 'Género'),
-    ('NIVEL', 'Nivel'),
-    ('ORIGEN', 'Origen'),
-    ('ROL', 'Rol de persona '),
-    ('ROL_INSTITUCION', 'Rol de institución'),
-    ('CIRCUITO', 'Circuito'),
-    ('TIPO_DEPENDENCIA', 'Tipo de dependencia'),
-    ('ESTADO_TURNO', 'Estado del ticket de turno'),
     ('PAIS', 'País'),
     ('TIPO_NACIONALIDAD', 'Tipo de nacionalidad'),
+    ('DEPARTAMENTO', 'Departamento'),
+)
+
+UNIDADES = (
+    ('BOL', 'BOLSA'),
+    ('CAJ', 'CAJA'),
+    ('CM3', 'CENTIMENTROS CUBICOS'),
+    ('G', 'GRAMO'),
+    ('HOJ', 'HOJA'),
+    ('HOR', 'HORA'),
+    ('KGS', 'KILOGRAMOS'),
+    ('LTS', 'LITROS'),
+    ('MHO', 'MILI HORAS'),
+    ('MLI', 'METRO LINEAL'),
+    ('MLT', 'MILI LITROS'),
+    ('MT2', 'METROS CUADRADOS'),
+    ('MTS', 'METROS'),
+    ('ROL', 'ROLLO'),
+    ('UNI', 'UNIDAD'),
 
 )
 
@@ -32,6 +36,10 @@ IVAS = (
     ('N', 'EXCENTO TIERRA'),
     ('P', 'PUBLICIDAD'),
     ('S', 'SERVICIOS'),
+)
+MONEDA = (
+    ('1', 'PESO'),
+    ('2', 'DOLAR')
 )
 
 ACTIVO = (
