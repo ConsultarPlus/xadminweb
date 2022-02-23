@@ -6,14 +6,6 @@ from django.contrib.auth import user_logged_in
 from django.contrib.sessions.models import Session
 from simple_history.models import HistoricalRecords
 from tabla.models import Tabla
-from tabla.gets import get_choices
-from django.contrib.auth.models import Group
-# from clientes.models import Cliente
-
-
-dependencias = get_choices('DEPENDENCIA')
-Group.add_to_class('dependencia', models.IntegerField(null=True, blank=True,
-                                                     choices=dependencias))
 
 
 def get_image_filename(instance, filename):

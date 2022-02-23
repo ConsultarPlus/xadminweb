@@ -13,8 +13,8 @@ def menu_processor(request):
         try:
             cliente_asociado = Cliente.objects.filter(clicod=clicod).values('encriptado', 'id')[0]
         except Exception as e:
-            cliente_asociado = {'encriptado': 0,'id': 0}
-        fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', False)
+            cliente_asociado = {'encriptado': 0, 'id': 0}
+        fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', True)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
         # CLIENTES
         cuentas_puede_listar = True
@@ -67,7 +67,7 @@ def menu_processor(request):
                   ]
 
         menues = [
-                  {'id_grupo': 'CLI', 'url': reverse('cuentas_listar', kwargs={'encriptado': cliente_asociado['encriptado']}),
+                  {'id_grupo': 'CLI', 'url': reverse('facturas_pendientes', kwargs={'encriptado': cliente_asociado['encriptado']}),
                    'titulo':'Facturas Pendientes', 'modelo': 'CLIENTE', 'visible': True},
                   {'id_grupo': 'CLI', 'url': reverse('cuenta_corriente', kwargs={'encriptado': cliente_asociado['encriptado']}),
                    'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': True},

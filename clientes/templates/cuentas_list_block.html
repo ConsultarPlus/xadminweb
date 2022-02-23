@@ -6,9 +6,16 @@
         {% include "cabeza.html" %}
         <div id="content" class="{% block coltype %}colM{% endblock %}">
     {% endif %}
-
+    {% if cuenta_corriente %}
+        <h1>{% traducir 'Cuenta Corriente' 'CUENTAS' %}</h1>
+    {% else %}
+        {% if facturas_pendientes %}
+            <h1>{% traducir 'Facturas Pendientes' 'CUENTAS' %}</h1>
+        {% else %}
+            <h1>{% traducir 'Comprobantes' 'CUENTAS' %}</h1>
+        {% endif %}
+    {% endif %}
     {% if filtros_form %}
-        <h1>{% traducir 'Comprobantes' 'CUENTAS' %}</h1>
         {% crispy filtros_form %}
     {% endif %}
 
@@ -94,13 +101,7 @@
                     <td> {{ item.cliente }}</td>
                     <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
                     <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
-                    <td>
-                        {% if not item.cptedh == 'D' %}
-                            -
-                        {% else %}
-                            +
-                        {% endif %}
-                        {{ item.total }}</td>
+                    <td> {{ item.total }}</td>
                     <td> {{ item.concepto }}</td>
                     {% if item.cliente.encriptado %}
                         <td><a href="{% url 'imprimir_png' item.id item.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Descargar pdf' 'CUENTAS' %}</a></td>
@@ -112,9 +113,9 @@
                     <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
                     <td>
                         {% if not item.cptedh == 'D' %}
-                            <td> - {{ item.total }}</td>
+                            <td> {{ item.total }}</td>
                         {% else %}
-                            + {{ item.total }}
+                            {{ item.total }}
                             <td></td>
                         {% endif %}
                     </td>

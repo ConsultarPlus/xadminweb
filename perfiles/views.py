@@ -8,8 +8,8 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.http import JsonResponse
 from urllib.parse import urlencode
-from perfiles.funcs import actualizar_fecha_de_clave, set_preferencia, get_preferencia, get_dependencia
-from perfiles.forms import UsuarioForm  #PerfilDependenciaForm
+from perfiles.funcs import actualizar_fecha_de_clave, set_preferencia, get_preferencia
+from perfiles.forms import UsuarioForm
 from perfiles.models import Perfil, Preferencia
 from perfiles.filters import usuario_filtrar
 from tabla.templatetags.custom_tags import traducir
@@ -85,8 +85,6 @@ def usuario_modificar(request):
     user = request.user.id
     usuario = User.objects.get(id=user)
     perfil, created = Perfil.objects.get_or_create(user_id=user)
-    pref_dependencia = get_dependencia(user)  # get_preferencia(user, 'menu', 'dependencia_x_defecto', 'C', None)
-    # pref_pantalla = get_preferencia(user, 'menu', 'pantalla_inicial', 'C', None)
     if request.method == 'POST':
         post = request.POST.copy()
         post['user'] = user
@@ -100,51 +98,17 @@ def usuario_modificar(request):
                 usuario.last_name = form['apellido'].value()
                 usuario.email = email
                 usuario.save()
-                """Grabo datos de la tabla Preferencia"""
-                pref_dependencia = form.cleaned_data['dependencia_x_def']
-                ok = set_preferencia(preferencia={'usuario': usuario,
-                                                  'vista': 'menu',
-                                                  'opcion': 'dependencia_x_defecto',
-                                                  'caracter': pref_dependencia})
-                #
-                # pref_pantalla = form.cleaned_data['menu']
-                # ok = set_preferencia(preferencia={'usuario': usuario,
-                #                                   'vista': 'menu',
-                #                                   'opcion': 'menu',
-                #                                   'caracter': pref_pantalla})
-
                 """Se graba la tabla Perfil"""
                 form.save()
-                vista = get_preferencia(request.user, 'menu', 'pantalla_inicial', 'C', 'insumidos_listar')
-                try:
-                    return redirect(vista)
-                except Exception as e:
-                    return render(request, 'vista_vacia.html')
+                return render(request, 'vista_vacia.html')
             else:
                 messages.add_message(request, messages.ERROR, 'El correo indicado ya está usado')
     else:
-        initial = {'dependencia_x_def': pref_dependencia,
-                   }
-        form = UsuarioForm(instance=perfil, initial=initial)
+        form = UsuarioForm(instance=perfil)
 
     template_name = 'usuario_form.html'
     contexto = {'form': form, 'usuario': usuario}
     return render(request, template_name, contexto)
-
-
-# class PerfilDependenciaTabularInline:
-#     model = Preferencia
-#     fields = ('vista_dummy', 'opcion_dummy', 'caracter', 'vista', 'opcion',)
-#     verbose_name_plural = traducir('Dependencia por defecto', 'EXPEDIENTE)')
-#     form = PerfilDependenciaForm
-#
-#     def get_queryset(self, request):
-#         qs = super(PerfilDependenciaTabularInline, self).get_queryset(request)
-#         return qs.filter(usuario=request.user, opcion='dependencia_x_defecto')
-#
-#     def get_max_num(self, request, obj=None, **kwargs):
-#         max_num = 1
-#         return max_num
 
 
 def usuario_nombre(request):

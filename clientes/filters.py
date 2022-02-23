@@ -33,7 +33,7 @@ def clientes_filtrar(query_dict, encriptado=None):
             'filtros_form': form}
 
 
-def cuentas_filtrar(query_dict, encriptado):
+def cuentas_filtrar(query_dict, encriptado, facturas_pendientes):
     buscar = query_dict.GET.get('buscar')
     items = get_opcion_paginado(query_dict)
     modo = query_dict.GET.get('modo')
@@ -41,6 +41,9 @@ def cuentas_filtrar(query_dict, encriptado):
 
     if encriptado != '' and encriptado is not None:
         filtrado = filtrado.filter(cliente__encriptado=encriptado)
+
+    if facturas_pendientes:
+        filtrado = filtrado.filter(pendiente=True)
 
     if buscar != '' and buscar is not None:
         filtrado = filtrado.filter(concepto__icontains=buscar)

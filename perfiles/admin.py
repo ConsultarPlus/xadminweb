@@ -343,8 +343,6 @@ class GroupAdminForm(forms.ModelForm):
 
 # Definir un nuevo GroupAdmin
 class GroupAdmin(BaseGroupAdmin):
-    list_display = ('name', 'dependencia')
-    search_fields = ['name', 'dependencia']
     form = GroupAdminForm
     change_list_template = "grupos_change_list.html"
 
@@ -411,36 +409,16 @@ class GroupAdmin(BaseGroupAdmin):
                             if line_aux:
                                 values = line_aux.split(';')
                                 name = values[0].replace("'", "").strip()
-                                dependencia = None
                                 if len(name) > 150:
                                     name = name[0:150]
-                                if len(values) > 1:
-                                    dependencia = values[1].replace("'", "").strip()
-                                    if len(dependencia) > 10:
-                                        dependencia = dependencia[0:10]
-
-                                if dependencia:
-                                    try:
-                                        dependencia = Tabla.objects.get(codigo=dependencia, entidad='DEPENDENCIA')
-                                        dependencia = dependencia.id
-                                    except Tabla.DoesNotExist:
-                                        errores += 1
-                                        e = 'No existe la dependencia ' + dependencia + \
-                                            '. Se deja vacía'
-                                        errores_lista = agregar_a_errores(cnt, errores, e, errores_lista)
-                                        dependencia = None
 
                                 try:
                                     group = Group.objects.get(name=name)
-                                    if dependencia:
-                                        group.dependencia = dependencia
                                     group.save()
                                     actualizados += 1
                                     exitos += 1
                                 except Group.DoesNotExist:
-                                    group = Group(name=name,
-                                                  dependencia=dependencia,
-                                                  )
+                                    group = Group(name=name)
                                     group.save()
                                     nuevos += 1
                                     exitos += 1
@@ -464,7 +442,7 @@ class GroupAdmin(BaseGroupAdmin):
         else:
             form = ImportarCSVForm(initial=initial)
 
-        formato = 'Grupo C(150) ; Código de dependencia C(10). Codificación UTF-8'
+        formato = 'Grupo C(150) ; Codificación UTF-8'
         contexto = {'form': form, 'formato': formato,
                     'errores': errores_lista,
                     'titulo': 'Grupos',

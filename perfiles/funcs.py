@@ -107,61 +107,6 @@ def set_preferencia(preferencia):
         return False
 
 
-def get_dependencia(usuario):
-
-    dependencias_posibles = get_dependencias_posibles(usuario)
-    if len(dependencias_posibles) > 0:
-        dependencia_x_defecto = dependencias_posibles[0]
-    else:
-        dependencia_x_defecto = None
-    dependencia = get_preferencia(usuario, 'menu', 'dependencia_x_defecto', 'C', dependencia_x_defecto)
-    if dependencia is not None:
-        if len(dependencias_posibles) > 0:
-            if int(dependencia) not in dependencias_posibles:
-                if len(dependencias_posibles) > 0:
-                    dependencia = dependencias_posibles[0]
-                else:
-                    dependencia = None
-
-    return dependencia
-
-
-def get_dependencias_posibles(usuario):
-    grupos = Group.objects.filter(user=usuario).exclude(dependencia=None)
-    dependencias = []
-    for grupo in grupos:
-        dependencias.append(grupo.dependencia)
-    return dependencias
-
-
-def get_choices_dependencias_de_usuario(usuario):
-    dependencias_posibles = get_dependencias_posibles(usuario)
-    if len(dependencias_posibles) == 0:
-        dependencias = Tabla.objects.filter(entidad='DEPENDENCIA', activo='S').\
-                                     order_by('-valor_preferencial', 'descripcion').\
-                                     values('id', 'descripcion', 'codigo')
-    else:
-        dependencias = Tabla.objects.filter(entidad='DEPENDENCIA', activo='S', id__in=dependencias_posibles). \
-                                     order_by('-valor_preferencial', 'descripcion'). \
-                                     values('id', 'descripcion', 'codigo')
-
-    choices = [(q['id'], q['descripcion']) for q in dependencias]
-    return choices
-
-
-def get_dependencia_activa(usuario):
-    dependencia = get_dependencia(usuario)
-    if dependencia == '' or dependencia is None:
-        dependencia = None
-    else:
-        try:
-            dependencia = Tabla.objects.get(id=int(dependencia))
-        except Exception as e:
-            dependencia = None
-
-    return dependencia
-
-
 def get_opcion_paginado(query_dict):
     usuario = query_dict.user
     default = get_preferencia(usuario, 'filtro', 'paginado', 'N', 10)

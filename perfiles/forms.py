@@ -13,7 +13,7 @@ from tabla.listas import ITEMS_X_PAG
 from tabla.gets import get_choices_mas_vacio, get_group_choices, get_user_groups
 from tabla.templatetags.custom_tags import traducir
 from .models import Perfil, Preferencia
-from .funcs import get_choices_dependencias_de_usuario
+
 
 PANTALLAS = (('documentos_listar', traducir('Documentos')),
              ('/admin', traducir('Admin')),
@@ -24,25 +24,6 @@ PANTALLAS = (('documentos_listar', traducir('Documentos')),
              ('usuario_modificar', traducir('Perfil')),
              ('', traducir('Ninguna')),
              )
-
-
-# class PerfilDependenciaForm(forms.Form):
-#     VISTA_DUMMY_CHOICES = (('expediente', 'Expediente'),)
-#     OPCION_DUMMY_CHOICES = (('dependencia_x_defecto', 'Dependencia x defecto'),)
-#
-#     vista_dummy = forms.ChoiceField(choices=VISTA_DUMMY_CHOICES, required=False, label='Pantalla')
-#     opcion_dummy = forms.ChoiceField(choices=OPCION_DUMMY_CHOICES,
-#                                      required=False, label='Opción')
-#     caracter = forms.ChoiceField(choices=get_choices_mas_vacio('DEPENDENCIA'), required=False, label='Valor')
-#     vista = forms.CharField(max_length=60, initial='expediente', label='')
-#     opcion = forms.CharField(max_length=60, initial='dependencia_x_defecto', label='')
-#
-#     def __init__(self, *args, **kwargs):
-#         super().__init__(*args, **kwargs)
-#         self.fields['vista_dummy'].widget.attrs['disabled'] = True
-#         self.fields['opcion_dummy'].widget.attrs['disabled'] = True
-#         self.fields['vista'].widget.attrs['hidden'] = True
-#         self.fields['opcion'].widget.attrs['hidden'] = True
 
 
 class PerfilPantallaForm(forms.ModelForm):
@@ -70,9 +51,7 @@ class UsuarioForm(forms.ModelForm):
     telefono = forms.CharField(max_length=40, label='Teléfono', required=False)
     email = forms.CharField(max_length=50, required=False, validators=[validate_email],
                             label='E-mail (para recuperar contraseña)')
-    dependencia_x_def = forms.IntegerField(max_value=999999999, required=False, label='Dependencia por defecto')
     grupo = forms.MultipleChoiceField(required=False, label='Grupos')
-    # pantalla_inicial = forms.CharField(max_length=40, required=False, label='Pantalla inicial')
 
     class Meta:
         model = Perfil
@@ -83,9 +62,6 @@ class UsuarioForm(forms.ModelForm):
         self.fields['nick'].widget.attrs['disabled'] = True
         self.fields['nivel'].widget.attrs['disabled'] = True
         self.fields['grupo'].widget.attrs['disabled'] = True
-        self.fields['dependencia_x_def'].widget = \
-            SelectLiveSearchInput(choices=get_choices_dependencias_de_usuario(self.instance.user_id))
-        # self.fields['pantalla_inicial'].widget = SelectLiveSearchInput(choices=sorted(PANTALLAS))
 
         for field_name, field in self.fields.items():
             field.label = traducir(field.label, 'USUARIO')
@@ -107,9 +83,6 @@ class UsuarioForm(forms.ModelForm):
             self.fields['apellido'].initial = usuario.last_name
             self.fields['telefono'].initial = telefono
             self.fields['email'].initial = usuario.email
-            # self.fields['nivel'].queryset = niveles
-            # self.fields['nivel'].widget.attrs['rows'] = niveles.count()
-
             if foto:
                 img = MEDIA_URL+str(foto)
             else:
@@ -146,11 +119,6 @@ class UsuarioForm(forms.ModelForm):
             ),
             HTML(separador),
             HTML(div_colapsable_ini),
-            # Row(
-            #     Column('dependencia_x_def', css_class='form-group col-md-3 mb-0'),
-            #     Column('pantalla_inicial', css_class='form-group col-md-3 mb-0'),
-            #     css_class='form-row'
-            # ),
             Row(
                 # Column('nivel', css_class='form-group col-md-3 mb-0'),
                 Column('grupo', css_class='form-group col-md-3 mb-0'),
