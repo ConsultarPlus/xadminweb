@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECRET_KEY = 'django-insecure-*j)f4!r#ayh$b19kfhme3w&i-398da9py7$bjgf(=dndwst_uv'
 
 test = False  # Esto sirve para poder hacer pruebas con DEBUG = False cargando configuraciones de prueba
-DEBUG = False
+DEBUG = True
 
 if not DEBUG and not test:
     BASE_DIR = '/home/consultar/xadminweb'

@@ -344,6 +344,33 @@ def cuenta_corriente(request, encriptado=None):
 
     return render(request, template_name, contexto)
 
+@login_required(login_url='ingresar')
+def cuenta_detalle(request, encriptado=None):
+    contexto = cuentas_filtrar(request, encriptado, False)
+    modo = request.GET.get('modo')
+    contexto['modo'] = modo
+    contexto['cuenta_corriente'] = True
+
+    if encriptado is None:
+        return redirect('menu')
+
+    if modo == 'm' or modo == 's':
+        template_name = 'cuentasD_list_block.html'
+    else:
+        template_name = 'cuentas_listar.html'
+
+    cliente = Cliente.objects.get(encriptado=encriptado)
+
+    if cliente.saldo_inicial is None:
+        si = 0
+    else:
+        si = cliente.saldo_inicial
+
+    contexto['saldo_inicial'] = si
+
+    contexto['saldo_actual'] = saldo_total(si, cliente)
+
+    return render(request, template_name, contexto)
 
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_agrega", None, raise_exception=True)
@@ -534,7 +561,7 @@ def cuentas_importar(request):
 
 @login_required(login_url='ingresar')
 def imprimir_png(request, id, encriptado=None):
-
+    print("Dir:" + BASE_DIR)
     comprobante = Cuentas.objects.get(id=id)
     validacion = Cliente.objects.get(clicod=comprobante.cliente)
     cliente = Cliente.objects.get(encriptado=encriptado)
@@ -545,7 +572,8 @@ def imprimir_png(request, id, encriptado=None):
         dat = encriptado + format(id)
         nombre_de_archivo = dat + '.pdf'
         if DEBUG:
-            carpeta_media = BASE_DIR + '/media/'
+            carpeta_media = BASE_DIR + '\media\ '.strip()
+            print("Funca:" + carpeta_media)
         else:
             carpeta_media = '/home/consultar/xadminweb/media/'
 

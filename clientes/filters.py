@@ -37,7 +37,7 @@ def cuentas_filtrar(query_dict, encriptado, facturas_pendientes):
     buscar = query_dict.GET.get('buscar')
     items = get_opcion_paginado(query_dict)
     modo = query_dict.GET.get('modo')
-    filtrado = Cuentas.objects.all()
+    filtrado = Cuentas.objects.all().order_by('-fecha_emision')
 
     if encriptado != '' and encriptado is not None:
         filtrado = filtrado.filter(cliente__encriptado=encriptado)

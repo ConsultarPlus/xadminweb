@@ -11,6 +11,7 @@ from .views import (cliente_agregar,
                     facturas_pendientes,
                     cuentas_listar_admin,
                     cuenta_corriente,
+                    cuenta_detalle,
                     cuentas_importar,
                     imprimir_png,
                     )
@@ -30,5 +31,6 @@ urlpatterns = [
     path('cuentas_listar/', cuentas_listar_admin, name='cuentas_listar_admin'),
     path('cuentas_importar/', cuentas_importar, name='cuentas_importar'),
     path('cuenta_corriente/<slug:encriptado>', cuenta_corriente, name='cuenta_corriente'),
+    path('cuenta_detalle/<slug:encriptado>', cuenta_detalle, name='cuenta_corriente'),
     path('imprimir_png/<int:id>/<slug:encriptado>', imprimir_png, name='imprimir_png'),
 ]

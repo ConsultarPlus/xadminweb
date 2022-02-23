@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+from datetime import date
 from django.template.defaulttags import register
 from django.urls import resolve
 from tabla.listas import PRIORIDAD, AMBITO, PREPOSICIONES, ADMISIBLES
@@ -166,8 +167,8 @@ def trim(cadena):
 
 @register.filter
 def atraso(d1):
-    if isinstance(d1, datetime):
-        d2 = datetime.today()
+    if isinstance(d1, date):
+        d2 = date.today()
         return abs((d2 - d1).days)
     else:
         return 0
@@ -401,6 +402,11 @@ def encode_utf8(texto_original):
     texto = texto_original.encode(encoding="utf-8", errors="ignore")
     texto = texto.decode()
     return texto
+
+@register.filter
+def decimales(num):
+    numdec = "{:.2f}".format(num)
+    return numdec
 
 
 @register.filter(is_safe=False)
