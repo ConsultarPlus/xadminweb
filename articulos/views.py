@@ -41,22 +41,11 @@ def articulo_agregar(request):
     return render(request, template_name, {'form': form})
 
 
-
-
-
-
-
-
-
-
-
-
 @login_required(login_url='ingresar')
 @permission_required("articulo_editar", None, raise_exception=True)
 def articulo_editar(request, id):
     try:
         articulo = Articulo.objects.get(id=id)
-        print(articulo)
     except Exception as mensaje:
         messages.add_message(request, messages.ERROR, mensaje)
         return redirect('articulos_listar')
@@ -98,22 +87,15 @@ def articulos_importar(request):
                             values = line_aux.split(';')
                             artcod = values[0].replace("'", "")
                             artcod = artcod.replace('"', '')
-
-                            if cnt == 0:
-                                print('*values: ', values)
-                                print('*artcod: ', artcod)
-
-                            artcod = ''
                             descripcion = ''
                             iva = 0
-                            artprecos = 0
+                            precio = 0
                             moneda = 0
                             departamento = ''
                             artuniven = ''
                             descextra = ''
                             ubicacion = ''
                             artimg = ''
-
 
                             if len(values) > 1:
                                 artcod = values[1].strip()
@@ -122,7 +104,7 @@ def articulos_importar(request):
                                     if len(values) > 3:
                                         iva = values[3].strip()
                                         if len(values) > 4:
-                                            artprecos = values[4].strip()
+                                            precio = values[4].strip()
                                             if len(values) > 5:
                                                     moneda = values[5].strip()
                                                     if len(values) > 6:
@@ -144,8 +126,8 @@ def articulos_importar(request):
                                     articulo.descripcion = descripcion.upper()
                                 if iva:
                                     articulo.iva = iva
-                                if artprecos:
-                                    articulo.artprecos = artprecos
+                                if precio:
+                                    articulo.precio = precio
                                 if moneda:
                                     articulo.moneda = moneda
                                 if departamento:
@@ -173,7 +155,7 @@ def articulos_importar(request):
                                                   descripcion=descripcion,
                                                   articulo=articulo,
                                                   iva=iva,
-                                                  artprecos=artprecos,
+                                                  precio=precio,
                                                   moneda=moneda,
                                                   departamento=departamento,
                                                   artuniven=artuniven,
@@ -208,7 +190,7 @@ def articulos_importar(request):
         form = ImportarCSVForm(initial=initial)
 
     template_name = 'tabla/tabla_form.html'
-    formato = 'ArtCod C(13) ; escripcion C(60); iva N(6); artprecos N(12); ' \
+    formato = 'ArtCod C(13) ; escripcion C(60); iva N(6); precio N(12); ' \
               'moneda N(2); departamento C(12); artuniven C(3); descextra C(255) ' \
               'ubicacion C(15); artimg C(250); ' \
               'Codificación UTF-8'
