@@ -1,6 +1,7 @@
 {% load crispy_forms_tags %}
 {% load custom_tags %}
 {% load static %}
+{% get_media_prefix as MEDIA_URL %}
 {% if request.GET.seleccionar == 'True' %}
     {% include "cabeza.html" %}
     <div id="content" class="{% block coltype %}colM{% endblock %}">
@@ -63,6 +64,11 @@
                 <th>Unidad</th>
                 <th></th>
                 <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
+                <th></th>
             </tr>
             </thead>
             <tbody>
@@ -86,6 +92,15 @@
                 <td>{{ item.departamento }}</td>
                 <td>{{ item.ubicacion }}</td>
                 <td>{{ item.artuniven|unidad_descripcion }}</td>
+                {% if item.artimg.name|tiene_vista_previa %}
+                    <td><a target="_blank"
+                           href="{{ MEDIA_URL }}{{ item.artimg }}">
+                           <img class="preview" src="/media/{{ item.artimg }}" style="width:1500px">
+                        </a>
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
                 <td><a href="{% url 'articulo_editar' item.id %}" class="changelink">Editar</a></td>
                 <td><a href="{% url 'articulo_eliminar' item.id %}" class="deletelink">Eliminar</a></td>
             </tr>
