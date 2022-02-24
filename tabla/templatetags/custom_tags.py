@@ -4,6 +4,7 @@ from django.template.defaulttags import register
 from django.urls import resolve
 from tabla.listas import PRIORIDAD, AMBITO, PREPOSICIONES, ADMISIBLES
 from tabla.models import MODELOS, Traduccion, Plantilla
+from tabla.listas import UNIDADES, MONEDA
 
 
 @register.filter
@@ -61,6 +62,25 @@ def prioridad_descripcion(key):
     else:
         PRIORIDAD_TUP = dict(PRIORIDAD)
         return get_item(PRIORIDAD_TUP, key)
+
+
+@register.filter
+def moneda_descripcion(key):
+    if key == '' or key is None:
+        return '--'
+    else:
+        PRIORIDAD_TUP = dict(MONEDA)
+        return get_item(PRIORIDAD_TUP, key)
+
+
+@register.filter
+def unidad_descripcion(key):
+    if key == '' or key is None:
+        return '--'
+    else:
+        PRIORIDAD_TUP = dict(UNIDADES)
+        return get_item(PRIORIDAD_TUP, key)
+
 
 
 @register.filter
