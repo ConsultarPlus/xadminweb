@@ -38,8 +38,8 @@ IVAS = (
     ('S', 'SERVICIOS'),
 )
 MONEDA = (
-    ('1', 'PESO'),
-    ('2', 'DOLAR')
+    (1, 'PESO'),
+    (2, 'DOLAR')
 )
 
 ACTIVO = (

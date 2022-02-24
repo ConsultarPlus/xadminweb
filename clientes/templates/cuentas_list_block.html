@@ -32,9 +32,6 @@
                         <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"
                                class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>
                         </th>
-                        <th><a href="{% url 'facturas_exportar' %}?modo={{ request.GET.modo }}"
-                               class="addlink">{% traducir 'exportar CSV' 'CUENTAS' %}</a>
-                        </th>
                     </tr>
                 </table>
             </div>
@@ -86,6 +83,7 @@
                         <th>{% traducir 'Total Débito' 'CUENTAS' %}</th>
                         <th>{% traducir 'Total Crédito' 'CUENTAS' %}</th>
                     {% endif %}
+                        <th>{% traducir 'Ver Detalle' 'CUENTAS' %}</th>
                     <th></th>
                 </tr>
             </thead>
@@ -135,6 +133,7 @@
                         {% endif %}
                     </td>
                 {% endif %}
+                <td><a href="{% url 'cuenta_detalle' item.id item.cliente.encriptado %} " target="_blank" class="printlink">{% traducir 'Ver Detalle' 'CUENTAS' %}</a></td>
                 <td></td>
             </tr>
             {% endfor %}

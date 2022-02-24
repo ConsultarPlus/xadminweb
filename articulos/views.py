@@ -29,12 +29,12 @@ def articulos_listar(request):
 def articulo_agregar(request):
     url = reverse('articulo_agregar')
     if request.POST:
-      form = ArticuloForm(request.POST)
-      if form.is_valid():
-        Articulo.save()
-        return redirect('articulo_agregar')
+        form = ArticuloForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('articulos_listar')
     else:
-        form =ArticuloForm()
+        form = ArticuloForm()
 
     template_name = "articulos_form.html"
 
@@ -118,10 +118,7 @@ def articulos_importar(request):
                                                                     if len(values) > 10:
                                                                         artimg = values[10].strip
                             try:
-                                articulo = articulo.objects.get(artcod=artcod)
-                                if artcod:
-                                    articulo = articulo.objects.get(artcod=artcod)
-                                    articulo.articulo = articulo
+                                articulo = Articulo.objects.get(artcod=artcod)
                                 if descripcion:
                                     articulo.descripcion = descripcion.upper()
                                 if iva:
@@ -136,24 +133,17 @@ def articulos_importar(request):
                                     articulo.artuniven = artuniven
                                 if descextra:
                                     articulo.descextra = descextra
-                                    print(cptedh)
                                 if artimg:
                                     articulo.artimg = artimg
-                                    print(cptedh)
                                 if ubicacion:
-                                    if ubicacion == 'S':
-                                        ubicacion = True
-                                    else:
-                                        pendiente = False
-                                    articulo.pendiente = pendiente
+                                    articulo.ubicacion = ubicacion
                                 articulo.save()
                                 actualizados += 1
                                 exitos += 1
-                            except articulo.DoesNotExist:
-                                articulo = articulo.objects.get(artcod=artcod)
-                                articulo = articulo(artcod=artcod,
+                            except Articulo.DoesNotExist:
+                                print('epaa')
+                                articulo = Articulo(artcod=artcod,
                                                   descripcion=descripcion,
-                                                  articulo=articulo,
                                                   iva=iva,
                                                   precio=precio,
                                                   moneda=moneda,

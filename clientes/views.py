@@ -344,8 +344,9 @@ def cuenta_corriente(request, encriptado=None):
 
     return render(request, template_name, contexto)
 
+
 @login_required(login_url='ingresar')
-def cuenta_detalle(request, encriptado=None):
+def cuenta_detalle(request, id=None, encriptado=None):
     contexto = cuentas_filtrar(request, encriptado, False)
     modo = request.GET.get('modo')
     contexto['modo'] = modo
@@ -357,7 +358,7 @@ def cuenta_detalle(request, encriptado=None):
     if modo == 'm' or modo == 's':
         template_name = 'cuentasD_list_block.html'
     else:
-        template_name = 'cuentas_listar.html'
+        template_name = 'cuentasD_listar.html'
 
     cliente = Cliente.objects.get(encriptado=encriptado)
 
@@ -371,6 +372,7 @@ def cuenta_detalle(request, encriptado=None):
     contexto['saldo_actual'] = saldo_total(si, cliente)
 
     return render(request, template_name, contexto)
+
 
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_agrega", None, raise_exception=True)
@@ -495,6 +497,8 @@ def cuentas_importar(request):
                                 if cae:
                                     cuentas.cae = cae
                                 if vto_cae:
+                                    if vto_cae == "":
+                                        vto_cae = None
                                     cuentas.vencimiento_cae = vto_cae
                                 if pdf:
                                     cuentas.pdf = pdf
@@ -511,6 +515,12 @@ def cuentas_importar(request):
                                 exitos += 1
                             except Cuentas.DoesNotExist:
                                 cliente = Cliente.objects.get(clicod=clicod)
+                                if vto_cae == "":
+                                    vto_cae = None
+                                if pendiente == 'N':
+                                    pendiente = False
+                                if pendiente == 'S':
+                                    pendiente = True
                                 cuentas = Cuentas(vtacod=vtacod,
                                                   comprobante=comprobante,
                                                   cliente=cliente,
