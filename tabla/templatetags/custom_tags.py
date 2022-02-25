@@ -422,3 +422,18 @@ def incluir_plantilla(plantilla_id):
         plantilla_html = 'No se indicó el ID de la plantilla a incluir'
 
     return plantilla_html
+
+@register.filter
+def iva21(num):
+    numtot = (num/100) * 121
+    return numtot
+
+@register.filter
+def iva27(num):
+    numtot = (num/100) * 127
+    return numtot
+
+@register.filter
+def iva105(num):
+    numtot = (num/100) * 110.5
+    return numtot

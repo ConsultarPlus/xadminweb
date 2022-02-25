@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils.translation import ugettext as _
-
+from articulos.models import Articulo
 
 # Create your models here.
 from tabla.listas import IVAS
@@ -26,6 +26,7 @@ class Cliente(models.Model):
                 return "06"
             else:
                 return "Undefined"
+
     tipocmp = property(_get_tipocmp)
 
     def __str__(self):
@@ -47,7 +48,7 @@ class Cuentas(models.Model):
     fecha_vencimiento = models.DateField(verbose_name='Vencimiento', null=False, blank=False)
     total = models.IntegerField(null=False, blank=False)
     concepto = models.TextField(null=True, blank=True)
-    pdf = models.FileField(null=True, blank=True)
+    pdf = models.FileField(null=True, blank=False)
     cae = models.CharField(max_length=20, null=True, blank=True)
     vencimiento_cae = models.DateField(null=True, blank=True)
     pendiente = models.BooleanField(null=False, blank=False, default=False)
@@ -58,6 +59,7 @@ class Cuentas(models.Model):
         while len(num) < 8:
             num = "0" + num
         return num
+
     numero = property(_get_numero)
 
     def _get_sucursal(self):
@@ -65,26 +67,45 @@ class Cuentas(models.Model):
         while len(suc) < 4:
             suc = "0" + suc
         return suc
+
     sucursal = property(_get_sucursal)
 
     def _get_tipocmp(self):
         return self.comprobante.split('-')[1]
+
     tipocmp = property(_get_tipocmp)
 
     def _get_subtotal(self):
         subt = (self.total / 121) * 100
         return "{:.2f}".format(subt)
+
     subtotal = property(_get_subtotal)
 
     def _get_iva(self):
         i = (self.total / 121) * 21
         return "{:.2f}".format(i)
+
     iva = property(_get_iva)
 
     def _getiva27(self):
         i = (self.total / 121) * 27
         return "{:.2f}".format(i)
+
     iva27 = property(_getiva27)
+
+    class Meta:
+        permissions = (("clientes.cuentas_agregar", _("Agregar")),
+                       ("clientes.cuentas_editar", _("Editar")),
+                       ("clientes.cuentas_eliminar", _("Eliminar")),
+                       ("clientes.cuentas_listar", _("Listar")),
+                       ("clientes.cuentas_listar_admin", _("Listar Admin")),
+                       ("clientes.cuenta_corriente", _("Cuenta Corriente")),
+                       )
+
+
+class CuentasD(models.Model):
+    vtacod = models.IntegerField(null=False, blank=False)
+    articulo = models.ForeignKey(Articulo, on_delete=models.DO_NOTHING, null=False, blank=False)
 
     class Meta:
         permissions = (("clientes.cuentas_agregar", _("Agregar")),

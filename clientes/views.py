@@ -6,9 +6,9 @@ from django.contrib.auth.models import User, Group
 from django.http import FileResponse, HttpResponse
 from urllib.parse import urlencode
 import os
-from .models import Cliente, Cuentas
+from .models import Cliente, Cuentas, CuentasD
 from .forms import ClienteForm, CuentasForm
-from .filters import clientes_filtrar, cuentas_filtrar
+from .filters import clientes_filtrar, cuentas_filtrar, cuentasd_filtrar
 from tabla.forms import ImportarCSVForm
 from tabla.funcs import es_valido, email_valido, saldo_total
 from tabla.funcs import get_lett
@@ -347,10 +347,14 @@ def cuenta_corriente(request, encriptado=None):
 
 @login_required(login_url='ingresar')
 def cuenta_detalle(request, id=None, encriptado=None):
-    contexto = cuentas_filtrar(request, encriptado, False)
+    cuentas = Cuentas.objects.get(id=id)
+    contexto = cuentasd_filtrar(request, cuentas.vtacod, False)
     modo = request.GET.get('modo')
     contexto['modo'] = modo
-    contexto['cuenta_corriente'] = True
+
+    comprobante = Cuentas.objects.get(id=id)
+
+    contexto['comprobante'] = comprobante
 
     if encriptado is None:
         return redirect('menu')
@@ -359,17 +363,6 @@ def cuenta_detalle(request, id=None, encriptado=None):
         template_name = 'cuentasD_list_block.html'
     else:
         template_name = 'cuentasD_listar.html'
-
-    cliente = Cliente.objects.get(encriptado=encriptado)
-
-    if cliente.saldo_inicial is None:
-        si = 0
-    else:
-        si = cliente.saldo_inicial
-
-    contexto['saldo_inicial'] = si
-
-    contexto['saldo_actual'] = saldo_total(si, cliente)
 
     return render(request, template_name, contexto)
 
@@ -466,7 +459,7 @@ def cuentas_importar(request):
                                             fecha_vencimiento = values[4].strip()
                                             if len(values) > 5:
                                                 t = values[5].replace("'", "")
-                                                total = int(float(t))
+                                                total = float(t) / 10000
                                                 if len(values) > 6:
                                                     concepto = values[6].strip()
                                                     if len(values) > 7:
@@ -638,6 +631,20 @@ def imprimir_png(request, id, encriptado=None):
         doc.drawString(75, 550, "SON PESOS:")
         doc.drawString(75, 530, get_lett(comprobante.total))
         doc.drawString(75, 510, comprobante.concepto)
+        alt = 510
+        articulos = CuentasD.objects.filter(vtacod=comprobante.vtacod)
+        for item in articulos:
+            producto = item.articulo.artcod + " - " + '{}'.format(item.articulo.descripcion) + " - " + '{}'.format(item.articulo.precio)
+
+            if item.articulo.moneda == 1:
+                producto = producto + " pesos "
+            else:
+                producto = producto + " dolares "
+
+            producto = producto + "(Con IVA del " + '{}'.format(item.articulo.iva) + "%)"
+            alt -= 20
+            doc.drawString(75, alt, producto)
+
         doc.setFontSize(9)
         doc.drawString(150, 25, "https://serviciosweb.afip.gob.ar/genericos/comprobantes/cae.aspx")
         doc.setFontSize(12)

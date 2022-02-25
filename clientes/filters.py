@@ -1,4 +1,4 @@
-from .models import Cliente, Cuentas
+from .models import Cliente, Cuentas, CuentasD
 from django.db.models import Q
 from tabla.filters import paginador
 from tabla.forms import FiltroSimple
@@ -41,6 +41,33 @@ def cuentas_filtrar(query_dict, encriptado, facturas_pendientes):
 
     if encriptado != '' and encriptado is not None:
         filtrado = filtrado.filter(cliente__encriptado=encriptado)
+
+    if facturas_pendientes:
+        filtrado = filtrado.filter(pendiente=True)
+
+    if buscar != '' and buscar is not None:
+        filtrado = filtrado.filter(concepto__icontains=buscar)
+
+    registros = filtrado.count()
+    paginado = paginador(query_dict, filtrado)
+
+    form = FiltroSimple(initial={'buscar': buscar,
+                                 'items': items,
+                                 'modo': modo})
+    return {'filter': filtrado,
+            'paginado': paginado,
+            'registros': registros,
+            'filtros_form': form}
+
+
+def cuentasd_filtrar(query_dict, vtacod, facturas_pendientes):
+    buscar = query_dict.GET.get('buscar')
+    items = get_opcion_paginado(query_dict)
+    modo = query_dict.GET.get('modo')
+    filtrado = CuentasD.objects.all().order_by('id')
+
+    if vtacod != '' and vtacod is not None:
+        filtrado = filtrado.filter(vtacod=vtacod)
 
     if facturas_pendientes:
         filtrado = filtrado.filter(pendiente=True)

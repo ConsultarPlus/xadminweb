@@ -9,15 +9,15 @@
     {% if cuenta_corriente %}
         <h1>{% traducir 'Cuenta Corriente' 'CUENTAS' %}</h1>
     {% else %}
-        {% if facturas_pendientes %}
-            <h1>{% traducir 'Facturas Pendientes' 'CUENTAS' %}</h1>
-        {% else %}
-            <h1>{% traducir 'Comprobantes' 'CUENTAS' %}</h1>
-        {% endif %}
-    {% endif %}
-    {% if filtros_form %}
-            {% if not cuenta_corriente %}
-            {% crispy filtros_form %}
+        <h1>{% traducir 'Detalles del Comprobante' 'CUENTAS' %}</h1>
+            <b>Fecha Emision:</b> {{ comprobante.fecha_emision|date:"d/m/Y" }} <br>
+            <b>Fecha Vencimiento:</b> {{ comprobante.fecha_vencimiento|date:"d/m/Y" }}<br>
+            <b>Total (Con IVA):</b> {{ comprobante.total|decimales }}<br>
+            <b>Concepto:</b> {{ comprobante.concepto }}<br><br>
+            {% if comprobante.pdf %}
+                <td><a href="{{ MEDIA_URL }}{{ comprobante.pdf }}" class="printlink" target="_blank">Ver Factura en PDF</a></td>
+            {% else %}
+                <td><a href="{% url 'imprimir_png' comprobante.id comprobante.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Ver Factura en PDF' 'CUENTAS' %}</a></td>
             {% endif %}
     {% endif %}
 
@@ -39,16 +39,6 @@
                 </table>
             </div>
         {% endif %}
-        {% if cuenta_corriente %}
-            <div class="col form-group">
-                <table>
-                    <tr class="model-group">
-                        <th>AAAAAAAAAAAA: {{ saldo_actual|decimales }}</th>
-                    <tr class="model-group">
-                        <th>AAAAAAAAAAAAA: {{ saldo_inicial|decimales }} a fecha de {{fecha_saldo}}</th>
-                </table>
-            </div>
-        {% endif %}
         {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
         <div class="col form-group" align="right">
             <div class="form-group">
@@ -64,84 +54,35 @@
         <br>
         <table id="tab">
             <thead>
-                <tr>
-                    {% if request.GET.modo == 'm' %}
-                        <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]"/></th>
-                    {% else %}
-                        <th></th>
-                    {% endif %}
-                    {% if not cuenta_corriente %}
-                        <th>{% traducir 'Comprobante' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Emisión' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Vencimiento' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Atraso' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Total' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
-                        <th>{% traducir 'PDF' 'CUENTAS' %}</th>
-                    {% else %}
-                        <th>{% traducir 'Comprobante' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Concepto' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Emisión' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Vencimiento' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Total Débito' 'CUENTAS' %}</th>
-                        <th>{% traducir 'Total Crédito' 'CUENTAS' %}</th>
-                    {% endif %}
-                    <th></th>
-                </tr>
+            <th>{% traducir 'ID Articulo' 'CUENTAS' %}</th>
+            <th>{% traducir 'Nombre Articulo' 'CUENTAS' %}</th>
+            <th>{% traducir 'Precio (Sin IVA)' 'CUENTAS' %}</th>
+            <th>{% traducir 'IVA' 'CUENTAS' %}</th>
+            <th>{% traducir 'Precio Total' 'CUENTAS' %}</th>
             </thead>
             <tbody>
             {% for item in paginado %}
-            <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
-                {% if request.GET.modo == 'm' %}
-                    <td><input type="checkbox" id="{{ item.id }}"/></td>
+             <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+                <td>{{item.articulo.id}}</td>
+                <td>{{item.articulo.artcod}}</td>
+                <td>{{item.articulo.precio}}</td>
+                <td>{{item.articulo.iva}}</td>
+                {% if item.articulo.iva == 21 %}
+                    <td>{{item.articulo.precio|iva21}}</td>
                 {% else %}
-                    {% if request.GET.modo == 's' %}
-                        <td><input type="radio" id="{{ item.id }}" name="items"></td>
-                    {% else %}
-                        <td></td>
-                    {% endif %}
-                {% endif %}
-
-                {% if not cuenta_corriente %}
-                    <td> {{ item.comprobante }}</td>
-                    <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
-                    <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
-                    {% if item.fecha_vencimiento|atraso > 0 %}
-                        <td bgcolor="pink">{{ item.fecha_vencimiento|atraso }}</td>
+                    {% if item.articulo.iva == 27 %}
+                        <td>{{item.articulo.precio|iva27}}</td>
+                     {% else %}
+                        {% if item.articulo.iva == 10.5 %}
+                            <td>{{item.articulo.precio|iva105}}</td>
                         {% else %}
-                        <td bgcolor="lightgreen">{{ item.fecha_vencimiento|atraso }}</td>
-                        {% endif %}
-                    </td>
-                    <td> {{ item.total|decimales }}</td>
-                    <td> {{ item.concepto }}</td>
-                    {% if item.cliente.encriptado %}
-                        {% if item.pdf %}
-                            <td><a href="{{ MEDIA_URL }}{{ item.pdf }}" class="printlink" target="_blank">Descargar pdf</a></td>
-                        {% else %}
-                            <td><a href="{% url 'imprimir_png' item.id item.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Descargar pdf' 'CUENTAS' %}</a></td>
-                        {% endif %}
-                    {% endif %}
-                {% else %}
-                    <td> {{ item.comprobante }}</td>
-                    <td> {{ item.concepto }}</td>
-                    <td> {{ item.fecha_emision|date:"d/m/Y" }}</td>
-                    <td> {{ item.fecha_vencimiento|date:"d/m/Y" }}</td>
-                    <td>
-                        {% if not item.cptedh == 'D' %}
-                            <td> {{ item.total|decimales }} </td>
-                        {% else %}
-                            {{ item.total|decimales }}
-                            <td></td>
-                        {% endif %}
-                    </td>
-                {% endif %}
-                <td></td>
-            </tr>
+                            <td>{{item.articulo.precio}}</td>
+                 {% endif %}{% endif %}{% endif %}
+             </tr>
             {% endfor %}
             </tbody>
         </table>
         <br>
-        {% include "paginador.html" %}
     </div>
     {% if not expediente %}
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
