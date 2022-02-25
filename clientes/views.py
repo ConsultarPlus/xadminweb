@@ -639,7 +639,10 @@ def imprimir_png(request, id, encriptado=None):
             if item.articulo.moneda == 1:
                 producto = producto + " pesos "
             else:
-                producto = producto + " dolares "
+                if item.articulo.moneda == 2:
+                    producto = producto + " dolares "
+                else:
+                    producto = producto + ""
 
             producto = producto + "(Con IVA del " + '{}'.format(item.articulo.iva) + "%)"
             alt -= 20
