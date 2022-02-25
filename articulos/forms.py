@@ -21,7 +21,7 @@ class ArticuloForm(forms.ModelForm):
         self.fields['moneda'].label = 'Moneda'
         self.fields['departamento'].label = 'Departamento'
         self.fields['artuniven'].label = 'Unidad'
-        self.fields['descextra'].label = 'Descripcion Extra'
+        self.fields['descextra'].label = 'Descripción Extra'
         self.fields['ubicacion'].label = 'Ubicación'
         self.fields['artimg'].label = 'Imagen'
 

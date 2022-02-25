@@ -5,6 +5,7 @@ from articulos.filters import articulos_filtrar
 from articulos.models import Articulo
 from articulos.forms import ArticuloForm
 from tabla.forms import ImportarCSVForm
+from tabla.models import Tabla
 from django.urls import reverse
 
 
@@ -50,17 +51,35 @@ def articulo_editar(request, id):
         messages.add_message(request, messages.ERROR, mensaje)
         return redirect('articulos_listar')
 
+    template_name = 'articulos_form.html'
+
     if request.method == 'POST':
        post= request.POST.copy()
        form = ArticuloForm(post, request.FILES, instance=articulo)
+       contexto = {'form': form, 'MODELO': articulo}
        if form.is_valid():
             form.save()
             return redirect('articulos_listar')
     else:
         form = ArticuloForm(instance=articulo)
-        template_name = 'articulos_form.html'
         contexto = {'form': form, 'MODELO': articulo}
-        return render(request, template_name, contexto)
+
+    return render(request, template_name, contexto)
+
+
+@login_required(login_url='ingresar')
+@permission_required("articulos.articulo_eliminar", None, raise_exception=True)
+def articulo_eliminar(request, id):
+    url = 'articulos_listar'
+    try:
+        articulo = Articulo.objects.get(id=id)
+        articulo.delete()
+    except Exception as e:
+        mensaje = 'No se puede eliminar porque el ítem está referenciado en ' \
+                  'otros registros. Otra opción es desactivarlo'
+        messages.add_message(request, messages.ERROR, mensaje)
+
+    return redirect(url)
 
 
 @login_required(login_url='ingresar')
@@ -98,25 +117,29 @@ def articulos_importar(request):
                             artimg = ''
 
                             if len(values) > 1:
-                                artcod = values[1].strip()
+                                descripcion = values[1].replace("'", "").strip()
                                 if len(values) > 2:
-                                    descripcion = values[2].replace("'", "").strip()
+                                    aux = values[2].replace("'", "")
+                                    aux = values[2].replace(",", ".")
+                                    iva = int(float(aux.strip()))
                                     if len(values) > 3:
-                                        iva = values[3].strip()
+                                        aux = values[3].replace("'", "")
+                                        aux = values[3].replace(",", ".")
+                                        precio = float(aux.strip())
                                         if len(values) > 4:
-                                            precio = values[4].strip()
-                                            if len(values) > 5:
-                                                    moneda = values[5].strip()
+                                                aux = values[4].replace("'", "")
+                                                aux = values[4].replace(",", ".")
+                                                moneda = int(float(aux.strip()))
+                                                if len(values) > 5:
+                                                    departamento = values[5].replace("'", "").strip()
                                                     if len(values) > 6:
-                                                        departamento = values[6].strip()
+                                                        artuniven = values[6].replace("'", "").strip()
                                                         if len(values) > 7:
-                                                            artuniven = values[7].strip()
+                                                            descextra = values[7].replace("'", "").strip()
                                                             if len(values) > 8:
-                                                                descextra = values[8].strip()
+                                                                ubicacion = values[8].replace("'", "").strip()
                                                                 if len(values) > 9:
-                                                                    ubicacion = values[9].strip()
-                                                                    if len(values) > 10:
-                                                                        artimg = values[10].strip
+                                                                    artimg = values[9].replace("'", "").strip()
                             try:
                                 articulo = Articulo.objects.get(artcod=artcod)
                                 if descripcion:
@@ -128,7 +151,14 @@ def articulos_importar(request):
                                 if moneda:
                                     articulo.moneda = moneda
                                 if departamento:
-                                    articulo.departamento = departamento
+                                    try:
+                                        depto = Tabla.objects.get(codigo=departamento, entidad='DEPARTAMENTO')
+                                    except Tabla.DoesNotExist:
+                                        depto = Tabla(entidad='DEPARTAMENTO',
+                                                      codigo=departamento,
+                                                      descripcion=departamento)
+                                        depto.save()
+                                    articulo.departamento = depto
                                 if artuniven:
                                     articulo.artuniven = artuniven
                                 if descextra:
@@ -141,17 +171,23 @@ def articulos_importar(request):
                                 actualizados += 1
                                 exitos += 1
                             except Articulo.DoesNotExist:
-                                print('epaa')
+                                try:
+                                    depto = Tabla.objects.get(codigo=departamento, entidad='DEPARTAMENTO')
+                                except Tabla.DoesNotExist:
+                                    depto = Tabla(entidad='DEPARTAMENTO',
+                                                  codigo=departamento,
+                                                  descripcion=departamento)
+                                    depto.save()
                                 articulo = Articulo(artcod=artcod,
-                                                  descripcion=descripcion,
-                                                  iva=iva,
-                                                  precio=precio,
-                                                  moneda=moneda,
-                                                  departamento=departamento,
-                                                  artuniven=artuniven,
-                                                  artimg=artimg,
-                                                  ubicacion=ubicacion,
-                                                  descextra =descextra)
+                                                    descripcion=descripcion,
+                                                    iva=iva,
+                                                    precio=precio,
+                                                    moneda=moneda,
+                                                    departamento=depto,
+                                                    artuniven=artuniven,
+                                                    artimg=artimg,
+                                                    ubicacion=ubicacion,
+                                                    descextra=descextra)
                                 articulo.save()
                                 nuevos += 1
                                 exitos += 1
@@ -176,13 +212,15 @@ def articulos_importar(request):
                 else:
                     messages.add_message(request, messages.INFO, msj)
                     return redirect('articulo_listar')
+        else:
+            messages.add_message(request, messages.ERROR, 'error')
     else:
         form = ImportarCSVForm(initial=initial)
 
     template_name = 'tabla/tabla_form.html'
-    formato = 'ArtCod C(13) ; escripcion C(60); iva N(6); precio N(12); ' \
+    formato = 'ArtCod C(13) ; Descripcion C(60); iva N(6); Precio N(12); ' \
               'moneda N(2); departamento C(12); artuniven C(3); descextra C(255) ' \
-              'ubicacion C(15); artimg C(250); ' \
+              'ubicación C(15); artimg C(250); ' \
               'Codificación UTF-8'
     titulo = 'Importar CSV'
     contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
