@@ -30,7 +30,10 @@
                                class="addlink">{% traducir 'Agregar' 'CUENTAS' %}</a>
                         </th>
                         <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"
-                               class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>
+                               class="addlink">{% traducir 'Importar CSV Cuentas' 'CUENTAS' %}</a>
+                        </th>
+                        <th><a href="{% url 'cuentasd_importar' %}?modo={{ request.GET.modo }}"
+                               class="addlink">{% traducir 'Importar CSV CuentasD' 'CUENTAS' %}</a>
                         </th>
                     </tr>
                 </table>
@@ -133,7 +136,11 @@
                         {% endif %}
                     </td>
                 {% endif %}
-                <td><a href="{% url 'cuenta_detalle' item.id item.cliente.encriptado %} " target="_blank" class="printlink">{% traducir 'Ver Detalle' 'CUENTAS' %}</a></td>
+                {% if item.comprobante|co == True %}
+                    <td></td>
+                {% else %}
+                    <td><a href="{% url 'cuenta_detalle' item.id item.cliente.encriptado %} " target="_blank" class="printlink">{% traducir 'Ver Detalle' 'CUENTAS' %}</a></td>
+                {% endif %}
                 <td></td>
             </tr>
             {% endfor %}

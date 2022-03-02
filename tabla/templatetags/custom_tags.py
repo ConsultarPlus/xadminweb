@@ -83,7 +83,6 @@ def unidad_descripcion(key):
         return get_item(PRIORIDAD_TUP, key)
 
 
-
 @register.filter
 def prioridad_color(prioridad):
     """ Esta etiqueta se puede usar al mostrar campos de prioridad (Alta/Media/Baja)
@@ -297,7 +296,6 @@ def define(val=None):
     return val
 
 
-
 @register.filter
 def vencimiento_color(vencimiento):
     """
@@ -305,7 +303,7 @@ def vencimiento_color(vencimiento):
     """
     d1 = datetime.today().date()
     dias_para_vencer = abs((vencimiento - d1).days)
-    if vencimiento < d1: # vencido, en rojo
+    if vencimiento < d1:  # vencido, en rojo
         bgcolor = "#ff8080"
         fcolor = "#330000"
     else:
@@ -423,6 +421,7 @@ def encode_utf8(texto_original):
     texto = texto.decode()
     return texto
 
+
 @register.filter
 def decimales(num):
     numdec = "{:.2f}".format(num)
@@ -443,17 +442,37 @@ def incluir_plantilla(plantilla_id):
 
     return plantilla_html
 
+
 @register.filter
 def iva21(num):
-    numtot = (num/100) * 121
+    if num.precio is None:
+        numtot = (num.articulo.precio / 100) * 121 * num.cantidad
+    else:
+        numtot = (num.precio / 100) * 121 * num.cantidad
     return numtot
+
 
 @register.filter
 def iva27(num):
-    numtot = (num/100) * 127
+    if num.precio is None:
+        numtot = (num.articulo.precio / 100) * 127 * num.cantidad
+    else:
+        numtot = (num.precio / 100) * 127 * num.cantidad
     return numtot
+
 
 @register.filter
 def iva105(num):
-    numtot = (num/100) * 110.5
+    if num.precio is None:
+        numtot = (num.articulo.precio / 100) * 110.5 * num.cantidad
+    else:
+        numtot = (num.precio / 100) * 110.5 * num.cantidad
     return numtot
+
+
+@register.filter
+def co(nom):
+    if "CO" in nom:
+        return True
+    else:
+        return False

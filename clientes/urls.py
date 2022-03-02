@@ -13,9 +13,9 @@ from .views import (cliente_agregar,
                     cuenta_corriente,
                     cuenta_detalle,
                     cuentas_importar,
+                    cuentasd_importar,
                     imprimir_png,
                     )
-
 
 urlpatterns = [
     path('cliente_agregar/', cliente_agregar, name='cliente_agregar'),
@@ -30,6 +30,7 @@ urlpatterns = [
     path('facturas_pendientes/<slug:encriptado>', facturas_pendientes, name='facturas_pendientes'),
     path('cuentas_listar/', cuentas_listar_admin, name='cuentas_listar_admin'),
     path('cuentas_importar/', cuentas_importar, name='cuentas_importar'),
+    path('cuentasd_importar/', cuentasd_importar, name='cuentasd_importar'),
     path('cuenta_corriente/<slug:encriptado>', cuenta_corriente, name='cuenta_corriente'),
     path('cuenta_detalle/<int:id>/<slug:encriptado>', cuenta_detalle, name='cuenta_detalle'),
     path('imprimir_png/<int:id>/<slug:encriptado>', imprimir_png, name='imprimir_png'),

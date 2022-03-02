@@ -54,8 +54,8 @@
         <br>
         <table id="tab">
             <thead>
-            <th>{% traducir 'ID Articulo' 'CUENTAS' %}</th>
-            <th>{% traducir 'Nombre Articulo' 'CUENTAS' %}</th>
+            <th>{% traducir 'Descripción' 'CUENTAS' %}</th>
+            <th>{% traducir 'Cantidad' 'CUENTAS' %}</th>
             <th>{% traducir 'Precio (Sin IVA)' 'CUENTAS' %}</th>
             <th>{% traducir 'IVA' 'CUENTAS' %}</th>
             <th>{% traducir 'Precio Total' 'CUENTAS' %}</th>
@@ -63,18 +63,33 @@
             <tbody>
             {% for item in paginado %}
              <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
-                <td>{{item.articulo.id}}</td>
-                <td>{{item.articulo.artcod}}</td>
-                <td>{{item.articulo.precio}}</td>
+                {% if item.descripcion == None %}
+                    {% if item.articulo.descripcion == None %}
+                        <td>{{item.articulo.artcod}}</td>
+                    {% else %}
+                        <td>{{item.articulo.artcod}}, {{item.articulo.descripcion}}</td>
+                    {% endif %}
+                {% else %}
+                    <td>{{item.articulo.artcod}}, {{item.descripcion}}</td>
+                {% endif %}
+
+                <td>{{item.cantidad}}</td>
+
+                {% if item.precio == None %}
+                    <td>{{item.articulo.precio}}</td>
+                {% else %}
+                    <td>{{item.precio}}</td>
+                {% endif %}
+
                 <td>{{item.articulo.iva}}</td>
                 {% if item.articulo.iva == 21 %}
-                    <td>{{item.articulo.precio|iva21}}</td>
+                    <td>{{item|iva21}}</td>
                 {% else %}
                     {% if item.articulo.iva == 27 %}
-                        <td>{{item.articulo.precio|iva27}}</td>
+                        <td>{{item|iva27}}</td>
                      {% else %}
                         {% if item.articulo.iva == 10.5 %}
-                            <td>{{item.articulo.precio|iva105}}</td>
+                            <td>{{item|iva105}}</td>
                         {% else %}
                             <td>{{item.articulo.precio}}</td>
                  {% endif %}{% endif %}{% endif %}

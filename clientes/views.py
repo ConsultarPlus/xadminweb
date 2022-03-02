@@ -23,7 +23,7 @@ import webbrowser
 import json
 import keyboard
 from tabla.listas import IVAS
-
+from articulos.models import Articulo
 
 # Create your views here.
 @login_required(login_url='ingresar')
@@ -383,6 +383,95 @@ def cuentas_agregar(request):
 
     return render(request, template_name, {'form': form})
 
+@login_required(login_url='ingresar')
+@permission_required("clientes.cuentas_agrega", None, raise_exception=True)
+def cuentasd_importar(request):
+    errores_lista = []
+    initial = {'entidades': (('CUENTASD', 'CuentasD'),),
+               'entidad': 'CuentasD'}
+    if request.POST:
+        form = ImportarCSVForm(request.POST, request.FILES, initial=initial)
+        if form.is_valid():
+            csv = request.FILES['archivo']
+            entidad = form.cleaned_data['entidad']
+            actualizados = 0
+            nuevos = 0
+            errores = 0
+            exitos = 0
+            msj = ''
+            listadecods = []
+            try:
+                for cnt, line in enumerate(csv):
+                    line_aux = line.decode("utf-8-sig")
+                    if line_aux:
+                        values = line_aux.split(';')
+                        vtacod = values[0].replace("'", "")
+                        vtacod = vtacod.replace('"', '')
+                        listadecods.append(vtacod)
+
+                listadecods = list(dict.fromkeys(listadecods))
+                for cod in listadecods:
+                    cuentas = CuentasD.objects.filter(vtacod=cod)
+                    for item in cuentas:
+                        item.delete()
+
+                for cnt, line in enumerate(csv):
+                    line_aux = line.decode("utf-8-sig")
+                    try:
+                        values = line_aux.split(';')
+                        vtacod = values[0].replace("'", "").replace('"', '')
+
+                        if len(values) > 1:
+                            artcod = values[1].strip()
+                            try:
+                                articulo = Articulo.objects.get(artcod=artcod)
+                            except Exception as e:
+                                articulo = Articulo(artcod=artcod)
+                                articulo.save()
+                            if len(values) > 2:
+                                descripcion = values[2].strip()
+                                if len(values) > 3:
+                                    cantidad = values[3].strip()
+                                    if len(values) > 4:
+                                        precio = values[4].strip()
+
+                        cuentasd = CuentasD(vtacod=vtacod,
+                                            articulo=articulo,
+                                            cantidad=cantidad,
+                                            descripcion=descripcion,
+                                            precio=precio)
+                        cuentasd.save()
+                        nuevos += 1
+                        exitos += 1
+                    except Exception as e:
+                        errores += 1
+                        if errores <= 10:
+                            if errores == 10:
+                                errores_lista.append('Hay más errores...')
+                            else:
+                                errores_lista.append('Fila {}: {}'.format(cnt + 1, e))
+            except Exception as e:
+                msj = e
+
+            if msj:
+                messages.add_message(request, messages.ERROR, msj)
+            else:
+                msj = 'Carga de {}: {} errores; {} actualizados; {} nuevos'.format(entidad, errores,
+                                                                                   actualizados, nuevos)
+                if errores_lista:
+                    messages.add_message(request, messages.ERROR, msj)
+                else:
+                    messages.add_message(request, messages.INFO, msj)
+                    return redirect('cuentas_listar')
+    else:
+        form = ImportarCSVForm(initial=initial)
+
+    template_name = 'tabla/tabla_form.html'
+    formato = 'VtaCod N(8) ; Articulo C(20); Cantidad N(2); Precio N(10); ' \
+              'Codificación UTF-8'
+    titulo = 'Importar CSV'
+    contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
+    return render(request, template_name, contexto)
 
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_editar", None, raise_exception=True)
@@ -634,7 +723,12 @@ def imprimir_png(request, id, encriptado=None):
         alt = 510
         articulos = CuentasD.objects.filter(vtacod=comprobante.vtacod)
         for item in articulos:
-            producto = item.articulo.artcod + " - " + '{}'.format(item.articulo.descripcion) + " - " + '{}'.format(item.articulo.precio)
+            producto = item.articulo.artcod + " - "
+
+            if item.precio is None:
+                producto = producto + '{}'.format(item.articulo.precio)
+            else:
+                producto = producto + '{}'.format(item.precio)
 
             if item.articulo.moneda == 1:
                 producto = producto + " pesos "

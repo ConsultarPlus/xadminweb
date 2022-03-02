@@ -105,7 +105,10 @@ class Cuentas(models.Model):
 
 class CuentasD(models.Model):
     vtacod = models.IntegerField(null=False, blank=False)
-    articulo = models.ForeignKey(Articulo, on_delete=models.DO_NOTHING, null=False, blank=False)
+    articulo = models.ForeignKey(Articulo, on_delete=models.DO_NOTHING, null=True, blank=False)
+    cantidad = models.FloatField(null=False, blank=False, default=1)
+    descripcion = models.TextField(null=True, blank=True)
+    precio = models.IntegerField(null=True, blank=True)
 
     class Meta:
         permissions = (("clientes.cuentas_agregar", _("Agregar")),
