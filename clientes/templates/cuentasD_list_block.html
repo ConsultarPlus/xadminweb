@@ -40,7 +40,7 @@
         <b>Total (Con IVA):</b> {{ comprobante.total|decimales }}<br>
         <b>Concepto:</b> {{ comprobante.concepto }}<br>
         <div id="checkbox_div">
-            Ocultar Imagen <input type="checkbox" value="hide" id="img_col" onchange="hide_show_table(this.id);">
+            <b>Ocultar Imágenes</b> <input type="checkbox" value="hide" id="img_col" onchange="hide_show_table(this.id);">
         </div><br>
         {% if comprobante.pdf %}
             <td><a href="{{ MEDIA_URL }}{{ comprobante.pdf }}" class="printlink" target="_blank">Ver Factura en PDF</a></td>
