@@ -533,9 +533,9 @@ def cuentasd_importar(request):
                                 articulo = Articulo(artcod=artcod)
                                 articulo.save()
                             if len(values) > 2:
-                                descripcion = values[2].strip()
+                                cantidad = values[2].strip()
                                 if len(values) > 3:
-                                    cantidad = values[3].strip()
+                                    descripcion = values[3].strip()
                                     if len(values) > 4:
                                         precio = values[4].strip()
 
