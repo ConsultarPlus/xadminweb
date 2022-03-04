@@ -16,6 +16,7 @@ def menu_processor(request):
             cliente_asociado = {'encriptado': 0, 'id': 0}
         fijar_menu = get_preferencia(usuario, 'menu', 'fijar', 'L', True)
         modo_obscuro = get_preferencia(usuario, 'menu', 'modo_obscuro', 'L', False)
+        fijar_imagen = get_preferencia(usuario, 'clientes', 'fijar_i', 'L', True)
         # CLIENTES
         cuentas_puede_listar = True
         cuenta_corriente = True
@@ -103,6 +104,7 @@ def menu_processor(request):
         return {'menues': menues,
                 'grupos': grupos,
                 'fijar_menu': fijar_menu,
+                'fijar_imagen': fijar_imagen,
                 'css_version': css_version,
                 'modo_obscuro': modo_obscuro,
                 'carpeta_media': carpeta_media,

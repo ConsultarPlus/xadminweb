@@ -6,39 +6,49 @@
         {% include "cabeza.html" %}
         <div id="content" class="{% block coltype %}colM{% endblock %}">
     {% endif %}
-    {% if cuenta_corriente %}
-        <h1>{% traducir 'Cuenta Corriente' 'CUENTAS' %}</h1>
-    {% else %}
-        <h1>{% traducir 'Detalles del Comprobante' 'CUENTAS' %}</h1>
-            <b>Fecha Emision:</b> {{ comprobante.fecha_emision|date:"d/m/Y" }} <br>
-            <b>Fecha Vencimiento:</b> {{ comprobante.fecha_vencimiento|date:"d/m/Y" }}<br>
-            <b>Total (Con IVA):</b> {{ comprobante.total|decimales }}<br>
-            <b>Concepto:</b> {{ comprobante.concepto }}<br><br>
-            {% if comprobante.pdf %}
-                <td><a href="{{ MEDIA_URL }}{{ comprobante.pdf }}" class="printlink" target="_blank">Ver Factura en PDF</a></td>
-            {% else %}
-                <td><a href="{% url 'imprimir_png' comprobante.id comprobante.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Ver Factura en PDF' 'CUENTAS' %}</a></td>
-            {% endif %}
-    {% endif %}
+    <h1>{% traducir 'Detalles del Comprobante' 'CUENTAS' %}</h1>
+        <script type="text/javascript">
+        function hide_show_table(col_name)
+        {
+            var checkbox_val=document.getElementById(col_name).value;
+            if(checkbox_val=="hide")
+            {
+                var all_col=document.getElementsByClassName(col_name);
+                for(var i=0;i<all_col.length;i++)
+                {
+                    all_col[i].style.display="none";
+                }
+                document.getElementById(col_name+"_head").style.display="none";
+                document.getElementById(col_name).value="show";
+            }
+
+            else
+            {
+                var all_col=document.getElementsByClassName(col_name);
+                for(var i=0;i<all_col.length;i++)
+                {
+                    all_col[i].style.display="table-cell";
+                }
+                document.getElementById(col_name+"_head").style.display="table-cell";
+                document.getElementById(col_name).value="hide";
+            }
+        }
+        </script>
+        <b>Cliente:</b> {{comprobante.cliente.nombre}} <br>
+        <b>Fecha Emision:</b> {{ comprobante.fecha_emision|date:"d/m/Y" }} <br>
+        <b>Fecha Vencimiento:</b> {{ comprobante.fecha_vencimiento|date:"d/m/Y" }}<br>
+        <b>Total (Con IVA):</b> {{ comprobante.total|decimales }}<br>
+        <b>Concepto:</b> {{ comprobante.concepto }}<br>
+        <div id="checkbox_div">
+            Ocultar Imagen <input type="checkbox" value="hide" id="img_col" onchange="hide_show_table(this.id);">
+        </div><br>
+        {% if comprobante.pdf %}
+            <td><a href="{{ MEDIA_URL }}{{ comprobante.pdf }}" class="printlink" target="_blank">Ver Factura en PDF</a></td>
+        {% else %}
+            <td><a href="{% url 'imprimir_png' comprobante.id comprobante.cliente.encriptado%} " target="_blank" class="printlink">{% traducir 'Ver Factura en PDF' 'CUENTAS' %}</a></td>
+        {% endif %}
 
     <div class="form-row form-row">
-        {% if subir_cuentas %}
-            <div class="col form-group">
-                <table>
-                    <tr class="model-group">
-                        <th><a href="{% url 'cuentas_agregar' %}?modo={{ request.GET.modo }}"
-                               class="addlink">{% traducir 'Agregar' 'CUENTAS' %}</a>
-                        </th>
-                        <th><a href="{% url 'cuentas_importar' %}?modo={{ request.GET.modo }}"
-                               class="addlink">{% traducir 'Importar CSV' 'CUENTAS' %}</a>
-                        </th>
-                        <th><a href="{% url 'facturas_exportar' %}?modo={{ request.GET.modo }}"
-                               class="addlink">{% traducir 'exportar CSV' 'CUENTAS' %}</a>
-                        </th>
-                    </tr>
-                </table>
-            </div>
-        {% endif %}
         {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
         <div class="col form-group" align="right">
             <div class="form-group">
@@ -54,46 +64,61 @@
         <br>
         <table id="tab">
             <thead>
-            <th>{% traducir 'Descripción' 'CUENTAS' %}</th>
-            <th>{% traducir 'Cantidad' 'CUENTAS' %}</th>
-            <th>{% traducir 'Precio (Sin IVA)' 'CUENTAS' %}</th>
-            <th>{% traducir 'IVA' 'CUENTAS' %}</th>
-            <th>{% traducir 'Precio Total' 'CUENTAS' %}</th>
+            <tr>
+                <th id="desc_col_head">{% traducir 'Descripción' 'CUENTAS' %}</th>
+                <th id="cant_col_head">{% traducir 'Cantidad' 'CUENTAS' %}</th>
+                <th id="precio_col_head">{% traducir 'Precio (Sin IVA)' 'CUENTAS' %}</th>
+                <th id="iva_col_head">{% traducir 'IVA' 'CUENTAS' %}</th>
+                <th id="precio_coniva_col_head">{% traducir 'Precio Total' 'CUENTAS' %}</th>
+                <th id="img_col_head">{% traducir 'Imagen' 'CUENTAS' %}</th>
+            </tr>
             </thead>
             <tbody>
             {% for item in paginado %}
-             <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+            <tr class="row{% if forloop.counter|divisibleby:2 %}1{% else %}2{% endif %}">
+                <td class="desc_col">
                 {% if item.descripcion == None %}
                     {% if item.articulo.descripcion == None %}
-                        <td>{{item.articulo.artcod}}</td>
+                        {{item.articulo.artcod}}
                     {% else %}
-                        <td>{{item.articulo.artcod}}, {{item.articulo.descripcion}}</td>
+                        {{item.articulo.artcod}}, {{item.articulo.descripcion}}
                     {% endif %}
                 {% else %}
-                    <td>{{item.articulo.artcod}}, {{item.descripcion}}</td>
-                {% endif %}
+                    {{item.articulo.artcod}}, {{item.descripcion}}
+                {% endif %}</td>
 
-                <td>{{item.cantidad}}</td>
+                <td class="cant_col">{{item.cantidad}}</td>
 
-                {% if item.precio == None %}
-                    <td>{{item.articulo.precio}}</td>
+                <td class="precio_col">{% if item.precio == None %}
+                    {{item.articulo.precio}}
                 {% else %}
-                    <td>{{item.precio}}</td>
-                {% endif %}
+                    {{item.precio}}
+                {% endif %}</td>
 
-                <td>{{item.articulo.iva}}</td>
+                <td class="iva_col">{{item.articulo.iva}}</td>
+
+                <td class="precio_coniva_col">
                 {% if item.articulo.iva == 21 %}
-                    <td>{{item|iva21}}</td>
+                    {{item|iva21}}
                 {% else %}
                     {% if item.articulo.iva == 27 %}
-                        <td>{{item|iva27}}</td>
-                     {% else %}
+                        {{item|iva27}}
+                    {% else %}
                         {% if item.articulo.iva == 10.5 %}
-                            <td>{{item|iva105}}</td>
+                            {{item|iva105}}
                         {% else %}
-                            <td>{{item.articulo.precio}}</td>
-                 {% endif %}{% endif %}{% endif %}
-             </tr>
+                            {{item.articulo.precio}}
+                {% endif %}{% endif %}{% endif %}</td>
+
+                <td class="img_col">
+                {% if item.articulo.artimg.name|tiene_vista_previa %}
+                    <a target="_blank"
+                        href="{{ MEDIA_URL }}{{ item.articulo.artimg }}">
+                        <img class="preview" src="/media/{{ item.articulo.artimg }}" style="width:200px">
+                    </a>
+                {% endif %}</td>
+
+            </tr>
             {% endfor %}
             </tbody>
         </table>
@@ -107,6 +132,7 @@
     {% if request.GET.modo == 'm' %}
     <script src="{% static " js/marcar_todo.js" %} " ></script>
     {% endif %}
+
     <script src="{% static " js/armar_seleccionados.js" %} " ></script>
 </div>
 {% endif %}

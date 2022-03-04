@@ -18,12 +18,15 @@ from perfiles.models import Perfil
 import random
 import string
 from xadmin.settings import MEDIA_URL, DEBUG, BASE_DIR
+from xadmin.settings import MEDIA_URL
 from reportlab.pdfgen import canvas
 import webbrowser
 import json
 import keyboard
 from tabla.listas import IVAS
 from articulos.models import Articulo
+import csv
+
 
 # Create your views here.
 @login_required(login_url='ingresar')
@@ -301,6 +304,104 @@ def facturas_pendientes(request, encriptado=None):
 
 
 @login_required(login_url='ingresar')
+@permission_required("expediente.expediente_exportar", None, raise_exception=True)
+def cuentas_exportar(request):
+    output = []
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Cuentas.csv"'
+    writer = csv.writer(response, delimiter=";")
+    filtrado = Cliente.objects.all()
+    # CSV Data
+    I = 0
+    while I < len(filtrado):
+        obj = filtrado[I]
+        output.append([obj.clicod,
+                       obj.nombre,
+                       obj.cuit,
+                       obj.domicilio,
+                       obj.telefono,
+                       obj.email,
+                       obj.encriptado,
+                       obj.tipoiva,
+                       obj.fecha_saldo,
+                       obj.saldo_inicial,
+                       ])
+        I = I + 1
+    writer.writerows(output)
+    return response
+
+
+@login_required(login_url='ingresar')
+@permission_required("expediente.expediente_exportar", None, raise_exception=True)
+def cuentasd_exportar(request):
+    output = []
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Cuentas_Detalle.csv"'
+    writer = csv.writer(response, delimiter=";")
+    filtrado = CuentasD.objects.all()
+    # CSV Data
+    I = 0
+    while I < len(filtrado):
+        obj = filtrado[I]
+        output.append([obj.vtacod,
+                       obj.articulo_id,
+                       obj.cantidad,
+                       obj.descripcion,
+                       obj.precio])
+        I = I + 1
+    writer.writerows(output)
+    return response
+
+
+@login_required(login_url='ingresar')
+@permission_required("expediente.expediente_exportar", None, raise_exception=True)
+def facturas_exportar(request):
+    output = []
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="facturas.csv"'
+    writer = csv.writer(response, delimiter=";")
+    filtrado = Cuentas.objects.all()
+    # CSV Data
+    I = 0
+    while I < len(filtrado):
+        obj = filtrado[I]
+        output.append([obj.vtacod,
+                       obj.comprobante,
+                       obj.fecha_emision,
+                       obj.fecha_vencimiento,
+                       obj.total,
+                       obj.concepto,
+                       obj.pdf,
+                       obj.cliente,
+                       obj.cae,
+                       obj.vencimiento_cae,
+                       obj.cptedh,
+                       obj.pendiente,
+                       ])
+        I = I + 1
+    writer.writerows(output)
+    return response
+
+
+@login_required(login_url='ingresar')
+def cuentas_listar(request, encriptado=None):
+    contexto = cuentas_filtrar(request, encriptado)
+    modo = request.GET.get('modo')
+    contexto['modo'] = modo
+    contexto['facturas_pendientes'] = True
+
+    if encriptado is None:
+        return redirect('menu')
+
+    if modo == 'm' or modo == 's':
+        template_name = 'cuentas_list_block.html'
+    else:
+        template_name = 'cuentas_listar.html'
+
+    return render(request, template_name, contexto)
+
+
+@login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_listar_admin", None, raise_exception=True)
 def cuentas_listar_admin(request):
     contexto = cuentas_filtrar(request, None, False)
@@ -356,6 +457,8 @@ def cuenta_detalle(request, id=None, encriptado=None):
 
     contexto['comprobante'] = comprobante
 
+    # contexto['fijar_imagen'] = get_preferencia(request.user, 'clientes', 'fijar_i', 'L', True)
+
     if encriptado is None:
         return redirect('menu')
 
@@ -382,6 +485,7 @@ def cuentas_agregar(request):
     template_name = 'cuentas_form.html'
 
     return render(request, template_name, {'form': form})
+
 
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_agrega", None, raise_exception=True)
@@ -472,6 +576,7 @@ def cuentasd_importar(request):
     titulo = 'Importar CSV'
     contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
     return render(request, template_name, contexto)
+
 
 @login_required(login_url='ingresar')
 @permission_required("clientes.cuentas_editar", None, raise_exception=True)
