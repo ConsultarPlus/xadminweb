@@ -83,3 +83,4 @@ class CuentasForm(forms.ModelForm):
                 Button('cancel', 'Volver', css_class='btn-default', onclick="window.history.back()")
             )
         )
+

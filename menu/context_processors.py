@@ -74,6 +74,8 @@ def menu_processor(request):
                    'titulo': 'Cuenta Corriente', 'modelo': 'CLIENTE', 'visible': True},
                   {'id_grupo': 'CLI', 'url': reverse('cliente_editar', kwargs={'encriptado': cliente_asociado['encriptado']}),
                    'titulo':'Mis Datos', 'modelo': 'CLIENTE', 'visible': True},
+                  {'id_grupo': 'CLI', 'url': reverse('hacer_pedido', kwargs={'encriptado': cliente_asociado['encriptado']}),
+                   'titulo':'Hacer Pedido', 'modelo': 'CLIENTE', 'visible': True},
 
                   {'id_grupo': 'SOP', 'url': reverse('clientes_listar'), 'titulo': 'Clientes', 'modelo': 'CLIENTE',
                    'visible': clientes_puede_listar},

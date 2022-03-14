@@ -1,4 +1,4 @@
-from .models import Cliente, Cuentas, CuentasD
+from .models import Cliente, Cuentas, CuentasD, Articulo
 from django.db.models import Q
 from tabla.filters import paginador
 from tabla.forms import FiltroSimple
@@ -74,6 +74,30 @@ def cuentasd_filtrar(query_dict, vtacod, facturas_pendientes):
 
     if buscar != '' and buscar is not None:
         filtrado = filtrado.filter(concepto__icontains=buscar)
+
+    registros = filtrado.count()
+    paginado = paginador(query_dict, filtrado)
+
+    form = FiltroSimple(initial={'buscar': buscar,
+                                 'items': items,
+                                 'modo': modo})
+    return {'filter': filtrado,
+            'paginado': paginado,
+            'registros': registros,
+            'filtros_form': form}
+
+
+def articulos_filtrar(query_dict):
+    buscar = query_dict.GET.get('buscar')
+    # buscarenc = query_dict.GET.get('encriptado')
+    items = get_opcion_paginado(query_dict)
+    modo = query_dict.GET.get('modo')
+    filtrado = Articulo.objects.all()
+
+    if buscar != '' and buscar is not None:
+        filtrado = filtrado.filter(Q(clicod__icontains=buscar) |
+                                   Q(nombre__icontains=buscar)
+                                   )
 
     registros = filtrado.count()
     paginado = paginador(query_dict, filtrado)

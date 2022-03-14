@@ -3,12 +3,12 @@ from django.contrib import messages
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User, Group
-from django.http import FileResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse
 from urllib.parse import urlencode
 import os
-from .models import Cliente, Cuentas, CuentasD
+from .models import Cliente, Cuentas, CuentasD, Articulo
 from .forms import ClienteForm, CuentasForm
-from .filters import clientes_filtrar, cuentas_filtrar, cuentasd_filtrar
+from .filters import clientes_filtrar, cuentas_filtrar, cuentasd_filtrar, articulos_filtrar
 from tabla.forms import ImportarCSVForm
 from tabla.funcs import es_valido, email_valido, saldo_total
 from tabla.funcs import get_lett
@@ -24,7 +24,6 @@ import webbrowser
 import json
 import keyboard
 from tabla.listas import IVAS
-from articulos.models import Articulo
 import csv
 
 
@@ -884,3 +883,59 @@ def imprimir_png(request, id, encriptado=None):
         doc.showPage()
         doc.save()
         return response
+
+
+@login_required(login_url='ingresar')
+def hacer_pedido(request, encriptado=None):
+    contexto = articulos_filtrar(request)
+    modo = request.GET.get('modo')
+    contexto['modo'] = modo
+    contexto['facturas_pendientes'] = True
+    contexto['encriptado'] = encriptado
+
+    if modo == 'm' or modo == 's':
+        template_name = 'articulos_list_block.html'
+    else:
+        template_name = 'articulos_listar.html'
+
+    return render(request, template_name, contexto)
+
+
+@login_required(login_url='ingresar')
+def subir_pedido(request, encriptado=None):
+    if request.POST:
+        form = CuentasForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('cuentas_listar')
+    else:
+        form = CuentasForm()
+
+    template_name = 'cuentas_form.html'
+
+    return render(request, template_name, {'form': form})
+
+
+@login_required(login_url='ingresar')
+@permission_required("expediente.expediente_vincular", None, raise_exception=True)
+def grabar_cuentasd(request):
+    print("grabar_cuentasd")
+    if request.is_ajax and request.method == "GET":
+        articulos_ids = request.GET.get('seleccion')
+        articulos_ids = articulos_ids.split(';')
+        items = 0
+        print('aca')
+        """Generar vtacod"""
+        vtacod = 99999
+        for articulo_id in articulos_ids:
+            if int(articulo_id):
+                """Alta de cuentasD"""
+                cuentasd = CuentasD(vtacod=vtacod,
+                                    articulo_id=articulo_id
+                                    )
+                cuentasd.save()
+                items += 1
+        mensaje = 'Se generaron {} items en detalle de pedido'.format(items)
+        return JsonResponse({"mensaje": mensaje}, status=200)
+
+    return JsonResponse({}, status=400)

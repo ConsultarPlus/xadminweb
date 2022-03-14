@@ -2,18 +2,74 @@
 {% load custom_tags %}
 {% load static %}
 {% get_media_prefix as MEDIA_URL %}
-{% if request.GET.seleccionar == 'True' %}
-    {% include "cabeza.html" %}
-    <div id="content" class="{% block coltype %}colM{% endblock %}">
-{% endif %}
+    {% if request.GET.seleccionar == 'True' %}
+        {% include "cabeza.html" %}
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+    {% endif %}
 
     <h1>Artículos</h1>
+    <script type="text/javascript">
+        function hide_show_table(col_name)
+        {
+            var checkbox_val=document.getElementById(col_name).value;
+            if(checkbox_val=="hide")
+            {
+                var all_col=document.getElementsByClassName(col_name);
+                for(var i=0;i<all_col.length;i++)
+                {
+                    all_col[i].style.display="none";
+                }
+                document.getElementById(col_name+"_head").style.display="none";
+                document.getElementById(col_name).value="show";
+            }
 
+            else
+            {
+                var all_col=document.getElementsByClassName(col_name);
+                for(var i=0;i<all_col.length;i++)
+                {
+                    all_col[i].style.display="table-cell";
+                }
+                document.getElementById(col_name+"_head").style.display="table-cell";
+                document.getElementById(col_name).value="hide";
+            }
+        }
+
+        function armar_seleccionados(multiple) {
+            var inputs = document.getElementsByTagName('input');
+            var seleccion = "";
+            var id;
+            var elemento = ((multiple == 'm') ? 'checkbox' : 'radio');
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].type == elemento) {
+                    if (inputs[i].checked == true) {
+                        id = inputs[i].id ;
+                        seleccion = seleccion + ((seleccion.length == 0) ? '' : '') + id ;
+                        if (multiple != 'm') {
+                            break;
+                        }
+                    }
+                }
+            }
+            if (seleccion.length > 0) {
+                window.opener.setValue(seleccion);
+                close();
+                window.location = "http://www.w3schools.com";
+            }
+            else {
+                alert('No se seleccionó ningún item');
+            }
+        }
+        </script>
     {% if filtros_form %}
         {% crispy filtros_form %}
         <br>
     {% endif %}
+        <div id="checkbox_div">
+            <b>Ocultar Imágenes</b> <input type="checkbox" value="hide" id="img_col" onchange="hide_show_table(this.id);">
+        </div><br>
 
+    {% if subir_cuentas %}
     <div class="form-row form-row">
         <div class="col form-group">
             <table>
@@ -27,21 +83,20 @@
                 </tr>
             </table>
         </div>
-        {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
-        <div class="col form-group" align="right">
+    </div>
+    {% endif %}
+    <table>
+            <tr class="model-group">
+                <th><a href="{% url 'subir_pedido' encriptado %}?modo={{ request.GET.modo }}"
+                       class="addlink">{% traducir 'Subir Pedido' 'Articulo' %} </a>
+                </th>
+            </tr>
+        </table>
+        <div class="col form-group" align="left">
             <div class="form-group">
-                {% include 'boton_seleccionar.html' %}
+                <a href="#" class="btn btn-default" onclick="armar_seleccionados('m')">Seleccionara</a>
             </div>
         </div>
-        {% endif %}
-    </div>
-
-
-    <div align="right">
-        {% if request.GET.seleccionar == 'True' %}
-        <a href="#" class="btn btn-default" onclick="armar_seleccionados('{{ request.GET.multiple }}')">Seleccionar</a>
-        {% endif %}
-    </div>
 
     <div style="overflow-x:auto;">
         <br>
@@ -55,6 +110,7 @@
                         <th></th>
                     {% endif %}
                 {% endif %}
+                <th></th>
                 <th>Código</th>
                 <th>Descripción</th>
                 <th>Precio</th>
@@ -62,13 +118,12 @@
                 <th>Departamento</th>
                 <th>Ubicación</th>
                 <th>Unidad</th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
-                <th></th>
+                <th id="img_col_head">{% traducir 'Imagen' 'CUENTAS' %}</th>
+                <th>Cantidad</th>
+                {% if subir_cuentas %}
+                    <th></th>
+                    <th></th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
@@ -78,13 +133,7 @@
                 {% else %}
             <tr class="row2">
                 {% endif %}
-                {% if request.GET.seleccionar == 'True' %}
-                    {% if request.GET.multiple == 'True' %}
-                        <td><input type="checkbox" id="{{ item.id }}"/></td>
-                    {% else %}
-                        <td><input type="radio" id="{{ item.id }}" name="items"></td>
-                    {% endif %}
-                {% endif %}
+                <td><input type="checkbox" id="{{ item.id }}"/></td>
                 <td>{{ item.artcod }}</td>
                 <td>{{ item.descripcion }}</td>
                 <td>{{ item.precio }}</td>
@@ -92,17 +141,23 @@
                 <td>{{ item.departamento }}</td>
                 <td>{{ item.ubicacion }}</td>
                 <td>{{ item.artuniven|unidad_descripcion }}</td>
+                <td class="img_col">
                 {% if item.artimg.name|tiene_vista_previa %}
-                    <td><a target="_blank"
+                    <a target="_blank"
                            href="{{ MEDIA_URL }}{{ item.artimg }}">
                            <img class="preview" src="/media/{{ item.artimg }}" style="width:200px">
                         </a>
-                    </td>
-                {% else %}
-                    <td></td>
                 {% endif %}
-                <td><a href="{% url 'articulo_editar' item.id %}" class="changelink">Editar</a></td>
-                <td><a href="{% url 'articulo_eliminar' item.id %}" class="deletelink">Eliminar</a></td>
+                </td>
+                <td>
+                    <form action="/action_page.php">
+                        <input type="number" id="quantity" name="quantity" min="1" max="65535" value="1">
+                    </form>
+                </td>
+                {% if subir_cuentas %}
+                    <td><a href="{% url 'articulo_editar' item.id %}" class="changelink">Editar</a></td>
+                    <td><a href="{% url 'articulo_eliminar' item.id %}" class="deletelink">Eliminar</a></td>
+                {% endif %}
             </tr>
             {% endfor %}
             </tbody>
@@ -113,14 +168,10 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     {% if request.GET.multiple == 'True' %}
-        <script src="{% static " js/marcar_todo.js" %} " ></script>{% endif %}
-    {% if request.GET.seleccionar == 'True' %}
-        <script src="{% static "js/armar_seleccionados.js" %} " ></script>
+        <script src="{% static " js/marcar_todo.js" %} " ></script>
     {% endif %}
-    {% if request.GET.seleccionar == 'True' %}
-</div>
-{% endif %}
-
-
-
- 
+    {% if request.GET.modo == 's' or request.GET.modo == 'm' %}
+        {% if request.GET.modo == 'm' %}
+            <script src="{% static " js/marcar_todo.js" %} " ></script>
+        {% endif %}
+    {% endif %}

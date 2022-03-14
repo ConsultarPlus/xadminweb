@@ -17,5 +17,20 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="{% static " js/registros_de_entidad.js" %} " ></script>
-
+    <script>
+        function setValue(seleccion) {
+            alert("epaaa");
+            var url = "{% url 'grabar_cuentasd' %}";
+            $.ajax({
+                  url: url,
+                  type: 'GET' ,
+                  data: {'seleccion': seleccion },
+                  success: function (response) {
+                    alert(response["mensaje"]);
+                    window.location.replace(url);
+                    }
+                  }
+            });
+        }
+    </script>
     {% endblock %}

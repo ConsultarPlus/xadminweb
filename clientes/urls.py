@@ -19,6 +19,9 @@ from .views import (cliente_agregar,
                     cuentas_exportar,
                     cuentasd_exportar,
                     imprimir_png,
+                    hacer_pedido,
+                    subir_pedido,
+                    grabar_cuentasd,
                     )
 
 urlpatterns = [
@@ -42,4 +45,7 @@ urlpatterns = [
     path('cuenta_corriente/<slug:encriptado>', cuenta_corriente, name='cuenta_corriente'),
     path('cuenta_detalle/<int:id>/<slug:encriptado>', cuenta_detalle, name='cuenta_detalle'),
     path('imprimir_png/<int:id>/<slug:encriptado>', imprimir_png, name='imprimir_png'),
+    path('hacer_pedido/<slug:encriptado>', hacer_pedido, name='hacer_pedido'),
+    path('subir_pedido/<slug:encriptado>', subir_pedido, name='subir_pedido'),
+    path('grabar_cuentasd/', grabar_cuentasd, name='grabar_cuentasd'),
 ]
