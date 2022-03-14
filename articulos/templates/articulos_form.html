@@ -10,7 +10,19 @@
 {% endif %}
 
     {% crispy form %}
-
+    <script>
+        $(document).ready(function(){
+            $("#id_departamento").change(function(){
+                rubro_y_seccion()
+            });
+        });
+        function rubro_y_seccion(){
+            if (document.getElementById("id_departamento").value) {
+                document.getElementById("id_rubro").value=document.getElementById("id_rubro_calc").value;
+                document.getElementById("id_seccion").value=document.getElementById("id_seccion_calc").value;
+            }
+        }
+    </script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="{% static " js/registros_de_entidad.js" %} " ></script>
