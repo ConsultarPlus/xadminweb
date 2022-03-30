@@ -16,7 +16,7 @@ def articulos_listar(request):
     contexto = articulos_filtrar(request)
     modo = request.GET.get('modo')
     contexto['modo'] = modo
-
+    contexto['subir_cuentas'] = True
     if modo == 'm' or modo == 's':
         template_name = 'articulos_list_block.html'
     else:
@@ -61,8 +61,12 @@ def articulo_editar(request, id):
             form.save()
             return redirect('articulos_listar')
     else:
-        form = ArticuloForm(instance=articulo)
-        contexto = {'form': form, 'MODELO': articulo}
+        departamento = Tabla.objects.get(id=articulo.departamento.id)
+        rubro = Tabla.objects.get(codigo=departamento.superior_codigo, entidad=departamento.superior_entidad)
+        seccion = Tabla.objects.get(codigo=rubro.superior_codigo, entidad=rubro.superior_entidad)
+        initial = {'rubro': rubro.descripcion, 'seccion':seccion.descripcion}
+        form = ArticuloForm(instance=articulo, initial=initial)
+        contexto = {'form': form, 'articulo': articulo}
 
     return render(request, template_name, contexto)
 
@@ -225,3 +229,19 @@ def articulos_importar(request):
     titulo = 'Importar CSV'
     contexto = {'form': form, 'formato': formato, 'errores': errores_lista, 'titulo': titulo}
     return render(request, template_name, contexto)
+
+
+def cargar_rubro(request):
+    departamento_id = request.GET.get('id_depto')
+    departamento = Tabla.objects.get(id=departamento_id)
+    rubro = Tabla.objects.get(codigo=departamento.superior_codigo, entidad=departamento.superior_entidad)
+    return render(request,  'dropdowns/rubros_dropdown.html', {'rubro': rubro})
+
+
+def cargar_seccion(request):
+    departamento_id = request.GET.get('id_depto')
+    departamento = Tabla.objects.get(id=departamento_id)
+    rubro = Tabla.objects.get(codigo=departamento.superior_codigo, entidad=departamento.superior_entidad)
+    seccion = Tabla.objects.get(codigo=rubro.superior_codigo, entidad=rubro.superior_entidad)
+    return render(request,  'dropdowns/seccion_dropdown.html', {'seccion': seccion})
+

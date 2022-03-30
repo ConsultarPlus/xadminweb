@@ -18,6 +18,4 @@ class Articulo(models.Model):
     artimg = models.FileField(null=True, blank=True)
     marca = models.ForeignKey(Tabla, related_name='marca', on_delete=models.DO_NOTHING, null=True, blank=True)
     color = models.ForeignKey(Tabla, related_name='color', on_delete=models.DO_NOTHING, null=True, blank=True)
-    seccion = models.ForeignKey(Tabla, related_name='seccion', on_delete=models.DO_NOTHING, null=True, blank=True)
-    rubro = models.ForeignKey(Tabla, related_name='rubro', on_delete=models.DO_NOTHING, null=True, blank=True)
     codbar = models.CharField(max_length=30, null=True, blank=True)

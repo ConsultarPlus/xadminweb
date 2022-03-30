@@ -6,7 +6,6 @@
         {% include "cabeza.html" %}
         <div id="content" class="{% block coltype %}colM{% endblock %}">
     {% endif %}
-
     <h1>Artículos</h1>
     <script type="text/javascript">
         function hide_show_table(col_name)
@@ -85,7 +84,8 @@
         </div>
     </div>
     {% endif %}
-    <table>
+    {% if encriptado %}
+        <table>
             <tr class="model-group">
                 <th><a href="{% url 'subir_pedido' encriptado %}?modo={{ request.GET.modo }}"
                        class="addlink">{% traducir 'Subir Pedido' 'Articulo' %} </a>
@@ -97,29 +97,28 @@
                 <a href="#" class="btn btn-default" onclick="armar_seleccionados('m')">Seleccionara</a>
             </div>
         </div>
-
+    {% endif %}
     <div style="overflow-x:auto;">
         <br>
         <table id="tab">
             <thead>
             <tr>
-                {% if request.GET.seleccionar == 'True' %}
-                    {% if request.GET.multiple == 'True' %}
-                        <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]"/></th>
-                    {% else %}
-                        <th></th>
-                    {% endif %}
+                {% if hacer_pedido %}
+                    <th><input type="checkbox" onchange="marcar_todo(this)" name="chk[]"/></th>
                 {% endif %}
                 <th></th>
                 <th>Código</th>
                 <th>Descripción</th>
                 <th>Precio</th>
+                <th>Iva</th>
                 <th>Moneda</th>
                 <th>Departamento</th>
                 <th>Ubicación</th>
                 <th>Unidad</th>
                 <th id="img_col_head">{% traducir 'Imagen' 'CUENTAS' %}</th>
-                <th>Cantidad</th>
+                {% if hacer_pedido %}
+                    <th>Cantidad</th>
+                {% endif %}
                 {% if subir_cuentas %}
                     <th></th>
                     <th></th>
@@ -133,13 +132,18 @@
                 {% else %}
             <tr class="row2">
                 {% endif %}
-                <td><input type="checkbox" id="{{ item.id }}"/></td>
+                {% if hacer_pedido %}
+                    <td><input type="checkbox" id="{{ item.id }}"/></td>
+                {% else %}
+                    <td></td>
+                {% endif %}
                 <td>{{ item.artcod }}</td>
-                <td>{{ item.descripcion }}</td>
+                <td>{{ item.descripción }}</td>
                 <td>{{ item.precio }}</td>
+                <td>{{ item.iva }}</td>
                 <td>{{ item.moneda|moneda_descripcion }}</td>
                 <td>{{ item.departamento }}</td>
-                <td>{{ item.ubicacion }}</td>
+                <td>{{ item.ubicación }}</td>
                 <td>{{ item.artuniven|unidad_descripcion }}</td>
                 <td class="img_col">
                 {% if item.artimg.name|tiene_vista_previa %}
@@ -149,11 +153,14 @@
                         </a>
                 {% endif %}
                 </td>
-                <td>
-                    <form action="/action_page.php">
-                        <input type="number" id="quantity" name="quantity" min="1" max="65535" value="1">
-                    </form>
-                </td>
+                {% if hacer_pedido %}
+                    <td>
+                        <form action="/action_page.php">
+                            <input type="number" id="quantity" name="quantity" min="1" max="65535" value="1">
+                        </form>
+                    </td>
+                {% endif %}
+
                 {% if subir_cuentas %}
                     <td><a href="{% url 'articulo_editar' item.id %}" class="changelink">Editar</a></td>
                     <td><a href="{% url 'articulo_eliminar' item.id %}" class="deletelink">Eliminar</a></td>

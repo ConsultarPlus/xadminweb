@@ -22,7 +22,7 @@ class ImportarCSVForm(forms.Form):
             entidades = ENTIDADES
 
         self.fields['entidad'].widget = SelectLiveSearchInput(choices=entidades)
-
+        self.fields['entidad'].initial = kwargs['initial']['entidad']
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control-sm'
 

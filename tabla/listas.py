@@ -7,6 +7,9 @@ ENTIDADES = (
     ('PAIS', 'País'),
     ('TIPO_NACIONALIDAD', 'Tipo de nacionalidad'),
     ('DEPARTAMENTO', 'Departamento'),
+    ('IVA', 'Iva',),
+    ('RUBRO', 'Rubro',),
+    ('SECCION', 'Sección',)
 )
 
 UNIDADES = (
@@ -37,9 +40,17 @@ IVAS = (
     ('P', 'PUBLICIDAD'),
     ('S', 'SERVICIOS'),
 )
+
 MONEDA = (
     (1, 'PESO'),
     (2, 'DOLAR')
+)
+
+PORCENTAJEIVA = (
+    (0.0, '0 %'),
+    (10.5, '10.5 %'),
+    (21.0, '21 %'),
+    (27.0, '27 %')
 )
 
 ACTIVO = (

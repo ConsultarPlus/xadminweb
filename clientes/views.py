@@ -121,7 +121,7 @@ def cliente_agregar_y_volver(request):
 def clientes_cargar_csv(request):
     errores_lista = []
     initial = {'entidades': (('CLIENTES', 'Clientes'),),
-               'entidad': 'Clientes'}
+               'entidad': 'CLIENTES'}
     if request.POST:
         form = ImportarCSVForm(request.POST, request.FILES, initial=initial)
         if form.is_valid():
@@ -491,7 +491,7 @@ def cuentas_agregar(request):
 def cuentasd_importar(request):
     errores_lista = []
     initial = {'entidades': (('CUENTASD', 'CuentasD'),),
-               'entidad': 'CuentasD'}
+               'entidad': 'CUENTASD'}
     if request.POST:
         form = ImportarCSVForm(request.POST, request.FILES, initial=initial)
         if form.is_valid():
@@ -620,7 +620,7 @@ def cuentas_eliminar(request, id):
 def cuentas_importar(request):
     errores_lista = []
     initial = {'entidades': (('CUENTAS', 'Cuentas'),),
-               'entidad': 'Cuentas'}
+               'entidad': 'CUENTAS'}
     if request.POST:
         form = ImportarCSVForm(request.POST, request.FILES, initial=initial)
         if form.is_valid():
@@ -889,9 +889,10 @@ def imprimir_png(request, id, encriptado=None):
 def hacer_pedido(request, encriptado=None):
     contexto = articulos_filtrar(request)
     modo = request.GET.get('modo')
+
     contexto['modo'] = modo
-    contexto['facturas_pendientes'] = True
     contexto['encriptado'] = encriptado
+    contexto['hacer_pedido'] = True
 
     if modo == 'm' or modo == 's':
         template_name = 'articulos_list_block.html'

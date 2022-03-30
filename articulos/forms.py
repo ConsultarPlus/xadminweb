@@ -5,13 +5,15 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Submit, Row, Column, Button, ButtonHolder, HTML
 from xadmin.settings import MEDIA_URL, STATIC_URL
 from crispy_forms.bootstrap import FieldWithButtons
-from tabla.listas import ITEMS_X_PAG
+from tabla.listas import ITEMS_X_PAG, PORCENTAJEIVA
 from tabla.widgets import SelectLiveSearchInput
 from tabla.funcs import boton_buscar
 from tabla.gets import get_choices
 
 
 class ArticuloForm(forms.ModelForm):
+    rubro = forms.CharField(required=False)
+    seccion = forms.CharField(required=False)
 
     class Meta:
         model = Articulo
@@ -23,16 +25,19 @@ class ArticuloForm(forms.ModelForm):
         self.fields['descripcion'].label = 'Descripición'
         self.fields['marca'].label = 'Marca'
         self.fields['color'].label = 'Color'
-        self.fields['seccion'].label = 'Seccion'
-        self.fields['seccion'].enabled = False
+        self.fields['seccion'].label = 'Sección'
+        self.fields['seccion'].disabled = True
         self.fields['rubro'].label = 'Rubro'
-        self.fields['rubro'].enabled = False
-        self.fields['codbar'].label = 'codbar'
+        self.fields['rubro'].disabled = True
+        self.fields['codbar'].label = 'Código de Barra'
         self.fields['iva'].label = 'Iva %'
+        self.fields['iva'].widget = SelectLiveSearchInput(choices=PORCENTAJEIVA)
         self.fields['precio'].label = 'Precio'
         self.fields['moneda'].label = 'Moneda'
         self.fields['departamento'].label = 'Departamento'
         self.fields['departamento'].widget = SelectLiveSearchInput(choices=get_choices('DEPARTAMENTO'))
+        self.fields['marca'].widget = SelectLiveSearchInput(choices=get_choices('MARCA'))
+        self.fields['color'].widget = SelectLiveSearchInput(choices=get_choices('COLOR'))
         self.fields['artuniven'].label = 'Unidad'
         self.fields['descextra'].label = 'Descripción Extra'
         self.fields['ubicacion'].label = 'Ubicación'
@@ -40,6 +45,12 @@ class ArticuloForm(forms.ModelForm):
 
         link = ""
         if self.instance.pk:
+            try:
+                self.fields['rubro'].initial = kwargs['initial']['rubro']
+                self.fields['seccion'].initial = kwargs['initial']['seccion']
+            except Exception as e:
+                pass
+
             if self.instance.artimg:
                 img = MEDIA_URL+str(self.instance.artimg)
             else:
@@ -89,7 +100,6 @@ class ArticuloForm(forms.ModelForm):
             ),
             Row(
                 Column('iva', css_class='form-group col-md-1     mb-0'),
-                Column('%'),
                 css_class='form-row'
             ),
             Row(
