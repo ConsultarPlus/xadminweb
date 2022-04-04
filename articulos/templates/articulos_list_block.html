@@ -77,7 +77,7 @@
                            class="addlink">{% traducir 'Agregar' 'Articulo' %} </a>
                     </th>
                     <th><a href="{% url 'articulos_importar' %}"
-                           class="addlink">{% traducir 'Importar CSV' 'CLIENTE' %}</a>
+                           class="addlink">{% traducir 'Importar CSV' 'Articulo' %}</a>
                     </th>
                 </tr>
             </table>
@@ -109,6 +109,7 @@
                 <th></th>
                 <th>Código</th>
                 <th>Descripción</th>
+                <th>Marca</th>
                 <th>Precio</th>
                 <th>Iva</th>
                 <th>Moneda</th>
@@ -138,7 +139,8 @@
                     <td></td>
                 {% endif %}
                 <td>{{ item.artcod }}</td>
-                <td>{{ item.descripción }}</td>
+                <td>{{ item.descripcion }}</td>
+                <td>{{ item.marca|limpiar_none }}</td>
                 <td>{{ item.precio }}</td>
                 <td>{{ item.iva }}</td>
                 <td>{{ item.moneda|moneda_descripcion }}</td>

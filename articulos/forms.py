@@ -8,7 +8,7 @@ from crispy_forms.bootstrap import FieldWithButtons
 from tabla.listas import ITEMS_X_PAG, PORCENTAJEIVA
 from tabla.widgets import SelectLiveSearchInput
 from tabla.funcs import boton_buscar
-from tabla.gets import get_choices
+from tabla.gets import get_choices, get_choices_mas_vacio
 
 
 class ArticuloForm(forms.ModelForm):
@@ -128,7 +128,8 @@ class ArticuloForm(forms.ModelForm):
 
 
 class FiltroArticulo(forms.Form):
-    departamento = forms.CharField(max_length=30, required=False)
+    marca = forms.IntegerField(required=False)
+    departamento = forms.IntegerField(required=False)
     buscar = forms.CharField(max_length=60, required=False)
     modo = forms.CharField(required=False)
     items = forms.IntegerField(max_value=30,
@@ -144,6 +145,8 @@ class FiltroArticulo(forms.Form):
         self.fields['buscar'].label = ''
         self.fields['items'].label = ''
         self.fields['items'].widget = SelectLiveSearchInput(choices=ITEMS_X_PAG)
+        self.fields['departamento'].widget = SelectLiveSearchInput(choices=get_choices('DEPARTAMENTO'))
+        self.fields['marca'].widget = SelectLiveSearchInput(choices=get_choices_mas_vacio('MARCA'))
         self.fields['modo'].widget.attrs['hidden'] = True
         self.fields['modo'].label = ""
 
@@ -158,7 +161,8 @@ class FiltroArticulo(forms.Form):
             Row(
                 Column('departamento', css_class='form-group col-md-3 mb-0 ')
             ),
-            'modo'
+            'modo',
+            Row(
+                Column('marca', css_class='form-group col-md-3 mb-0 ')
+            )
         )
-
-
